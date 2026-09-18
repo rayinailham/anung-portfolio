@@ -259,7 +259,7 @@ export default function App() {
   }, [booting, transitioning, revealed, revealPage]);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#000000' : '#FFFFFF';
+    document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#102e2b' : '#F5DABF';
     try { localStorage.setItem('anung-theme', theme); } catch { /* Storage is optional. */ }
   }, [theme]);
   useEffect(() => {

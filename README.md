@@ -44,7 +44,7 @@ The contact form opens the visitor's email application using `mailto:`. It does 
 - `src/styles.css`: responsive layout and theme tokens.
 - `public/documents/anung-ramadhan-cv.pdf`: downloadable CV.
 
-Brand colors follow the supplied "Black and Gold Elegance" reference (`color_palette_option2`): white `#FFFFFF`, mist `#E5E5E5`, gold `#FCA311`, navy `#14213D`, black `#000000`. The `--green` CSS token is the text accent (black in light, gold in dark); `--gold` carries the decorative gold. Typography is self-hosted Manrope. Design-taste-frontend informed the asymmetric layout; emil-design-eng informed motion timing, interaction feedback, and reduced-motion behavior.
+Brand colors follow the supplied reference: bordo `#6C151E`, green `#0F3D3A`, cream `#F5DABF`. Typography is self-hosted Manrope. Design-taste-frontend informed the asymmetric layout; emil-design-eng informed motion timing, interaction feedback, and reduced-motion behavior.
 
 The sculpture image is a decorative AI-generated illustration, not client work or campaign evidence. See `docs/asset-provenance.md`. Profile photos and CV are supplied assets. No campaign results or revenue claims were invented. The combined 150 affiliates in the coordination role are the 100 Shopee + 50 TikTok affiliates listed in the CV; this is not a deduplicated count of individuals.
 

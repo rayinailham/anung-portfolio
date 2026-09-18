@@ -32,10 +32,10 @@ try {
       for (const theme of ['dark', 'light']) {
         await page.getByRole('button', { name: theme === 'dark' ? 'Aktifkan mode gelap' : 'Aktifkan mode terang' }).click();
         await page.waitForFunction(theme => document.documentElement.dataset.theme === theme &&
-          getComputedStyle(document.querySelector('.main-nav a')).color === (theme === 'dark' ? 'rgb(229, 229, 229)' : 'rgb(20, 33, 61)'), theme);
+          getComputedStyle(document.querySelector('.main-nav a')).color === (theme === 'dark' ? 'rgb(245, 218, 191)' : 'rgb(108, 21, 30)'), theme);
         const tokens = await page.evaluate(() => {
           const style = getComputedStyle(document.documentElement);
-          return Object.fromEntries(['--green', '--paper', '--paper-soft', '--ink', '--muted', '--button', '--button-text', '--gold', '--gold-ink']
+          return Object.fromEntries(['--green', '--paper', '--paper-soft', '--ink', '--muted', '--button', '--button-text']
             .map(name => [name, style.getPropertyValue(name).trim()]));
         });
         const pairs = {};
@@ -46,14 +46,10 @@ try {
             pairs[`${foreground}/${background}`] = ratio;
           }
         }
-        const buttonRatio = contrast(tokens['--button-text'], tokens['--button']);
-        assert.ok(buttonRatio >= 4.5);
-        pairs['--button-text/--button'] = buttonRatio;
-        // .button:hover now swaps to --ink/--paper, and --gold carries the decorative accent.
-        for (const [foreground, background] of [['--paper', '--ink'], ['--gold-ink', '--gold']]) {
-          const ratio = contrast(tokens[foreground], tokens[background]);
-          assert.ok(ratio >= 4.5, `${theme}: ${foreground}/${background} = ${ratio}`);
-          pairs[`${foreground}/${background}`] = ratio;
+        for (const background of ['--button', '--green']) {
+          const ratio = contrast(tokens['--button-text'], tokens[background]);
+          assert.ok(ratio >= 4.5);
+          pairs[`--button-text/${background}`] = ratio;
         }
         result.contrast[theme] = { tokens, pairs };
         if (theme === 'dark') {
