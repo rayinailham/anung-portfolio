@@ -7,10 +7,15 @@ test.beforeEach(async ({ page }) => {
   page.on('console', message => { if (message.type() === 'error') page.consoleErrors.push(message.text()); });
 });
 
+// Tests that deliberately abort a request get a browser network diagnostic on
+// the console; every other test still has to keep the console clean.
+const NETWORK_FAULT_TESTS = ['GSAP blocked', 'placeholder covers missing'];
+
 test.afterEach(async ({ page }, testInfo) => {
   expect(page.runtimeErrors, 'uncaught runtime errors').toEqual([]);
-  // Deliberately aborted module requests produce a browser network diagnostic.
-  if (!testInfo.title.startsWith('GSAP blocked')) expect(page.consoleErrors, 'console errors').toEqual([]);
+  if (!NETWORK_FAULT_TESTS.some(prefix => testInfo.title.startsWith(prefix))) {
+    expect(page.consoleErrors, 'console errors').toEqual([]);
+  }
 });
 
 async function ready(page, route = '/') {
@@ -110,8 +115,9 @@ test('refresh recovers stopped once-reveals using their current geometry', async
       trigger.disable(false);
       trigger.animation.pause(0);
       // Simulate stale geometry without depending on an engine's scroll timing.
+      // The offset is measured, not a constant: the page keeps getting taller.
       element.style.position = 'relative';
-      element.style.top = '-5000px';
+      element.style.top = `${-Math.round(element.getBoundingClientRect().top + innerHeight)}px`;
     }
     ScrollTrigger.refresh();
     gsap.ticker.sleep();
@@ -390,4 +396,106 @@ test('interrupted transition and live reduced motion never lock the page', async
   await expect(page.locator('.app')).not.toHaveAttribute('inert');
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Ada peluang');
   await expect(page.locator('body')).not.toHaveClass(/motion-locked/);
+});
+
+test('deep link from a Beranda card lands on its own experience entry', async ({ page }) => {
+  for (const [label, id] of [
+    ['Lihat pengalaman pemasaran afiliasi di AnyMind Group', 'entri-anymind'],
+    ['Lihat pengalaman kolaborasi KOL di PT Sutan Vet Medika', 'entri-anima-digital'],
+  ]) {
+    await ready(page, '/');
+    const card = page.getByRole('link', { name: label, exact: true });
+    await card.scrollIntoViewIfNeeded();
+    await card.click();
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('magang saya.');
+    await expect(page).toHaveURL(new RegExp(`#/pengalaman#${id}$`));
+    await expect.poll(() => page.locator(`#${id}`).evaluate(el => el.getBoundingClientRect().top), { timeout: 5000 })
+      .toBeLessThan(260);
+    expect(await page.locator(`#${id}`).evaluate(el => el.getBoundingClientRect().bottom)).toBeGreaterThan(0);
+  }
+});
+
+test('every evidence slot is declared, sized and captioned honestly', async ({ page }) => {
+  await ready(page, '/pengalaman');
+  await expect(page.locator('.evidence-item')).toHaveCount(4);
+  await expect(page.locator('.evidence-item[data-placeholder="true"]')).toHaveCount(3);
+  await expect(page.locator('.evidence-item:not([data-placeholder]) img'))
+    .toHaveAttribute('src', '/images/anymind-pantene-team.webp');
+  const sizes = await page.locator('.evidence-cover img').evaluateAll(images =>
+    images.map(image => [Number(image.getAttribute('width')), Number(image.getAttribute('height'))]));
+  expect(sizes).toHaveLength(4);
+  expect(sizes.every(([width, height]) => width > 0 && height > 0)).toBe(true);
+  for (const slot of await page.locator('.evidence-item[data-placeholder="true"]').all()) {
+    await expect(slot.locator('figcaption')).toContainText('ilustrasi sementara');
+    await expect(slot.locator('figcaption')).toBeVisible();
+  }
+  // The real photo is never described as work Anung produced on his own.
+  await expect(page.locator('#entri-anymind .evidence-item figcaption')).toContainText('Pantene Affiliate Gathering');
+});
+
+test('placeholder covers missing still leave the evidence slots correct', async ({ page }) => {
+  let aborted = 0;
+  await page.route('**/images/placeholder/**', route => { aborted++; return route.abort(); });
+  await ready(page, '/pengalaman');
+  const slots = page.locator('.evidence-item[data-placeholder="true"]');
+  await expect(slots).toHaveCount(3);
+  for (const slot of await slots.all()) {
+    await slot.scrollIntoViewIfNeeded();
+    await expect(slot.locator('figcaption')).toBeVisible();
+    const cover = slot.locator('.evidence-cover');
+    expect(await cover.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThan(40);
+    expect(await cover.evaluate(el => getComputedStyle(el).backgroundImage)).toContain('linear-gradient');
+    await expect(slot.locator('img')).toHaveAttribute('data-missing', 'true');
+  }
+  expect(aborted).toBeGreaterThan(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('no image is reused with a different crop', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const crops = new Map();
+  for (const route of ['/', '/pengalaman', '/tentang', '/kontak']) {
+    await ready(page, route);
+    const used = await page.locator('img').evaluateAll(images => images.map(image => {
+      const box = image.getBoundingClientRect();
+      if (!box.width || !box.height) return null;
+      const style = getComputedStyle(image);
+      return {
+        src: new URL(image.currentSrc || image.src, location.href).pathname,
+        crop: `${(box.width / box.height).toFixed(2)} ${style.objectFit} ${style.objectPosition}`,
+      };
+    }).filter(Boolean));
+    for (const { src, crop } of used) {
+      if (!crops.has(src)) crops.set(src, new Set());
+      crops.get(src).add(crop);
+    }
+  }
+  expect(crops.size).toBeGreaterThan(2);
+  const reused = [...crops].filter(([, variants]) => variants.size > 1)
+    .map(([src, variants]) => `${src}: ${[...variants].join(' | ')}`);
+  expect(reused).toEqual([]);
+});
+
+test('the contact callout says something different on each page', async ({ page }) => {
+  const headings = [];
+  for (const route of ['/', '/pengalaman', '/tentang']) {
+    await ready(page, route);
+    await expect(page.locator('.contact-callout h2')).toHaveCount(1);
+    headings.push((await page.locator('.contact-callout h2').innerText()).trim());
+    expect((await page.locator('.contact-callout .button').innerText()).trim().length).toBeGreaterThan(0);
+  }
+  expect(new Set(headings).size).toBe(3);
+});
+
+test('CV facts that were missing are on the page with their own numbers', async ({ page }) => {
+  await ready(page, '/pengalaman');
+  await expect(page.locator('#entri-anymind .experience-context')).toContainText('15 pasar Asia dan Timur Tengah');
+  await expect(page.locator('#entri-anima-digital .experience-context')).toContainText('teruji klinis');
+  const organizations = page.locator('.organization-grid');
+  for (const fact of ['11 laporan keuangan bulanan', '3+ program', '20+ barang', '5+ jenis dekorasi', '7+ misi respons cepat']) {
+    await expect(organizations).toContainText(fact);
+  }
+  await ready(page, '/tentang');
+  await expect(page.locator('.education-note')).toContainText('Profit lebih dari Rp100.000');
+  await expect(page.locator('.education-note')).toContainText('inovasi produk');
 });

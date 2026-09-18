@@ -1,0 +1,152 @@
+{
+  "label": "after",
+  "baseURL": "http://127.0.0.1:4173",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "consoleErrors": [],
+  "runtimeErrors": [],
+  "home": {
+    "heroCopyWidth": 707,
+    "heroTextWidth": 620,
+    "heroUnusedWidth": 268,
+    "headingLeadOnSameRow": true,
+    "headingUnusedWidth": 0,
+    "introColumnHeight": 319,
+    "introKickerHeight": 33,
+    "introPaddingBlock": 104
+  },
+  "experienceCards": [
+    {
+      "id": "entri-anymind",
+      "side": 308,
+      "main": 510,
+      "gap": 202,
+      "gallery": 555
+    },
+    {
+      "id": "entri-anima-coordination",
+      "side": 308,
+      "main": 488,
+      "gap": 180,
+      "gallery": 0
+    },
+    {
+      "id": "entri-anima-digital",
+      "side": 308,
+      "main": 488,
+      "gap": 180,
+      "gallery": 470
+    }
+  ],
+  "deadSpaceTotal": 562,
+  "images": [
+    {
+      "src": "/images/anung-profile.webp",
+      "crops": [
+        "0.90 cover 50% 100%"
+      ],
+      "loaded": true,
+      "declared": true
+    },
+    {
+      "src": "/images/anymind-pantene-team.webp",
+      "crops": [
+        "1.33 cover 50% 50%"
+      ],
+      "loaded": true,
+      "declared": true
+    },
+    {
+      "src": "/images/connections.webp",
+      "crops": [
+        "1.26 cover 50% 50%"
+      ],
+      "loaded": true,
+      "declared": true
+    },
+    {
+      "src": "/images/placeholder/konten-sosial.webp",
+      "crops": [
+        "1.33 cover 50% 50%"
+      ],
+      "loaded": true,
+      "declared": true
+    },
+    {
+      "src": "/images/placeholder/video-produk.webp",
+      "crops": [
+        "1.33 cover 50% 50%"
+      ],
+      "loaded": true,
+      "declared": true
+    },
+    {
+      "src": "/images/placeholder/webinar-b2b.webp",
+      "crops": [
+        "1.33 cover 50% 50%"
+      ],
+      "loaded": true,
+      "declared": true
+    }
+  ],
+  "imagesReusedWithDifferentCrop": [],
+  "evidence": [
+    {
+      "placeholder": false,
+      "caption": "Foto timFoto bersama tim AnyMind Group di acara AnyMind × Pantene New Product Launch. Saya ikut di tim pemasaran afiliasi selama periode ini; acara yang saya koordinasikan undangan dan kehadirannya adalah Pantene Affiliate Gathering.",
+      "src": "/images/anymind-pantene-team.webp",
+      "declared": "1200x900"
+    },
+    {
+      "placeholder": true,
+      "caption": "4+ konten InstagramMateri asli belum dipublikasikan — ilustrasi sementara, bukan tangkapan layar konten.",
+      "src": "/images/placeholder/konten-sosial.webp",
+      "declared": "1200x900"
+    },
+    {
+      "placeholder": true,
+      "caption": "3 video produk + video profil perusahaanMateri asli belum dipublikasikan — ilustrasi sementara, bukan cuplikan video.",
+      "src": "/images/placeholder/video-produk.webp",
+      "declared": "1200x900"
+    },
+    {
+      "placeholder": true,
+      "caption": "Webinar B2B 15+ pesertaRekaman dan materi webinar belum dipublikasikan — ilustrasi sementara, bukan dokumentasi acara.",
+      "src": "/images/placeholder/webinar-b2b.webp",
+      "declared": "1200x900"
+    }
+  ],
+  "blockedPlaceholders": {
+    "requests": 3,
+    "networkDiagnostics": [
+      "Failed to load resource: net::ERR_FAILED",
+      "Failed to load resource: net::ERR_FAILED",
+      "Failed to load resource: net::ERR_FAILED"
+    ],
+    "slots": [
+      {
+        "coverHeight": 317,
+        "background": "linear-gradient",
+        "imageHidden": true,
+        "captionVisible": true
+      },
+      {
+        "coverHeight": 317,
+        "background": "linear-gradient",
+        "imageHidden": true,
+        "captionVisible": true
+      },
+      {
+        "coverHeight": 317,
+        "background": "linear-gradient",
+        "imageHidden": true,
+        "captionVisible": true
+      }
+    ],
+    "noHorizontalOverflow": true
+  },
+  "initialLayoutShifts390": [],
+  "initialLayoutShiftSum390": 0
+}

@@ -1,0 +1,69 @@
+{
+  "label": "before",
+  "baseURL": "http://127.0.0.1:4173",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "consoleErrors": [],
+  "runtimeErrors": [],
+  "home": {
+    "heroCopyWidth": 707,
+    "heroTextWidth": 360,
+    "heroUnusedWidth": 528,
+    "headingLeadOnSameRow": false,
+    "headingUnusedWidth": 0,
+    "introColumnHeight": 319,
+    "introKickerHeight": 319,
+    "introPaddingBlock": 128
+  },
+  "experienceCards": [
+    {
+      "id": null,
+      "side": 166,
+      "main": 510,
+      "gap": 344,
+      "gallery": 0
+    },
+    {
+      "id": null,
+      "side": 193,
+      "main": 488,
+      "gap": 295,
+      "gallery": 0
+    },
+    {
+      "id": null,
+      "side": 166,
+      "main": 488,
+      "gap": 322,
+      "gallery": 0
+    }
+  ],
+  "deadSpaceTotal": 961,
+  "images": [
+    {
+      "src": "/images/anung-profile.webp",
+      "crops": [
+        "0.90 cover 50% 100%",
+        "1.13 cover 50% 65%"
+      ],
+      "loaded": true,
+      "declared": true
+    },
+    {
+      "src": "/images/connections.webp",
+      "crops": [
+        "1.26 cover 50% 50%"
+      ],
+      "loaded": true,
+      "declared": true
+    }
+  ],
+  "imagesReusedWithDifferentCrop": [
+    "/images/anung-profile.webp"
+  ],
+  "evidence": [],
+  "initialLayoutShifts390": [],
+  "initialLayoutShiftSum390": 0
+}

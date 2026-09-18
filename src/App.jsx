@@ -4,7 +4,15 @@ import { profile, experience, organizations, skills } from './data';
 import { gsap, useMotionStatus, useReducedMotion, useSmoothScroll, usePageMotion } from './motion';
 
 const routes = { '/': 'Beranda', '/pengalaman': 'Pengalaman', '/tentang': 'Tentang', '/kontak': 'Kontak' };
-const getRoute = () => window.location.hash.slice(1) || '/';
+// `#/pengalaman#entri-anymind` carries a route and a deep-link anchor in one
+// hash. Everything before the second '#' is the route; the rest is the anchor.
+const splitHash = () => {
+  const raw = window.location.hash.slice(1);
+  const at = raw.indexOf('#');
+  return at < 0 ? { path: raw || '/', anchor: '' } : { path: raw.slice(0, at) || '/', anchor: raw.slice(at + 1) };
+};
+const getRoute = () => splitHash().path;
+const getAnchor = () => splitHash().anchor;
 const canMove = () => gsap && matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches;
 
 function Link({ to, children, className = '', onNavigate, ...props }) {
@@ -102,12 +110,31 @@ function Portrait({ compact = false }) {
   </div>;
 }
 
-function ContactCallout() {
+function ContactCallout({ heading, lead, action }) {
   return <section className="contact-callout wrap" data-reveal="zoom">
     <Asterisk className="callout-star" weight="bold" aria-hidden="true" data-spin />
-    <h2>Membutuhkan anggota<br />tim pemasaran?</h2>
-    <Magnet><Link to="/kontak" className="button">Hubungi saya <ArrowUpRight size={20} /></Link></Magnet>
+    <h2>{heading}</h2>
+    {lead && <p className="callout-lead">{lead}</p>}
+    <Magnet><Link to="/kontak" className="button">{action} <ArrowUpRight size={20} /></Link></Magnet>
   </section>;
+}
+
+// One slot per claim. A slot whose material is not published yet keeps its
+// cover, its honest caption and `data-placeholder`; dropping a real file at the
+// same path and removing `placeholder: true` in `data.js` is the whole swap.
+function EvidenceGallery({ evidence }) {
+  if (!evidence?.items?.length) return null;
+  return <div className="evidence-gallery">
+    <h3 className="evidence-title">{evidence.title}</h3>
+    <ul>{evidence.items.map(item => <li key={item.id}>
+      <figure className="evidence-item" data-placeholder={item.placeholder ? 'true' : undefined}>
+        {/* The cover is a brand-colour block in CSS, so the slot stays correct
+            even when the image file is missing or blocked. */}
+        <span className="evidence-cover"><img src={item.src} alt={item.alt} width={item.width} height={item.height} loading="lazy" fetchPriority="low" decoding="async" onError={event => { event.currentTarget.dataset.missing = 'true'; }} /></span>
+        <figcaption><span className="evidence-type">{item.type}</span>{item.caption}</figcaption>
+      </figure>
+    </li>)}</ul>
+  </div>;
 }
 
 function Home() {
@@ -119,6 +146,11 @@ function Home() {
         <Title lines={['Halo, saya', 'Anung.']} />
         <p className="hero-description hero-enter">Saya membantu tim pemasaran mengelola mitra afiliasi dan kerja sama dengan kreator, mulai dari menghubungi mereka hingga memantau konten yang terbit.</p>
         <div className="hero-actions hero-enter"><Magnet><Link to="/pengalaman" className="button">Lihat pengalaman <ArrowUpRight size={20} /></Link></Magnet><Link to="/tentang" className="text-link">Tentang saya <ArrowRight size={18} /></Link></div>
+        <dl className="hero-meta hero-enter">
+          <div><dt>Pendidikan</dt><dd>Sarjana Bisnis, IPB University</dd></div>
+          <div><dt>Magang</dt><dd>AnyMind Group · PT Sutan Vet Medika</dd></div>
+          <div><dt>Domisili</dt><dd>Bekasi, Jawa Barat</dd></div>
+        </dl>
       </div>
       <div className="hero-portrait hero-enter"><Portrait /></div>
       <p className="scroll-cue hero-enter" aria-hidden="true"><ArrowDown size={16} />Scroll</p>
@@ -132,19 +164,19 @@ function Home() {
     <section className="selected-section wrap">
       <div className="section-heading" data-reveal="left"><h2>Yang saya kerjakan<br />selama magang.</h2><p>Saya pernah magang di tim pemasaran AnyMind Group dan PT Sutan Vet Medika. Berikut beberapa pekerjaan saya selama magang.</p></div>
       <div className="selected-grid">
-        <Link to="/pengalaman" className="feature-story" data-reveal="left" aria-label="Lihat pengalaman pemasaran afiliasi di AnyMind Group">
-          <div className="feature-photo" data-mask><img src="/images/anung-profile.webp" width="900" height="1200" loading="lazy" alt="Anung saat magang di AnyMind Group" data-parallax /></div>
+        <Link to="/pengalaman#entri-anymind" className="feature-story" data-reveal="left" aria-label="Lihat pengalaman pemasaran afiliasi di AnyMind Group">
+          <div className="feature-photo" data-mask><img src="/images/anymind-pantene-team.webp" width="1200" height="900" loading="lazy" fetchPriority="low" alt="Tim AnyMind Group berfoto bersama di depan layar acara AnyMind x Pantene New Product Launch" data-parallax /></div>
           <div className="story-meta"><span>AnyMind Group</span><ArrowUpRight size={26} /></div><h3>Mengelola mitra<br />afiliasi Unicharm.</h3><p>Pemasaran afiliasi / 2026</p>
         </Link>
-        <Link to="/pengalaman" className="feature-story secondary-story" data-reveal="right" aria-label="Lihat pengalaman kolaborasi KOL di PT Sutan Vet Medika">
-          <div className="feature-art" data-mask><img src="/images/connections.webp" width="1200" height="800" loading="lazy" alt="Ilustrasi dua bentuk saling terhubung dalam warna bordo dan hijau" data-parallax /></div>
+        <Link to="/pengalaman#entri-anima-digital" className="feature-story secondary-story" data-reveal="right" aria-label="Lihat pengalaman kolaborasi KOL di PT Sutan Vet Medika">
+          <div className="feature-art" data-mask><img src="/images/connections.webp" width="1200" height="800" loading="lazy" fetchPriority="low" alt="Ilustrasi dua bentuk saling terhubung dalam warna bordo dan hijau" data-parallax /></div>
           <div className="story-meta"><span>PT Sutan Vet Medika</span><ArrowUpRight size={26} /></div><h3>Konten dan KOL<br />Anima Companion.</h3><p>KOL & pemasaran digital / 2025 - 2026</p>
         </Link>
       </div>
     </section>
     <div className="marquee"><p className="sr-only">Bidang: pemasaran afiliasi, kerja sama KOL, perencanaan konten.</p><div className="marquee-track" aria-hidden="true">{[0, 1].map(i => <div className="marquee-group" key={i}><span>Pemasaran afiliasi</span><Asterisk weight="bold" /><span>Kerja sama KOL</span><Asterisk weight="bold" /><span>Perencanaan konten</span><Asterisk weight="bold" /></div>)}</div></div>
-    <section className="intro-section wrap" data-reveal-group="up"><span className="section-kicker">SEDIKIT TENTANG SAYA</span><div><h2>Lulusan Bisnis<br />IPB University.</h2><p>Selama magang, saya menangani pengiriman sampel, memantau penyelesaian konten kreator, dan menyusun laporan. Pengalaman ini membantu saya memahami pekerjaan tim pemasaran secara langsung.</p><Link to="/tentang" className="text-link">Tentang saya <ArrowUpRight size={20} /></Link></div></section>
-    <ContactCallout />
+    <section className="intro-section wrap" data-reveal-group="up"><div className="intro-aside"><span className="section-kicker">SEDIKIT TENTANG SAYA</span><dl className="intro-facts"><div><dt>IPK</dt><dd>3.74<span>/4.00</span></dd></div><div><dt>TOEFL ITP</dt><dd>583</dd></div><div><dt>Lulus</dt><dd>Agu 2026</dd></div></dl></div><div><h2>Lulusan Bisnis<br />IPB University.</h2><p>Selama magang, saya menangani pengiriman sampel, memantau penyelesaian konten kreator, dan menyusun laporan. Pengalaman ini membantu saya memahami pekerjaan tim pemasaran secara langsung.</p><Link to="/tentang" className="text-link">Tentang saya <ArrowUpRight size={20} /></Link></div></section>
+    <ContactCallout heading={<>Membutuhkan anggota<br />tim pemasaran?</>} action="Hubungi saya" />
   </>;
 }
 
@@ -162,17 +194,18 @@ function Experience() {
     <section className="experience-section wrap" aria-label="Pengalaman kerja">
       <div className="filter-list hero-enter" role="group" aria-label="Filter pengalaman">{['Semua', 'Pemasaran afiliasi', 'Kerja sama KOL', 'Pemasaran digital'].map(item => <button key={item} aria-pressed={filter === item} onClick={() => { setFilter(item); setExpanded(new Set()); }} className={filter === item ? 'filter active' : 'filter'}>{item}</button>)}</div>
       <p className="sr-only" role="status">{list.length} pengalaman ditampilkan</p>
-      <div className="experience-list" data-reveal-group="up">{list.map((item) => <article className="experience-card" key={item.id}>
-        <div className="experience-side"><span className="experience-period">{item.period}</span><h2>{item.company}</h2><p>{item.role}</p><span className="experience-location">{item.location}</span></div>
+      <div className="experience-list" data-reveal-group="up">{list.map((item) => <article className="experience-card" key={item.id} id={`entri-${item.id}`}>
+        <div className="experience-side"><span className="experience-period">{item.period}</span><h2>{item.company}</h2><p>{item.role}</p><span className="experience-location">{item.location}</span>{item.context && <p className="experience-context">{item.context}</p>}</div>
         <div className="experience-main"><span className="category-label">{item.category}</span><h3>{item.title}</h3><p>{item.summary}</p><div className="experience-stats">{item.stats.map(stat => <div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div>
           <button className="detail-button" aria-expanded={expanded.has(item.id)} aria-controls={`details-${item.id}`} onClick={() => toggleDetail(item.id)}>{expanded.has(item.id) ? 'Tutup detail' : 'Lihat detail'}{expanded.has(item.id) ? <Minus size={20} /> : <Plus size={20} />}</button>
           <div className="experience-details" id={`details-${item.id}`} aria-hidden={!expanded.has(item.id)} inert={!expanded.has(item.id) ? true : undefined}><div><ul>{item.details.map(detail => <li key={detail}>{detail}</li>)}</ul></div></div>
         </div>
+        <EvidenceGallery evidence={item.evidence} />
       </article>)}</div>
       <p className="source-note">Untuk riwayat lengkap, klik Download CV di bagian atas halaman.</p>
     </section>
     <section className="organizations wrap" data-reveal="up"><h2>Kegiatan selama kuliah.</h2><p className="section-description">Selama kuliah, saya mengelola keuangan organisasi, memimpin tim logistik, dan membantu pelaksanaan acara.</p><div className="organization-grid" data-reveal-group="up">{organizations.map(org => <article key={org.name}><span>{org.period}</span><h3>{org.name}</h3><strong>{org.role}</strong><p>{org.detail}</p></article>)}</div></section>
-    <ContactCallout />
+    <ContactCallout heading={<>Ingin tahu detail<br />pekerjaan saya?</>} lead="Saya bisa menjelaskan tanggung jawab di tiap tempat magang, termasuk yang materinya belum bisa saya tampilkan di sini." action="Ajukan pertanyaan" />
   </>;
 }
 
@@ -180,9 +213,9 @@ function About() {
   return <>
     <section className="about-hero wrap page-opening"><div><p className="eyebrow hero-enter">TENTANG SAYA</p><Title lines={['Perkenalkan,', 'saya Anung.']} /><p className="about-lead hero-enter">Lulusan Bisnis IPB.<br />Menekuni pemasaran afiliasi dan digital.</p><p className="hero-enter">Nama lengkap saya Anung Hanindhita Ramadhan. Saya tinggal di Bekasi dan lulus dari IPB University pada 2026. Selama magang di AnyMind Group dan PT Sutan Vet Medika, saya terlibat dalam pengelolaan mitra afiliasi, kerja sama KOL, dan pembuatan konten.</p><a className="text-link hero-enter" href={profile.cv} download>Download CV <DownloadSimple size={20} /></a></div><div className="hero-enter"><Portrait compact /></div></section>
     <section className="about-statement wrap" data-reveal="right"><h2>Tanggung jawab saya<br /><span>selama magang.</span></h2><p>Saya memastikan mitra menerima sampel produk, menindaklanjuti pembuatan konten sesuai arahan, serta memantau penyelesaiannya. Saya juga menyusun laporan penjualan dan kinerja konten untuk tim.</p></section>
-    <section className="education-section wrap" data-reveal-group="up"><div><span className="section-kicker">PENDIDIKAN</span><h2>Pendidikan bisnis<br />di IPB University.</h2></div><div className="education-card"><span>Agu 2022 - Agu 2026</span><h3>IPB University</h3><p>Sarjana Bisnis</p><div className="gpa"><strong>3.74<span>/4.00</span></strong><span>IPK</span></div><p>Saya mengikuti dua bazar bisnis untuk menjual produk, mengumpulkan masukan pembeli, dan menilai peluang pasar.</p><span className="education-note">30+ transaksi produk · Nilai A untuk pelaksanaan bisnis</span></div></section>
+    <section className="education-section wrap" data-reveal-group="up"><div><span className="section-kicker">PENDIDIKAN</span><h2>Pendidikan bisnis<br />di IPB University.</h2></div><div className="education-card"><span>Agu 2022 - Agu 2026</span><h3>IPB University</h3><p>Sarjana Bisnis</p><div className="gpa"><strong>3.74<span>/4.00</span></strong><span>IPK</span></div><p>Saya mengikuti dua bazar bisnis untuk menjual produk, mengumpulkan masukan pembeli, dan menilai peluang pasar.</p><span className="education-note">Profit lebih dari Rp100.000 · 30+ transaksi produk · Nilai A untuk inovasi produk, pelaksanaan bisnis, dan evaluasi kinerja pasar</span></div></section>
     <section className="skills-section wrap" data-reveal="left"><h2>Keahlian dan<br />aplikasi yang saya gunakan.</h2><div className="skills-grid" data-reveal-group="up">{skills.map(group => <article key={group.title}><h3>{group.title}</h3><ul>{group.items.map(skill => <li key={skill}>{skill}</li>)}</ul></article>)}</div><div className="language-row" data-reveal-group="up"><span>Bahasa Indonesia <strong>Bahasa ibu</strong></span><span>Bahasa Inggris <strong>Komunikasi profesional</strong></span><span>TOEFL ITP <strong>583</strong></span></div></section>
-    <ContactCallout />
+    <ContactCallout heading={<>Mari berkenalan<br />lebih jauh.</>} lead="Saya terbuka untuk peluang magang lanjutan maupun posisi pemasaran tingkat awal." action="Kirim pesan" />
   </>;
 }
 
@@ -235,6 +268,12 @@ export default function App() {
   const curtain = useRef(null);
   const lenis = useRef(null);
   const routeRef = useRef(route);
+  const [anchor, setAnchor] = useState(getAnchor);
+  const anchorRef = useRef(anchor);
+  const applyAnchor = useCallback(() => {
+    anchorRef.current = getAnchor();
+    setAnchor(anchorRef.current);
+  }, []);
   const transition = useRef(null);
   const focusedRoute = useRef(route);
   useSmoothScroll(lenis, reduced);
@@ -282,6 +321,8 @@ export default function App() {
     const change = () => {
       const next = getRoute();
       if (next === routeRef.current) {
+        // Same page, new deep-link anchor: no curtain, just move to the entry.
+        if (getAnchor() !== anchorRef.current) applyAnchor();
         // Back can arrive before the outgoing curtain has committed its target.
         if (transition.current?.isActive()) {
           transition.current.kill();
@@ -294,6 +335,7 @@ export default function App() {
       transition.current?.kill();
       const commit = () => {
         routeRef.current = next;
+        applyAnchor();
         window.scrollTo({ top: 0, behavior: 'instant' });
         lenis.current?.scrollTo(0, { immediate: true, force: true });
         setRoute(next);
@@ -324,7 +366,20 @@ export default function App() {
       window.removeEventListener('hashchange', change);
       window.removeEventListener('portfolio:top', top);
     };
-  }, [reduced, parkCurtain, revealPage]);
+  }, [reduced, parkCurtain, revealPage, applyAnchor]);
+
+  // Deep link from a Beranda card lands on its own entry, not on a list top.
+  // Runs after the page is revealed so ScrollTrigger has measured the layout.
+  useEffect(() => {
+    if (!anchor || booting || transitioning || !revealed) return;
+    const target = root.current?.querySelector(`#${CSS.escape(anchor)}`);
+    if (!target) return;
+    const id = setTimeout(() => {
+      if (lenis.current) lenis.current.scrollTo(target, { offset: -100, immediate: reduced, force: true });
+      else target.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }, 80);
+    return () => clearTimeout(id);
+  }, [anchor, route, booting, transitioning, revealed, reduced]);
   useEffect(() => {
     // A live OS preference change must never leave the page inert mid-transition.
     if (reduced && transitioning) {

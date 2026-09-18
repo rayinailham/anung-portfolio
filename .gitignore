@@ -10,6 +10,18 @@ blob-report/
 .playwright-mcp/
 playwright/.cache/
 
+# bukti yang sengaja disimpan: docs/evidence/** TIDAK diabaikan.
+# trace besar hanya dilacak kalau memang jadi bukti utama; sisanya buang.
+docs/evidence/**/*.webm
+docs/evidence/**/*.mp4
+
+# tooling agent
+.serena/
+.kiro/
+.codex/
+.aider*
+.claude/settings.local.json
+
 # env & secrets
 .env*
 !.env.example

@@ -9,19 +9,25 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 
 ## Ringkasan
 
-Rencana eksekusi: **5 kirim**. Pemetaan lengkap ada di `prompt.md`.
+Rencana eksekusi: **6 fase kode + 2 tiket gambar**. Satu prompt untuk semuanya —
+lihat "PROMPT UNIVERSAL" di `prompt.md`. Agent menentukan sendiri fase mana yang
+jadi giliran dengan membaca tabel di bawah: fase bernomor paling kecil yang
+belum seluruhnya `DONE`/`SKIP`.
 
-| Kirim | Isi | Item | Done |
-|---|---|---|---|
-| 1 | Bug P0 + semua perbaikan mekanis | 10 | 10 |
-| 2 | Bukti kerja + ruang mati | 7 | 0 |
-| 3 | Visualisasi data + kosakata motion | 3 | 0 |
-| 4 | Konversi | 4 | 0 |
-| 5 | Performa, SEO, penutup | 6 | 0 |
-| — | **Total dikerjakan** | **30** | **10** |
-| — | Sengaja di-SKIP | 3 | — |
+| Fase | Isi | Harness | Item | Done |
+|---|---|---|---|---|
+| 1 | Bug P0 + semua perbaikan mekanis | Claude Code | 10 | 10 |
+| 2 | Bukti kerja + ruang mati | Claude Code | 7 | 7 |
+| IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 0 |
+| 3 | Visualisasi data + kosakata motion | Claude Code | 3 | 0 |
+| 4 | Konversi | Claude Code | 4 | 0 |
+| IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
+| 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
+| 6 | Pass poles visual | Codex | 1 | 0 |
+| — | **Total dikerjakan** | | **33** | **17** |
+| — | Sengaja di-SKIP | | 3 | — |
 
-Di-SKIP supaya muat 5 kirim (alasan lengkap di `prompt.md`):
+Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
 `P2-31` bilingual · `P2-27` prerender/SSG · `P2-25` subset font.
 `P1-6` diturunkan jadi deep-link anchor, bukan halaman case study terpisah.
 `P2-24` dibatasi code-split saja, Phosphor tidak diganti SVG manual.
@@ -54,13 +60,37 @@ Baseline sebelum pengerjaan (jangan sampai turun):
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P1-4 | Pakai `with_anymind_team.jpg` (AnyMind × Pantene) | TODO | Butuh: masuk `prepare-assets.mjs`, tampil di halaman Pengalaman dekat klaim "40 mitra afiliasi", alt text deskriptif. |
-| P1-5 | Galeri bukti digerakkan data + placeholder jujur | BLOCKED | Aset dari Anung. Komponen tetap dibangun; slot diisi belakangan tanpa tulis JSX. |
-| P1-3 | Hentikan 1 foto dipakai 3×; beri gambar ke halaman Pengalaman | TODO | Butuh: audit — tidak ada gambar muncul >1× dengan crop berbeda. |
-| P1-7 | Fakta CV yang hilang (profit bazar IDR 100k, 11 laporan BEM, konteks perusahaan) | TODO | Butuh: cek silang tiap angka ke `Anung Hanindhita Ramadhan-CV.pdf`. |
-| P2-14 | Ruang mati: hero, `.section-heading`, `.intro-section`, `.experience-side` | TODO | Screenshot sebelum/sesudah 1440px. |
-| P1-6 | Kartu Beranda deep-link ke anchor entri yang tepat | TODO | Diturunkan dari halaman case study terpisah. |
-| P2-18 | ContactCallout identik di 3 halaman | TODO | |
+| P1-4 | Pakai `with_anymind_team.jpg` (AnyMind × Pantene) | DONE | Masuk `scripts/prepare-assets.mjs` → `public/images/anymind-pantene-team.webp` 1200×900, original di root tidak disentuh. Tayang di kartu Beranda dan di slot bukti entri AnyMind pada Pengalaman, keduanya dekat angka 40. `width="1200" height="900"` ada di kedua tempat ([metrics-after.json](docs/evidence/kirim-2/metrics-after.json) → `images`, `declared: true`). Caption memisahkan acara di foto (New Product Launch) dari acara yang dia koordinasikan (Affiliate Gathering) — diuji di `every evidence slot is declared, sized and captioned honestly`. [Sesudah](docs/evidence/kirim-2/pengalaman-1440-light-after.webp). |
+| P1-5 | Galeri bukti digerakkan data + placeholder jujur | DONE | `EvidenceGallery` digerakkan `experience[].evidence` di `src/data.js`. 4 slot, 3 di antaranya `placeholder: true` + `data-placeholder="true"` + caption "ilustrasi sementara" sebagai konten, bukan `title`/`alt` ([metrics-after.json](docs/evidence/kirim-2/metrics-after.json) → `evidence`). Dengan seluruh `**/images/placeholder/**` diblokir: 3 request digagalkan, cover tetap 317px, `background: linear-gradient`, `img[data-missing]` disembunyikan, caption terlihat, tanpa overflow horizontal (`blockedPlaceholders`). Test `placeholder covers missing still leave the evidence slots correct`. Kontrak tukar aset: [asset-provenance.md](docs/asset-provenance.md). Cover editorial lewat tiket IMG-1. |
+| P1-3 | Hentikan 1 foto dipakai 3×; beri gambar ke halaman Pengalaman | DONE | Audit crop lintas 4 route: **sebelum** `/images/anung-profile.webp` muncul dengan dua crop berbeda ([metrics-before.json](docs/evidence/kirim-2/metrics-before.json) → `imagesReusedWithDifferentCrop: ["/images/anung-profile.webp"]`); **sesudah** daftar itu kosong ([metrics-after.json](docs/evidence/kirim-2/metrics-after.json)). Kartu Unicharm sekarang memakai foto tim asli. Potret tersisa 2× dengan crop identik `0.90 cover 50% 100%` (hero + Tentang). Test `no image is reused with a different crop` lolos di 4 project. |
+| P1-7 | Fakta CV yang hilang (profit bazar IDR 100k, 11 laporan BEM, konteks perusahaan) | DONE | Empat fakta ditambahkan, tiap angka dikutip bersama baris CV sumbernya di tabel "Kutipan CV" di bawah. Test `CV facts that were missing are on the page with their own numbers`. Tidak ada angka baru di luar CV. |
+| P2-14 | Ruang mati: hero, `.section-heading`, `.intro-section`, `.experience-side` | DONE | Angka terukur 1440px, `align-self: start` supaya tinggi intrinsik terbaca. Hero: jarak kosong teks→potret **528px → 268px**. `.section-heading`: paragraf pindah ke baris yang sama dengan judul (`headingLeadOnSameRow` **false → true**). `.intro-section`: `padding-block` 128→104px, kolom kicker **319px → 33px** karena kini memuat 3 fakta CV. Kartu Pengalaman: selisih tinggi kolom **344+295+322 = 961px → 202+180+180 = 562px**. [before](docs/evidence/kirim-2/metrics-before.json) / [after](docs/evidence/kirim-2/metrics-after.json). Screenshot 3 halaman × 1440/390 × terang/gelap di `docs/evidence/kirim-2/`. |
+| P1-6 | Kartu Beranda deep-link ke anchor entri yang tepat | DONE | Hash dipecah jadi route + anchor (`splitHash` di `src/App.jsx`). Kartu Unicharm → `#/pengalaman#entri-anymind`, kartu Anima → `#/pengalaman#entri-anima-digital`. Test `deep link from a Beranda card lands on its own experience entry` memeriksa URL dan posisi entri (`top < 260px`, `bottom > 0`) di 4 project. Tidak ada halaman case study terpisah. |
+| P2-18 | ContactCallout identik di 3 halaman | DONE | Tiga heading berbeda + lead per konteks + label tombol berbeda. Test `the contact callout says something different on each page` memastikan `new Set(headings).size === 3`. |
+
+### Kutipan CV untuk P1-7
+
+Setiap angka baru beserta baris asalnya di `Anung Hanindhita Ramadhan-CV.pdf`.
+
+| Yang ditulis di situs | Baris CV |
+|---|---|
+| "Profit lebih dari Rp100.000 · 30+ transaksi produk · Nilai A untuk inovasi produk, pelaksanaan bisnis, dan evaluasi kinerja pasar" (Tentang) | "Achieved over IDR 100,000 in profit and completed 30+ product transactions" · "Earned an A grade for product innovation, business execution, and market performance evaluation." |
+| "menyusun 11 laporan keuangan bulanan termasuk rangkuman tengah dan akhir periode, menyiapkan laporan keuangan untuk 3+ program departemen, serta membimbing 5 peserta magang selama satu bulan" (BEM SB IPB) | "Prepared 11 comprehensive monthly financial reports, including mid-year and end-of-term summaries" · "Prepared financial reports for 3+ departmental programs" · "Coordinated and trained 5 internship participants ... over a one-month period." |
+| "Mengadakan 20+ barang kebutuhan acara, berkoordinasi dengan 3+ vendor, membuat 5+ jenis dekorasi, dan menuntaskan 7+ misi respons cepat" (ADDVENTURES 8.0) | "Responsible for procuring 20+ items" · "Coordinated with 3+ vendors" · "Designed and created 5+ types of decorations" · "successfully completing over 7 missions." |
+| "AnyMind Group adalah perusahaan teknologi BPaaS ... di 15 pasar Asia dan Timur Tengah." (konteks entri AnyMind) | "AnyMind Group is a BPaaS technology company delivering integrated solutions for marketing, e-commerce, digital transformation, logistics, and creator monetization across 15 markets in Asia and the Middle East." |
+| "PT Sutan Vet Medika adalah startup kesehatan hewan ... teruji klinis ... imunitas, pengelolaan stres, kesehatan kulit, serta nafsu makan." (konteks dua entri Sutan Vet Medika) | "PT Sutan Vet Medika is a pet healthcare startup offering innovative and clinically tested supplements under the Anima Companion brand. Products focus on immunity, stress management, skin health, and appetite." |
+| "IPK 3.74/4.00", "TOEFL ITP 583", "Lulus Agu 2026" (kolom intro Beranda) | "Bachelor of Business, 3.74/4.00" · "Aug 2022 - Aug 2026" · "TOEFL ITP Score 583" |
+| "Sarjana Bisnis, IPB University", "AnyMind Group · PT Sutan Vet Medika", "Bekasi, Jawa Barat" (meta hero) | "Institut Pertanian Bogor ... Bachelor of Business" · dua entri Pengalaman Kerja · "Bekasi, West Java, Indonesia" |
+
+Tidak ada angka lain yang ditambahkan. Permintaan "naikkan angka" tetap ditolak.
+
+## IMG-1 — Cover placeholder galeri bukti · Codex
+
+Tiket: [`docs/image-jobs/IMG-1-bukti-placeholder.md`](docs/image-jobs/IMG-1-bukti-placeholder.md) — sudah ditulis oleh sesi Kirim 2, siap dikerjakan Codex. Tidak memblokir apa pun.
+
+| ID | Item | Status | Bukti |
+|---|---|---|---|
+| IMG-1 | 3 cover abstrak (sosial / video / webinar) di `public/images/placeholder/` | TODO | Menunggu sesi **Codex**. Yang terpasang sekarang: blok geometris datar dari token warna brand, dihasilkan `scripts/make-placeholder-covers.mjs` — cukup untuk layout dan test, mentah secara visual. Provenance-nya sudah dicatat di [asset-provenance.md](docs/asset-provenance.md). Butuh: berkas ada di kedua jalur, 1200×900, tanpa teks/logo/wajah/tiruan antarmuka, prompt persis dicatat. |
 
 ## Kirim 3 — Visualisasi data + kosakata motion
 
@@ -79,6 +109,14 @@ Baseline sebelum pengerjaan (jangan sampai turun):
 | P1-12 | `og:image` + `og:url` + `twitter:card` + canonical | TODO | Butuh: validasi LinkedIn Post Inspector & preview WhatsApp nyata. |
 | P1-13 | Preview CV inline | TODO | Butuh: halaman pertama CV terlihat tanpa download. |
 
+## IMG-2 — Gambar OG 1200×630 · Codex
+
+Tiket: `docs/image-jobs/IMG-2-og-image.md` (ditulis oleh sesi Kirim 4).
+
+| ID | Item | Status | Bukti |
+|---|---|---|---|
+| IMG-2 | `public/images/og-cover.png` 1200×630 | TODO | Butuh: berkas ada, validasi LinkedIn Post Inspector + preview WhatsApp nyata setelah berkas masuk. |
+
 ## Kirim 5 — Performa, SEO, penutup
 
 | ID | Item | Status | Bukti |
@@ -90,6 +128,14 @@ Baseline sebelum pengerjaan (jangan sampai turun):
 | P2-29 | `sitemap.xml` | TODO | |
 | P2-30 | `llms.txt` (agentic-browsing 0.67) | TODO | Butuh: skor agentic-browsing naik, dicatat di sini. |
 
+## Kirim 6 — Pass poles visual · Codex
+
+Hanya dijalankan setelah Kirim 5 seluruhnya `DONE`.
+
+| ID | Item | Status | Bukti |
+|---|---|---|---|
+| K6-1 | Poles spacing, skala tipografi, easing estetis — tanpa menyentuh data/logika/test | TODO | Butuh: screenshot sebelum/sesudah 4 halaman × terang/gelap × 1440px/390px, angka kontras tiap pasangan yang berubah, `npm test` lolos, Lighthouse tidak turun. |
+
 ## Sengaja di-SKIP
 
 | ID | Item | Alasan |
@@ -100,9 +146,12 @@ Baseline sebelum pengerjaan (jangan sampai turun):
 
 Ambil lagi kapan saja lewat "Prompt satuan" di `prompt.md`.
 
-## Aset yang ditunggu dari Anung
+## Aset dari Anung — daftar tukar, bukan blocker
 
-Blocker untuk P1-5. Sampai ini ada, halaman Pengalaman tetap tanpa gambar.
+Ini BUKAN blocker. Halaman dibangun penuh dengan cover placeholder; daftar ini
+menyebut berkas apa yang menggantikan placeholder mana kalau nanti dikirim.
+Menukarnya = taruh berkas di jalur yang sama dan hapus `placeholder: true`.
+Tidak ada JSX yang perlu ditulis ulang.
 
 - [ ] 4+ konten Instagram Anima Companion (screenshot atau file asli)
 - [ ] 3 video promosi produk (file, atau thumbnail + tautan)
@@ -113,7 +162,7 @@ Blocker untuk P1-5. Sampai ini ada, halaman Pengalaman tetap tanpa gambar.
 - [ ] Opsional: screenshot laporan bulanan yang dia susun, angka disensor
 - [ ] Konfirmasi: mana yang boleh dipublikasikan, mana yang NDA
 
-Kalau materialnya tidak boleh dipublikasikan, keputusannya bukan "hilangkan diam-diam" — tampilkan placeholder jujur dengan caption yang menjelaskan.
+Kalau materialnya tidak boleh dipublikasikan, keputusannya bukan "hilangkan diam-diam" — placeholder jujur bercaption tetap tayang. Aturan lengkap apa yang boleh dan tidak boleh digambar ada di `prompt.md` bagian "Aturan aset & placeholder" dan `docs/image-jobs/README.md`.
 
 ---
 
@@ -124,6 +173,18 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | Tanggal | Keputusan | Alasan |
 |---|---|---|
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
+| 2026-09-19 | Galeri bukti jadi baris selebar kartu, bukan isi `.experience-side` | Versi pertama menaruh galeri di kolom samping seperti saran `prompt.md`. Terukur: kolom samping jadi 817/954px sementara kolom utama 510/488px — lubang 400px cuma pindah dari kiri ke kanan, dan tinggi kartu berhenti berubah saat disclosure dibuka sehingga `ResizeObserver` di `main` tidak lagi memicu refresh (test Kirim 1 gagal). Sebagai baris penuh: selisih kolom 562px total, disclosure kembali mengubah tinggi kartu. |
+| 2026-09-19 | Slot placeholder tetap merender `<img>`, dan berkas cover datar ikut di-commit | Kalau `<img>` menunjuk berkas yang tidak ada, Chromium mencatat 404 sebagai console error dan seluruh suite gagal — `afterEach` mewajibkan console bersih. Jalur "tanpa berkas gambar" tetap dibuktikan lewat test yang membatalkan `**/images/placeholder/**`, bukan dengan menghilangkan berkasnya. |
+| 2026-09-19 | Cover sementara dibuat Claude Code dari SVG token warna brand, bukan image gen | Blok geometris datar = artefak build yang deterministik (`scripts/make-placeholder-covers.mjs`), bukan artistry. Tugas artistik tetap milik Codex lewat IMG-1, yang menimpa berkas di jalur yang sama. `placeholder: true` tidak hilang saat IMG-1 selesai — flag itu baru dilepas kalau materi asli dari Anung yang masuk. |
+| 2026-09-19 | Potret tetap tampil 2× (hero Beranda + Tentang), crop identik | P1-3 menuntut "tidak ada gambar muncul >1× dengan crop berbeda", bukan "tidak ada gambar dipakai 2×". Yang menyesatkan adalah kartu Unicharm yang memajang potret ter-crop ulang sebagai gambar pekerjaan; itu diganti foto tim asli. Potret di hero dan Tentang memakai `aspect-ratio: .9` dan `object-position: 50% 100%` yang sama. |
+| 2026-09-19 | Hover kartu Beranda kehilangan `filter: brightness/saturate`, `transform: scale` dipertahankan | Bukan selera: WebKit meng-crash renderer kalau transisi `filter` pada `.feature-photo`/`.feature-art` dibongkar oleh perpindahan route. Bug ini sudah ada di `main` sebelum Kirim 2 — terbukti dengan menjalankan skenario yang sama pada `HEAD` (`crashed= true`). Menghapus `filter` saja sudah cukup; `scale` yang terlihat tetap ada. |
+| 2026-09-19 | Offset "geometri basi" di test Kirim 1 diubah dari `-5000px` tetap jadi hasil pengukuran | Halaman Pengalaman di 390px tumbuh dari ~4.700px jadi ~6.500px, jadi angka tetap itu tidak lagi menaruh elemen di atas viewport dan test gagal di project `mobile`. Offset sekarang `-(rect.top + innerHeight)`, tidak ikut basi saat halaman tumbuh lagi. Cakupan test tidak dikurangi. |
+| 2026-09-19 | LCP mobile turun 2,8 → 3,1 detik; diterima dan diteruskan ke P2-22 | Penyebabnya melekat pada perbaikan P1-3: kartu Beranda dulu memakai ulang berkas potret yang sudah diunduh hero (0 byte tambahan), sekarang mengunduh foto tim 138 KB tersendiri yang berebut bandwidth dengan `motion-runtime`. `fetchPriority="low"` pada semua gambar bawah-lipatan mengembalikan ~0,1 detik. Sisanya dibereskan `srcset` multi-lebar (P2-26) dan P2-22 di Kirim 5. Skor performa tetap 93 = baseline; CLS justru turun 0,008 → 0. |
+| 2026-09-19 | Satu prompt universal untuk semua fase; agent berorientasi sendiri dari tabel ringkasan di berkas ini | Tidak ada lagi copy-paste blok berbeda tiap kirim. `progress.md` jadi satu-satunya sumber kebenaran giliran fase. |
+| 2026-09-19 | Routing harness: Codex hanya untuk image gen (IMG-1, IMG-2) dan pass poles visual (Kirim 6); sisanya Claude Code | Context window Codex kecil — dipakai untuk artistry, dibungkus tiket mandiri di `docs/image-jobs/` supaya tidak perlu membaca repo. |
+| 2026-09-19 | Aset yang belum ada tidak lagi berstatus BLOCKED; slot diisi cover placeholder hasil image gen dengan caption jujur | P1-5 sebelumnya menahan halaman Pengalaman tanpa gambar tanpa batas waktu. Kontrak jalur berkas membuat penukaran ke aset asli tidak butuh perubahan JSX. |
+| 2026-09-19 | Satu commit per fase setelah verifikasi lolos; fase Claude Code ke `main`, fase Codex ke branch `fase/<id>` | Izin git diberikan eksplisit untuk project ini. Hasil berbasis selera (gambar, poles visual) dibuang dengan menghapus branch, bukan `git revert` di `main`. Hash commit dicatat di Log verifikasi. |
+| 2026-09-19 | Keputusan yang belum diisi Milord punya kolom default (Web3Forms via env, `VITE_SITE_URL`, placeholder ya) | Agent tidak boleh berhenti bertanya di tengah fase. Default dicatat di sini saat dipakai. |
 | 2026-09-18 | Rencana dipadatkan jadi 5 kirim | Permintaan Milord. 3 item di-SKIP, 2 diturunkan scope-nya. |
 | 2026-09-18 | Kirim 1: `ResizeObserver` pada `main`, refresh dikoaleskan via `requestAnimationFrame` | Callback berjalan setelah commit React; ikut menangani filter, transisi tinggi disclosure, resize, dan perubahan font. Tidak mengulang seluruh intro ketika filter berubah. |
 | 2026-09-18 | Reveal dipulihkan berdasarkan posisi DOM nyata setiap event refresh; timeout native 5 detik membuka semua reveal/mask | `once` yang menyimpan posisi lama tidak boleh menahan konten. Setelah 5 detik, keterbacaan diprioritaskan atas animasi scroll yang belum dimainkan. Observer, listener, frame, timer dibersihkan saat unmount/pergantian route. |
@@ -156,6 +217,16 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 | 2026-09-18 | `npm run build` | Exit 0; `✓ built in 257ms` — lihat [output asli](docs/evidence/kirim-1/build.txt) untuk durasi build terakhir. |
 | 2026-09-18 | `npm run preview -- --host 127.0.0.1 --port 4173` lalu `node scripts/verify-kirim-1.mjs` | Exit 0; [output asli](docs/evidence/kirim-1/production-check.txt), [JSON](docs/evidence/kirim-1/metrics.json). Teks GSAP diblokir: 43 + 66 + 49 + 21 = 179 node, 0 tersembunyi. Tiga target sentuh 32,390625px. Kontras aksen gelap 6,159:1; minimum seluruh pasangan termasuk hover 5,055:1. |
 | 2026-09-18 | `PerformanceObserver('layout-shift')` pada build statis, 390×844, tanpa input | Setelah preload: `initialLayoutShifts390: []`, jumlah 0. Pengukuran lokal initial render hingga 5,5 detik setelah intro; bukan audit Lighthouse ulang. [JSON](docs/evidence/kirim-1/metrics.json). |
+| 2026-09-19 | `node scripts/verify-kirim-2.mjs before` pada build `HEAD` | Exit 0. `imagesReusedWithDifferentCrop: ["/images/anung-profile.webp"]` — P1-3 dikonfirmasi berangka. Ruang mati kartu 344+295+322 = **961px**; jarak kosong hero **528px**; `headingLeadOnSameRow: false`; `introPaddingBlock: 128`. [metrics-before.json](docs/evidence/kirim-2/metrics-before.json). |
+| 2026-09-19 | `node scripts/verify-kirim-2.mjs after` pada build statis | Exit 0. `imagesReusedWithDifferentCrop: []`; semua gambar `loaded: true` dan `declared: true`. Ruang mati kartu **562px**; jarak kosong hero **268px**; `headingLeadOnSameRow: true`; `introPaddingBlock: 104`. 4 slot bukti, 3 placeholder, semua captionnya memuat "ilustrasi sementara". [metrics-after.json](docs/evidence/kirim-2/metrics-after.json), [output](docs/evidence/kirim-2/verify-after.txt). |
+| 2026-09-19 | Blokir `**/images/placeholder/**` lalu ukur ketiga slot | 3 request digagalkan. Tiap slot: `coverHeight: 317`, `background: linear-gradient`, `imageHidden: true`, `captionVisible: true`; `noHorizontalOverflow: true`. Halaman benar tanpa satu pun berkas cover. [metrics-after.json](docs/evidence/kirim-2/metrics-after.json) → `blockedPlaceholders`. |
+| 2026-09-19 | Skenario klik kartu Beranda di WebKit pada `HEAD` (tanpa perubahan Kirim 2) | `crashed= true` — renderer WebKit mati. Bug lama, bukan regresi Kirim 2. Dipersempit: mematikan `filter` **atau** `transform` **atau** `transition` pada `.feature-photo` menghilangkan crash. |
+| 2026-09-19 | Skenario yang sama setelah `filter` dilepas dari hover | `crashed= false`, `hash #/pengalaman#entri-anymind`. Test `deep link from a Beranda card lands on its own experience entry` lolos di keempat project. |
+| 2026-09-19 | `npm test` | `112 passed (2.4m)` — 28 skenario × chromium/mobile/firefox/webkit. 22 skenario Kirim 1 tetap ada, 6 skenario baru ditambahkan, tidak ada yang dihapus. Console error 0 kecuali dua test yang memang menggagalkan request. [Output asli](docs/evidence/kirim-2/full-suite.txt). |
+| 2026-09-19 | `npm run build` | Exit 0; `✓ built in 263ms`. Bundle (css + index + motion-runtime) **445.599 B → 454.464 B mentah**, **143.037 B → 145.181 B gzip** (+2.144 B), diukur dengan metode sama pada kedua build. [Output](docs/evidence/kirim-2/build.txt). |
+| 2026-09-19 | Lighthouse mobile pada build statis, sebelum vs sesudah, mesin dan sesi sama | **Sebelum**: performance 95 · LCP 2,8s · FCP 1,5s · TBT 10ms · CLS 0 ([JSON](docs/evidence/kirim-2/lighthouse-mobile-before.json)). **Sesudah**: performance 93 · a11y 100 · best-practices 100 · SEO 100 · LCP 3,1s · FCP 1,5s · TBT 10ms · **CLS 0** ([JSON](docs/evidence/kirim-2/lighthouse-mobile.json)). Syarat fase CLS ≤ 0,01 terpenuhi (0,008 → 0). LCP turun 0,3s dibanding run hari ini dan 0,2s dibanding baseline tercatat 2,9s — dilaporkan apa adanya, alasannya di Catatan keputusan, penyelesaiannya P2-22/P2-26 di Kirim 5. |
+| 2026-09-19 | `node scripts/make-placeholder-covers.mjs && node scripts/prepare-assets.mjs` | Exit 0; 3 PNG sumber + 3 WebP 1200×900 dihasilkan ulang dari SVG token warna brand. Foto tim `anymind-pantene-team.webp` 1200×900, 138 KB. |
+| 2026-09-19 | Berat bukti | 24 screenshot PNG dikonversi WebP q80 sebelum di-commit: **14.423 KB → 3.990 KB**, sesuai aturan "PNG bukti di atas 500 KB" di `prompt.md`. |
 
 ### Output regresi gagal → lolos
 
@@ -179,10 +250,21 @@ Sesudah implementasi ([output lengkap](docs/evidence/kirim-1/regression-after.tx
 1 passed (4.6s)
 ```
 
-### Batas bukti dan pemeriksaan visual
+### Batas bukti dan pemeriksaan visual — Kirim 1
 
 - Screenshot sebelum direkam sebelum implementasi; sesudah direkam dari build statis dengan ukuran sama (desktop 1440×1000). Motion dikurangi untuk membandingkan crop final. Screenshot gelap awal diambil dengan mengganti atribut tema langsung; header sempat menyimpan warna frame lama. Screenshot akhir memakai tombol tema dan menunggu warna tautan selesai berubah. Penilaian kontras memakai warna terukur di JSON, bukan piksel screenshot awal.
 - Hero, kartu beranda, dan Tentang diperiksa visual: logo AnyMind utuh; asterisk tidak menimpa lengan. Screenshot mobile tambahan pada 390×844.
 - Uji GSAP diblokir sengaja menghasilkan satu diagnostik jaringan `Failed to load resource: net::ERR_FAILED`; tidak ada runtime error. Angka console error 0 berlaku untuk skenario normal, bukan request yang sengaja digagalkan.
 - Data CV, klaim, foto sumber, dan ilustrasi dekoratif tidak diubah. Tidak ada gambar publik baru; width/height foto tetap 900×1200 dan ilustrasi tetap 1200×800.
 - Kirim 1 selesai seluruhnya; status kirim berikutnya tetap sesuai rencana sebelumnya.
+
+### Batas bukti dan pemeriksaan visual — Kirim 2
+
+- Screenshot sebelum direkam dari build statis `HEAD` (`git stash` → `vite build` → rekam → `git stash pop`), sesudah dari build statis hasil kerja ini. Skrip, viewport, tema, dan urutan sama: `scripts/shoot-kirim-2.mjs`. Semua diambil dengan `reducedMotion: 'reduce'` dan setelah menggulir seluruh halaman supaya gambar `loading="lazy"` benar-benar terdekode; tanpa itu cover placeholder tampil sebagai blok CSS kosong di tangkapan layar meski di browser normal termuat.
+- Semua angka ruang mati diukur dengan `align-self: start` dipaksakan lewat `addStyleTag`, supaya yang terbaca tinggi intrinsik kolom, bukan tinggi baris grid. Angka itu bukan hasil pembacaan screenshot.
+- Lighthouse dijalankan dua kali pada build "sesudah" (93/93) dan tiga kali pada build "sebelum" (95/95/95) di mesin dan sesi yang sama, memakai Chromium bawaan Playwright lewat `CHROME_PATH`. Selisih LCP 0,3 detik konsisten, bukan derau satu run.
+- Kategori `agentic-browsing` tidak diukur ulang di fase ini; itu bagian P2-30 di Kirim 5. Angka baseline 0,67 belum tersentuh.
+- Crash WebKit diverifikasi dua arah: skenario yang sama dijalankan pada `HEAD` (crash) dan pada hasil kerja ini (tidak crash). Jadi klaim "bug lama" bukan tebakan.
+- Cover placeholder yang ikut di-commit adalah blok warna datar, bukan tiruan tangkapan layar apa pun. Caption di halaman menyatakan statusnya; `alt` menggambarkan ilustrasinya, bukan pekerjaan yang tidak ditampilkan.
+- Tidak ada angka baru yang tidak ada di `Anung Hanindhita Ramadhan-CV.pdf`. Tabel "Kutipan CV untuk P1-7" mencantumkan pasangannya satu per satu.
+- Kirim 2 selesai seluruhnya. Giliran berikutnya: **IMG-1**, milik **Codex**, tiketnya sudah siap di `docs/image-jobs/IMG-1-bukti-placeholder.md`.
