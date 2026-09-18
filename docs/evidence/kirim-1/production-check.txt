@@ -1,0 +1,109 @@
+{
+  "baseURL": "http://127.0.0.1:4173",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "consoleErrors": [],
+  "runtimeErrors": [],
+  "contrast": {
+    "dark": {
+      "tokens": {
+        "--green": "#7fb3a8",
+        "--paper": "#102e2b",
+        "--paper-soft": "#163a36",
+        "--ink": "#f5dabf",
+        "--muted": "#cfb9a5",
+        "--button": "#f5dabf",
+        "--button-text": "#6c151e"
+      },
+      "pairs": {
+        "--ink/--paper": 10.819,
+        "--ink/--paper-soft": 9.254,
+        "--muted/--paper": 7.692,
+        "--muted/--paper-soft": 6.579,
+        "--green/--paper": 6.159,
+        "--green/--paper-soft": 5.268,
+        "--button-text/--button": 8.881,
+        "--button-text/--green": 5.055
+      }
+    },
+    "light": {
+      "tokens": {
+        "--green": "#0f3d3a",
+        "--paper": "#f5dabf",
+        "--paper-soft": "#f9e5d1",
+        "--ink": "#6c151e",
+        "--muted": "#75463c",
+        "--button": "#6c151e",
+        "--button-text": "#f5dabf"
+      },
+      "pairs": {
+        "--ink/--paper": 8.881,
+        "--ink/--paper-soft": 9.728,
+        "--muted/--paper": 5.806,
+        "--muted/--paper-soft": 6.36,
+        "--green/--paper": 8.956,
+        "--green/--paper-soft": 9.81,
+        "--button-text/--button": 8.881,
+        "--button-text/--green": 8.956
+      }
+    }
+  },
+  "touchTargets390": [
+    {
+      "label": "Download CV",
+      "height": 32.390625
+    },
+    {
+      "label": "LinkedIn",
+      "height": 32.390625
+    },
+    {
+      "label": "Email",
+      "height": 32.390625
+    }
+  ],
+  "blockedGSAP": {
+    "requests": [
+      "http://127.0.0.1:4173/assets/motion-runtime-C_ALmccL.js"
+    ],
+    "pages": [
+      {
+        "route": "/",
+        "checked": 43,
+        "hidden": [],
+        "inert": false
+      },
+      {
+        "route": "/pengalaman",
+        "checked": 66,
+        "hidden": [],
+        "inert": false
+      },
+      {
+        "route": "/tentang",
+        "checked": 49,
+        "hidden": [],
+        "inert": false
+      },
+      {
+        "route": "/kontak",
+        "checked": 21,
+        "hidden": [],
+        "inert": false
+      }
+    ],
+    "runtimeErrors": [],
+    "networkDiagnostics": [
+      "Failed to load resource: net::ERR_FAILED"
+    ]
+  },
+  "deepLink": {
+    "splash": false,
+    "inert": false,
+    "formOpacity": "1"
+  },
+  "initialLayoutShifts390": [],
+  "initialLayoutShiftSum390": 0
+}

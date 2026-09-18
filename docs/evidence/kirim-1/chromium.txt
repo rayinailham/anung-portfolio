@@ -1,0 +1,36 @@
+
+> anung-portfolio@1.0.0 test
+> playwright test --project=chromium
+
+
+Running 21 tests using 3 workers
+
+(node:447270) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:447276) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:447269) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [chromium] › tests/portfolio.spec.js:46:3 › every filter keeps lower sections visible: Semua (3.9s)
+  ✓   2 [chromium] › tests/portfolio.spec.js:46:3 › every filter keeps lower sections visible: Pemasaran afiliasi (4.0s)
+  ✓   3 [chromium] › tests/portfolio.spec.js:22:1 › filter layout refresh reveals organizations, every card and contact callout (4.4s)
+  ✓   4 [chromium] › tests/portfolio.spec.js:46:3 › every filter keeps lower sections visible: Kerja sama KOL (3.9s)
+  ✓   5 [chromium] › tests/portfolio.spec.js:46:3 › every filter keeps lower sections visible: Pemasaran digital (3.7s)
+  ✓   7 [chromium] › tests/portfolio.spec.js:102:1 › refresh recovers stopped once-reveals using their current geometry (1.8s)
+  ✓   6 [chromium] › tests/portfolio.spec.js:63:1 › multiple disclosures animate height and refresh after opening and closing (6.4s)
+  ✓   9 [chromium] › tests/portfolio.spec.js:138:1 › GSAP blocked still renders readable content and usable navigation on every route (2.0s)
+  ✓  10 [chromium] › tests/portfolio.spec.js:172:1 › fresh contact deep link skips intro immediately even while motion is loading (1.6s)
+  ✓  12 [chromium] › tests/portfolio.spec.js:200:1 › mobile touch targets, marquee text and dark accent meet their requirements (1.8s)
+  ✓   8 [chromium] › tests/portfolio.spec.js:124:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker (7.2s)
+  ✓  11 [chromium] › tests/portfolio.spec.js:185:1 › intro lasts about one second and stays skipped for the session (4.5s)
+  ✓  14 [chromium] › tests/portfolio.spec.js:244:1 › experience filters and contribution disclosures work (2.1s)
+  ✓  16 [chromium] › tests/portfolio.spec.js:269:1 › contact form validates inputs and prepares an honest email handoff (1.9s)
+  ✓  15 [chromium] › tests/portfolio.spec.js:257:1 › theme persists and CV download contains a PDF (4.7s)
+  ✓  17 [chromium] › tests/portfolio.spec.js:285:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works (1.9s)
+  ✓  13 [chromium] › tests/portfolio.spec.js:226:1 › intro completes; route transition, back and deep links work (8.4s)
+  ✓  19 [chromium] › tests/portfolio.spec.js:310:1 › all pages keep readable text, fit narrow screens and load images in both themes (2.8s)
+  ✓  18 [chromium] › tests/portfolio.spec.js:296:1 › mobile menu supports open, escape and navigation (4.1s)
+  ✓  20 [chromium] › tests/portfolio.spec.js:350:1 › unknown route has a usable recovery path (2.7s)
+  ✓  21 [chromium] › tests/portfolio.spec.js:357:1 › interrupted transition and live reduced motion never lock the page (3.1s)
+
+  21 passed (27.5s)

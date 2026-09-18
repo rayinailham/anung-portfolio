@@ -1,0 +1,53 @@
+
+> anung-portfolio@1.0.0 test
+> playwright test --project=chromium -g filter layout refresh
+
+
+Running 1 test using 1 worker
+
+(node:443840) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/portfolio.spec.js:9:1 › filter layout refresh reveals organizations, every card and contact callout (6.3s)
+
+
+  1) [chromium] › tests/portfolio.spec.js:9:1 › filter layout refresh reveals organizations, every card and contact callout 
+
+    Error: expect(locator).toHaveCSS(expected) failed
+
+    Locator:  locator('.organizations')
+    Expected: "1"
+    Received: "0"
+    Timeout:  2000ms
+
+    Call log:
+      - Expect "toHaveCSS" locator('.organizations') with timeout 2000ms
+      - waiting for locator('.organizations')
+        21 × locator resolved to <section data-reveal="up" class="organizations wrap">…</section>
+           - unexpected value "0"
+
+
+      14 |   await expect(page.locator('.experience-card')).toHaveCount(1);
+      15 |   await page.locator('.organizations').evaluate(el => el.scrollIntoView({ block: 'start' }));
+    > 16 |   await expect(page.locator('.organizations')).toHaveCSS('opacity', '1', { timeout: 2000 });
+         |                                                ^
+      17 |   for (const card of await page.locator('.organization-grid > article').all()) {
+      18 |     await card.scrollIntoViewIfNeeded();
+      19 |     await expect(card).toHaveCSS('opacity', '1', { timeout: 2000 });
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:16:48
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-filter-layout-re-34b0e-ry-card-and-contact-callout-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-filter-layout-re-34b0e-ry-card-and-contact-callout-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-filter-layout-re-34b0e-ry-card-and-contact-callout-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-filter-layout-re-34b0e-ry-card-and-contact-callout-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests/portfolio.spec.js:9:1 › filter layout refresh reveals organizations, every card and contact callout 

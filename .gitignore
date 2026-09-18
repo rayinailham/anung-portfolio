@@ -1,0 +1,29 @@
+# deps & build
+node_modules/
+dist/
+.vite/
+
+# test artifacts
+test-results/
+playwright-report/
+blob-report/
+.playwright-mcp/
+playwright/.cache/
+
+# env & secrets
+.env*
+!.env.example
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# editor & OS junk
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
