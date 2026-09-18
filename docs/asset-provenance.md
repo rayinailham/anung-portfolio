@@ -1,6 +1,6 @@
 # Asset provenance
 
-The supplied `anung_profile.jpeg` and `Anung Hanindhita Ramadhan-CV.pdf` remain unchanged. The portrait is resized and encoded as WebP for delivery; its visible framing uses CSS. Colors come from the supplied `color_palette.jpg`.
+The supplied `anung_profile.jpeg` and `Anung Hanindhita Ramadhan-CV.pdf` remain unchanged. The portrait is resized and encoded as WebP for delivery; its visible framing uses CSS. Colors come from the supplied `color_palette_option2` (Black and Gold Elegance); the earlier `color_palette.jpg` bordo/green scheme is kept in history.
 
 ## Decorative connections illustration
 
