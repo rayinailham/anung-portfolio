@@ -19,11 +19,12 @@ belum seluruhnya `DONE`/`SKIP`.
 | 1 | Bug P0 + semua perbaikan mekanis | Claude Code | 10 | 10 |
 | 2 | Bukti kerja + ruang mati | Claude Code | 7 | 7 |
 | IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 1 |
-| 3 | Visualisasi data + kosakata motion | Claude Code | 3 | 0 |
+| 3 | Kerangka visualisasi data + timeline | Claude Code | 2 | 0 |
+| VIS-1 | Rasa visual + animasi untuk kerangka Kirim 3 | Codex | 1 | 0 |
 | 4 | Konversi | Claude Code | 4 | 0 |
 | IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
 | 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
-| 6 | Pass poles visual | Codex | 1 | 0 |
+| 6 | Pass poles visual terakhir | Codex | 1 | 0 |
 | — | **Total dikerjakan** | | **33** | **18** |
 | — | Sengaja di-SKIP | | 3 | — |
 
@@ -92,13 +93,24 @@ Tiket: [`docs/image-jobs/IMG-1-bukti-placeholder.md`](docs/image-jobs/IMG-1-bukt
 |---|---|---|---|
 | IMG-1 | 3 cover abstrak (sosial / video / webinar) di `public/images/placeholder/` | DONE | Keenam berkas PNG/WebP 1200×900 selesai; generator bawaan `image_gen`, prompt persis di [provenance](docs/asset-provenance.md). [Ukuran + hash + DOM](docs/evidence/kirim-img-1/metrics.json), [screenshot](docs/evidence/kirim-img-1/README.md), build lolos. **Gerbang test sudah lolos**: kegagalan WebKit `interrupted transition` ternyata race di `src/App.jsx`, bukan aset — [diagnosis + bukti](docs/evidence/gerbang-img-1/README.md). WebKit `-g 'interrupted transition'` lolos 5/5 run berturut ([log](docs/evidence/gerbang-img-1/webkit-gerbang-5-run.txt)); `npm test` penuh exit 0 **116 passed** dua kali ([1](docs/evidence/gerbang-img-1/suite-penuh-sesudah.txt), [2](docs/evidence/gerbang-img-1/suite-penuh-sesudah-2.txt)). |
 
-## Kirim 3 — Visualisasi data + kosakata motion
+## Kirim 3 — Kerangka visualisasi data + timeline
+
+Kerangka saja: markup final, angka jujur, teks alternatif, nilai akhir
+reduced-motion, test. Boleh selesai dalam keadaan polos — rasanya digarap VIS-1.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P1-8 | Ring IPK · bar TOEFL · split 100/50 Shopee-TikTok · counter halaman Pengalaman | TODO | Butuh: semua terbaca benar dengan `prefers-reduced-motion: reduce` (nilai akhir langsung tampil). |
+| P1-8 | Ring IPK · bar TOEFL · split 100/50 Shopee-TikTok · counter halaman Pengalaman | TODO | Butuh: semua terbaca benar dengan `prefers-reduced-motion: reduce` (nilai akhir langsung tampil), plus test yang mengunci skala jujur (bar tidak mulai dari angka bukan-nol, "150" tetap 100 + 50). |
 | P1-9 | Timeline karier yang menunjukkan periode tumpang tindih | TODO | Butuh: Jan–Apr 2026 dan Jan–Jul 2026 terbaca jelas berjalan bersamaan. |
-| P2-23 | Kosakata reveal terlalu seragam | TODO | |
+
+## VIS-1 — Rasa visual + animasi · Codex
+
+Hanya dijalankan setelah Kirim 3 `DONE`. Tiket:
+`docs/visual-jobs/VIS-1-visualisasi-data.md` (ditulis oleh sesi Kirim 3).
+
+| ID | Item | Status | Bukti |
+|---|---|---|---|
+| P2-23 | Kosakata reveal terlalu seragam, plus pass rasa atas seluruh keluaran Kirim 3 | TODO | Butuh: screenshot terang/gelap × 1440px/390px, screenshot reduced motion, angka kontras tiap pasangan yang berubah, `npm test` lolos tanpa mengubah test. Branch `fase/vis-1`. |
 
 ## Kirim 4 — Konversi
 
@@ -185,7 +197,8 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | 2026-09-19 | Offset "geometri basi" di test Kirim 1 diubah dari `-5000px` tetap jadi hasil pengukuran | Halaman Pengalaman di 390px tumbuh dari ~4.700px jadi ~6.500px, jadi angka tetap itu tidak lagi menaruh elemen di atas viewport dan test gagal di project `mobile`. Offset sekarang `-(rect.top + innerHeight)`, tidak ikut basi saat halaman tumbuh lagi. Cakupan test tidak dikurangi. |
 | 2026-09-19 | LCP mobile turun 2,8 → 3,1 detik; diterima dan diteruskan ke P2-22 | Penyebabnya melekat pada perbaikan P1-3: kartu Beranda dulu memakai ulang berkas potret yang sudah diunduh hero (0 byte tambahan), sekarang mengunduh foto tim 138 KB tersendiri yang berebut bandwidth dengan `motion-runtime`. `fetchPriority="low"` pada semua gambar bawah-lipatan mengembalikan ~0,1 detik. Sisanya dibereskan `srcset` multi-lebar (P2-26) dan P2-22 di Kirim 5. Skor performa tetap 93 = baseline; CLS justru turun 0,008 → 0. |
 | 2026-09-19 | Satu prompt universal untuk semua fase; agent berorientasi sendiri dari tabel ringkasan di berkas ini | Tidak ada lagi copy-paste blok berbeda tiap kirim. `progress.md` jadi satu-satunya sumber kebenaran giliran fase. |
-| 2026-09-19 | Routing harness: Codex hanya untuk image gen (IMG-1, IMG-2) dan pass poles visual (Kirim 6); sisanya Claude Code | Context window Codex kecil — dipakai untuk artistry, dibungkus tiket mandiri di `docs/image-jobs/` supaya tidak perlu membaca repo. |
+| 2026-09-19 | Routing harness: Codex hanya untuk image gen (IMG-1, IMG-2) dan pass poles visual (Kirim 6); sisanya Claude Code | Context window Codex kecil — dipakai untuk artistry, dibungkus tiket mandiri di `docs/image-jobs/` supaya tidak perlu membaca repo. **Digantikan keputusan 2026-09-19 di bawah.** |
+| 2026-09-19 | Routing harness diperluas: Codex memegang SELURUH lapisan rasa (gambar, bentuk SVG, animasi, spacing, tipografi, warna dalam token); Claude Code memegang test, logika, data, angka, integrasi, performa, SEO, aksesibilitas | Permintaan Milord. Pemisahnya sifat kegagalan, bukan selera kerja: kerangka yang salah menghasilkan angka bohong dan harus ditangkap test di `main`; rasa yang meleset cuma jelek dan dibuang dengan menghapus branch. Konsekuensinya Kirim 3 dipecah — kerangka + angka + test tetap Claude Code (2 item), rasa jadi fase Codex VIS-1 (1 item, membawa P2-23). Total 33 item tidak berubah. Pola tiketnya menyalin pola gambar yang sudah terbukti: `docs/visual-jobs/` sebagai pasangan `docs/image-jobs/`. |
 | 2026-09-19 | Aset yang belum ada tidak lagi berstatus BLOCKED; slot diisi cover placeholder hasil image gen dengan caption jujur | P1-5 sebelumnya menahan halaman Pengalaman tanpa gambar tanpa batas waktu. Kontrak jalur berkas membuat penukaran ke aset asli tidak butuh perubahan JSX. |
 | 2026-09-19 | Satu commit per fase setelah verifikasi lolos; fase Claude Code ke `main`, fase Codex ke branch `fase/<id>` | Izin git diberikan eksplisit untuk project ini. Hasil berbasis selera (gambar, poles visual) dibuang dengan menghapus branch, bukan `git revert` di `main`. Hash commit dicatat di Log verifikasi. |
 | 2026-09-19 | Keputusan yang belum diisi Milord punya kolom default (Web3Forms via env, `VITE_SITE_URL`, placeholder ya) | Agent tidak boleh berhenti bertanya di tengah fase. Default dicatat di sini saat dipakai. |
@@ -319,4 +332,5 @@ Diagnosis, probe deterministik, dan seluruh keluaran mentah: [`docs/evidence/ger
 
 IMG-1 sekarang **DONE**; Ringkasan 17 → 18 dari 33.
 
-Fase berikutnya: **Kirim 3 — Claude Code**. Sesi tiket ini berhenti di sini.
+Fase berikutnya: **Kirim 3 — Claude Code** (kerangka + angka + test). Sesudah itu
+**VIS-1 — Codex** untuk rasanya. Sesi tiket ini berhenti di sini.

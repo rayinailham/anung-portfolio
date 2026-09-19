@@ -59,6 +59,7 @@ Berkas:
 - `index.html`      — meta, guard tema, noscript
 - `docs/asset-provenance.md` — asal-usul setiap gambar. Wajib diperbarui.
 - `docs/image-jobs/` — tiket gambar untuk harness image-gen
+- `docs/visual-jobs/` — tiket rasa visual & animasi untuk harness front-end
 
 Perintah:
 - `npm run dev` → http://localhost:5173
@@ -106,11 +107,14 @@ Perintah:
    ringkasan di atas, "Catatan keputusan", dan "Log verifikasi".
 2. Kalau fase ini melahirkan kebutuhan gambar, tulis tiketnya di
    `docs/image-jobs/` mengikuti format di `docs/image-jobs/README.md`.
+   Kalau fase ini melahirkan kerangka visual atau animasi yang masih polos,
+   tulis tiket rasanya di `docs/visual-jobs/` mengikuti format di
+   `docs/visual-jobs/README.md`. Claude Code tidak memolesnya sendiri.
 3. Git — WAJIB, dan ini izin eksplisit yang berlaku untuk seluruh project ini.
    Lakukan SETELAH verifikasi lolos, JANGAN sebelumnya. Detail di `prompt.md`
    bagian "Git per fase".
    - Fase Claude Code (Kirim 2-5): commit langsung ke `main`.
-   - Fase Codex (IMG-1, IMG-2, Kirim 6): commit ke branch `fase/<id>`.
+   - Fase Codex (IMG-1, VIS-1, IMG-2, Kirim 6): commit ke branch `fase/<id>`.
    - Satu commit per fase. Push ke `origin`. Jangan force, jangan rebase,
      jangan buka PR.
    - `npm test` gagal atau ada item fase belum tuntas → JANGAN commit. Lapor.
@@ -130,7 +134,8 @@ Satu fase = satu sesi = satu harness.
 | Kirim 1 | Bug P0 + perbaikan mekanis | **Claude Code** | selesai |
 | Kirim 2 | Bukti kerja + ruang mati | **Claude Code** | logika data, fakta CV, layout |
 | IMG-1 | Placeholder galeri bukti (3 cover) | **Codex** | image gen |
-| Kirim 3 | Visualisasi data + kosakata motion | **Claude Code** | angka + SVG + motion, aturan kejujuran ketat |
+| Kirim 3 | Kerangka visualisasi data + timeline: markup, angka, teks alternatif, test | **Claude Code** | angka CV, aturan kejujuran ketat, a11y, test |
+| VIS-1 | Rasa visual + animasi untuk kerangka Kirim 3 | **Codex** | artistry front-end |
 | Kirim 4 | Konversi (form, WA, OG, preview CV) | **Claude Code** | integrasi, env, state |
 | IMG-2 | Gambar OG 1200×630 | **Codex** | image gen |
 | Kirim 5 | Performa, SEO, penutup | **Claude Code** | build, audit, laporan |
@@ -138,28 +143,48 @@ Satu fase = satu sesi = satu harness.
 
 ## Aturan harness
 
-**Codex** dipakai HANYA untuk dua hal: menghasilkan gambar, dan pass poles
-visual terakhir. Context window-nya kecil, jadi pekerjaannya selalu dibungkus
-jadi tiket mandiri.
+Pembagiannya satu kalimat: **Codex memutuskan rupa, Claude Code memutuskan
+benar.**
+
+**Codex** memegang semua yang berbau rasa: gambar, bentuk SVG dekoratif, kurva
+dan durasi animasi, ritme reveal, spacing, skala tipografi, berat font, radius,
+bayangan, layering warna dalam token yang ada — pendeknya seluruh lapisan
+front-end yang dinilai dengan mata, bukan dengan assertion. Context window-nya
+kecil, jadi pekerjaannya selalu dibungkus jadi tiket mandiri.
 
 Batas keras untuk sesi Codex:
 - Baca HANYA berkas yang disebut di tiketnya. Jangan baca `plan.md`,
   `progress.md`, atau `src/` kecuali tiket menyebutnya.
-- Jangan sentuh `src/data.js`, `src/App.jsx` logika, `tests/`, atau angka apa
-  pun. Kirim 6 hanya boleh menyentuh `src/styles.css` dan berkas yang
-  disebut tiketnya.
+- Jangan sentuh `src/data.js`, `tests/`, `scripts/`, konfigurasi build, atau
+  angka apa pun. Logika `src/App.jsx` — routing, form, state, efek — bukan
+  miliknya; kalau sebuah rasa butuh perubahan logika, itu ditulis sebagai
+  catatan balik ke Claude Code, bukan dikerjakan.
+- Berkas yang boleh disentuh selalu disebut eksplisit di tiket. Default untuk
+  tiket rasa: `src/styles.css`, nilai easing/durasi estetis di `src/motion.js`,
+  dan atribut presentasi SVG pada JSX yang disebut tiket.
 - Jangan jalankan audit Lighthouse, jangan refactor, jangan perbaiki bug.
-  Temuan di luar tiket ditulis sebagai catatan, bukan dikerjakan.
+- `npm test` wajib tetap lolos **tanpa mengubah test**. Test gagal → berhenti
+  dan lapor, jangan akali.
 - Selesai satu tiket → berhenti.
 
-**Claude Code** mengerjakan sisanya: bug, data, fakta, integrasi, performa, SEO,
-test, dan semua penulisan `progress.md`.
+**Claude Code** memegang semua yang bisa salah secara terukur: bug, logika,
+data, angka dan fakta CV, integrasi, state, performa, SEO, aksesibilitas,
+seluruh `tests/`, dan semua penulisan `progress.md`.
 
-Kalau sebuah fase butuh gambar, Claude Code TIDAK menghasilkan gambarnya
-sendiri. Claude Code menulis tiket di `docs/image-jobs/`, memasang slot dengan
-placeholder CSS sementara supaya layout tetap utuh dan test tetap lolos, lalu
-lanjut. Sesi Codex mengeksekusi tiket itu dan menaruh berkasnya di jalur yang
-sudah ditentukan. Tidak ada yang saling menunggu.
+Konsekuensinya, Claude Code TIDAK mengerjakan pass rasa — untuk gambar maupun
+untuk visual dan animasi. Polanya sama persis di keduanya:
+
+1. Claude Code memasang **kerangka yang sudah benar tapi sengaja polos**:
+   markup final, angka yang jujur, teks alternatif, nilai akhir untuk
+   `prefers-reduced-motion`, dan test yang mengunci semua itu. Halaman utuh dan
+   suite hijau walaupun belum cantik.
+2. Claude Code menulis tiket — gambar ke `docs/image-jobs/`, rasa visual dan
+   animasi ke `docs/visual-jobs/` — lalu lanjut. Tidak ada yang saling menunggu.
+3. Sesi Codex mengeksekusi satu tiket di branch `fase/<id>`, lalu berhenti.
+
+Alasan pemisahan ini bukan selera kerja, melainkan sifat kegagalannya: kerangka
+yang salah menghasilkan angka bohong atau halaman rusak dan harus ditangkap
+test; rasa yang meleset cuma jelek, dan dibuang dengan menghapus branch.
 
 ---
 
@@ -187,7 +212,7 @@ Gerbang sebelum commit:
 | Fase | Tujuan |
 |---|---|
 | Kirim 2, 3, 4, 5 (Claude Code) | commit langsung ke `main` |
-| IMG-1, IMG-2, Kirim 6 (Codex) | branch `fase/img-1`, `fase/img-2`, `fase/kirim-6` |
+| IMG-1, VIS-1, IMG-2, Kirim 6 (Codex) | branch `fase/img-1`, `fase/vis-1`, `fase/img-2`, `fase/kirim-6` |
 
 Alasan pemisahan: fase Codex berbasis selera. Gambar atau poles visual yang
 tidak disukai Milord harus bisa dibuang dengan menghapus branch, bukan dengan
@@ -439,7 +464,12 @@ tanpa logo, tanpa wajah, tanpa tiruan antarmuka.
 
 ---
 
-# KIRIM #3 — Visualisasi data + kosakata motion · Claude Code
+# KIRIM #3 — Kerangka visualisasi data + timeline · Claude Code
+
+Fase ini membangun **kerangka**, bukan rasa. Targetnya: angka yang jujur,
+markup final, teks alternatif, nilai akhir reduced-motion, dan test yang
+mengunci semuanya. Boleh — dan memang seharusnya — kelihatan polos saat
+selesai. Bentuk, kurva, dan ritmenya digarap sesi Codex lewat VIS-1.
 
 ## A. Visualisasi angka (P1-8)
 
@@ -468,13 +498,14 @@ menangani dua magang sekaligus. Tunjukkan tumpang tindihnya eksplisit.
 Tampilkan juga bahwa dua entri Sutan Vet adalah perusahaan sama dengan promosi
 peran.
 
-## C. Kosakata reveal terlalu seragam (P2-23)
+## C. Kosakata reveal terlalu seragam (P2-23) — PINDAH KE VIS-1
 
-Setiap `[data-reveal]` memakai `duration: 0.9`, `ease: power3.out`, offset 44px
-(`src/motion.js:90`). Judul, statistik, kartu, blok teks — semuanya masuk
-dengan cara yang sama persis. Jadinya pola, bukan ritme. Beri kurva dan durasi
-berbeda untuk jenis konten berbeda. Jangan ditambah-tambahi — ini portofolio,
-bukan demo showreel.
+Bukan lagi pekerjaan fase ini. Kurva, durasi, dan ritme reveal adalah rasa, dan
+rasa milik Codex. Yang menjadi tugas Kirim 3 hanya memastikan mekanismenya bisa
+dibedakan per jenis konten tanpa mengubah logika lagi — yaitu setiap elemen yang
+tampil punya penanda jenis yang bisa disasar dari `src/motion.js`
+(`data-reveal="..."` yang deskriptif, bukan seragam). Sesudah itu berhenti;
+jangan menyetel nilainya.
 
 ## Batasan
 
@@ -491,8 +522,14 @@ bukan demo showreel.
 - Tiap visual tetap masuk akal di 390px.
 - Semua visual baru mengubah tinggi dokumen → jaring pengaman ScrollTrigger
   dari Kirim 1 harus tetap jalan. Verifikasi.
-- Visual dibuat sebagai SVG inline oleh Claude Code. Ini bukan pekerjaan image
-  gen — jangan buat tiket untuk ini.
+- Visual dibuat sebagai SVG inline, bukan image gen — jangan buat tiket gambar
+  untuk ini.
+- Tapi RASANYA bukan milik fase ini. Bangun bentuk yang paling lugas yang sudah
+  benar dan terbaca — sumbu, label, proporsi, urutan — lalu berhenti. Jangan
+  menghabiskan sesi menyetel kurva, gradien, bayangan, atau timing.
+- Struktur SVG-nya harus bisa dipoles tanpa menyentuh logika: kelas CSS pada
+  setiap bagian yang mungkin ingin diubah rupanya, nilai animasi hidup di
+  `src/motion.js`, bukan tertanam di JSX.
 
 ## Verifikasi yang diminta
 
@@ -502,8 +539,49 @@ bukan demo showreel.
 - delta ukuran bundle gzip
 - `npm test` lolos, plus test yang mengassert angka final ada di DOM dengan
   reduced motion aktif
+- test yang mengunci skala jujur: bar tidak mulai dari angka bukan-nol, dan
+  "150" tetap dinyatakan sebagai 100 + 50
 
-Update `progress.md`: P1-8, P1-9, P2-23.
+Update `progress.md`: P1-8, P1-9.
+
+Tutup sesi dengan menulis tiket `docs/visual-jobs/VIS-1-visualisasi-data.md`
+mengikuti format di `docs/visual-jobs/README.md`: sebutkan berkas yang boleh
+disentuh, kelas CSS yang tersedia, angka mana yang haram berubah, dan hasil
+seperti apa yang dianggap diterima.
+
+---
+
+# VIS-1 — Rasa visual + animasi · Codex
+
+Status tiket: ditulis oleh sesi Kirim 3 di
+`docs/visual-jobs/VIS-1-visualisasi-data.md`. Sesi Codex membaca tiket itu, BUKAN
+bagian ini — bagian ini cuma menjelaskan kenapa fase ini ada.
+
+Dijalankan setelah Kirim 3 `DONE`. Tugasnya menaikkan kualitas rasa dari
+kerangka yang sudah benar: ring IPK, bar TOEFL, split platform afiliasi,
+counter halaman Pengalaman, timeline karier, dan kosakata reveal (P2-23).
+
+Boleh disentuh: `src/styles.css`, nilai easing/durasi di `src/motion.js`, dan
+atribut presentasi SVG pada JSX yang disebut tiket.
+
+TIDAK boleh disentuh: `src/data.js`, angka apa pun, skala ordinat, teks
+alternatif, `tests/`, `scripts/`, logika `src/App.jsx`, konfigurasi build.
+
+Batasan keras yang diwarisi dari Kirim 3 dan tidak boleh luntur:
+- Skala ordinat tetap jujur. Bar tidak boleh mulai dari angka bukan-nol, dan
+  "150" tetap terbaca sebagai 100 + 50, bukan 150 orang unik.
+- `prefers-reduced-motion: reduce` → nilai akhir langsung tampil. Sudah ada di
+  suite.
+- Kontras AA terang dan gelap. Lampirkan angka tiap pasangan yang berubah.
+- Angka tetap terbaca screen reader, tidak terkunci di dalam grafis.
+- Tiap visual tetap masuk akal di 390px.
+- `npm test` lolos tanpa mengubah test.
+- Jangan tambah pustaka chart atau dependensi apa pun.
+
+Verifikasi: screenshot tiap visual terang/gelap × 1440px/390px, screenshot
+reduced motion, angka kontras yang berubah, hasil `npm test`.
+
+Commit ke branch `fase/vis-1`. Jangan merge.
 
 ---
 
