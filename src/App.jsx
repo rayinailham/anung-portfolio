@@ -275,6 +275,16 @@ export default function App() {
     setAnchor(anchorRef.current);
   }, []);
   const transition = useRef(null);
+  // A curtain is in flight while this ref holds its timeline, and only the code
+  // that ends the curtain clears it. GSAP cannot answer this: `isActive()` stays
+  // false until the first ticker frame renders the timeline, so a route change
+  // landing inside that frame gap would look like "nothing is running".
+  const stopTransition = useCallback(() => {
+    const running = transition.current;
+    transition.current = null;
+    running?.kill();
+    return !!running;
+  }, []);
   const focusedRoute = useRef(route);
   useSmoothScroll(lenis, reduced);
   usePageMotion(root, route, revealed, reduced, initialRoute.current !== '/' && route === initialRoute.current);
@@ -323,16 +333,16 @@ export default function App() {
       if (next === routeRef.current) {
         // Same page, new deep-link anchor: no curtain, just move to the entry.
         if (getAnchor() !== anchorRef.current) applyAnchor();
-        // Back can arrive before the outgoing curtain has committed its target.
-        if (transition.current?.isActive()) {
-          transition.current.kill();
+        // Back can arrive before the outgoing curtain has committed its target,
+        // even before that curtain has drawn a single frame.
+        if (stopTransition()) {
           parkCurtain();
           setTransitioning(false);
           setRevealed(true);
         }
         return;
       }
-      transition.current?.kill();
+      stopTransition();
       const commit = () => {
         routeRef.current = next;
         applyAnchor();
@@ -346,7 +356,7 @@ export default function App() {
       const star = curtain.current.querySelector('svg');
       // Every step is placed on an absolute position: the asterisk spin runs the
       // full length of the curtain, and appended steps must not queue behind it.
-      const timeline = gsap.timeline({ onComplete: () => setTransitioning(false) })
+      const timeline = gsap.timeline({ onComplete: () => { transition.current = null; setTransitioning(false); } })
         .fromTo(curtain.current, { yPercent: 110, y: 0 }, { yPercent: 0, duration: 0.45, ease: 'power3.inOut' }, 0)
         // Hold the incoming page hidden, then release it as the curtain lifts.
         .call(() => { setRevealed(false); commit(); }, null, 0.45)
@@ -360,13 +370,13 @@ export default function App() {
     window.addEventListener('hashchange', change);
     window.addEventListener('portfolio:top', top);
     return () => {
-      transition.current?.kill();
+      stopTransition();
       document.removeEventListener('keydown', noteKey);
       document.removeEventListener('pointerdown', notePointer);
       window.removeEventListener('hashchange', change);
       window.removeEventListener('portfolio:top', top);
     };
-  }, [reduced, parkCurtain, revealPage, applyAnchor]);
+  }, [reduced, parkCurtain, revealPage, applyAnchor, stopTransition]);
 
   // Deep link from a Beranda card lands on its own entry, not on a list top.
   // Runs after the page is revealed so ScrollTrigger has measured the layout.
@@ -383,14 +393,14 @@ export default function App() {
   useEffect(() => {
     // A live OS preference change must never leave the page inert mid-transition.
     if (reduced && transitioning) {
-      transition.current?.kill();
+      stopTransition();
       parkCurtain();
       routeRef.current = getRoute();
       setRoute(routeRef.current);
       setTransitioning(false);
       setRevealed(true);
     }
-  }, [reduced, transitioning, parkCurtain]);
+  }, [reduced, transitioning, parkCurtain, stopTransition]);
   return <>
     {booting && <Splash reveal={revealPage} done={finishIntro} reduced={userReduced} motionStatus={motionStatus} />}
     <div className="page-curtain" ref={curtain} aria-hidden="true"><Asterisk weight="bold" /><span /></div>

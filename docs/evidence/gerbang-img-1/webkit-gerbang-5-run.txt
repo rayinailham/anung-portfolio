@@ -1,0 +1,55 @@
+=== RUN 1: npm test -- --project=webkit -g 'interrupted transition' ===
+
+> anung-portfolio@1.0.0 test
+> playwright test --project=webkit -g interrupted transition --reporter=line
+
+
+Running 1 test using 1 worker
+
+[1/1] [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+  1 passed (4.1s)
+exit=0
+=== RUN 2: npm test -- --project=webkit -g 'interrupted transition' ===
+
+> anung-portfolio@1.0.0 test
+> playwright test --project=webkit -g interrupted transition --reporter=line
+
+
+Running 1 test using 1 worker
+
+[1/1] [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+  1 passed (4.0s)
+exit=0
+=== RUN 3: npm test -- --project=webkit -g 'interrupted transition' ===
+
+> anung-portfolio@1.0.0 test
+> playwright test --project=webkit -g interrupted transition --reporter=line
+
+
+Running 1 test using 1 worker
+
+[1/1] [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+  1 passed (4.1s)
+exit=0
+=== RUN 4: npm test -- --project=webkit -g 'interrupted transition' ===
+
+> anung-portfolio@1.0.0 test
+> playwright test --project=webkit -g interrupted transition --reporter=line
+
+
+Running 1 test using 1 worker
+
+[1/1] [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+  1 passed (3.8s)
+exit=0
+=== RUN 5: npm test -- --project=webkit -g 'interrupted transition' ===
+
+> anung-portfolio@1.0.0 test
+> playwright test --project=webkit -g interrupted transition --reporter=line
+
+
+Running 1 test using 1 worker
+
+[1/1] [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+  1 passed (3.6s)
+exit=0

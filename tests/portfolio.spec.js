@@ -398,6 +398,34 @@ test('interrupted transition and live reduced motion never lock the page', async
   await expect(page.locator('body')).not.toHaveClass(/motion-locked/);
 });
 
+test('a route change inside the curtain\'s first frame gap does not strand the old page', async ({ page }) => {
+  // The curtain timeline is only rendered on the GSAP ticker's next frame, while
+  // React paints `inert` without waiting for one. Holding requestAnimationFrame
+  // back reproduces, on every engine, the WebKit window where a second route
+  // change arrives before the outgoing curtain has drawn anything at all.
+  await page.addInitScript(() => {
+    const nativeRaf = window.requestAnimationFrame.bind(window);
+    let frozenUntil = 0;
+    window.freezeFrames = (ms) => { frozenUntil = performance.now() + ms; };
+    window.requestAnimationFrame = (callback) => nativeRaf((time) => {
+      const wait = frozenUntil - performance.now();
+      if (wait > 0) setTimeout(() => callback(performance.now()), wait + 1);
+      else callback(time);
+    });
+  });
+  await ready(page);
+  await page.evaluate(() => { window.freezeFrames(1500); location.hash = '/pengalaman'; });
+  await expect(page.locator('.app')).toHaveAttribute('inert');
+  await page.evaluate(() => { location.hash = '/'; });
+  await expect(page.locator('.app')).not.toHaveAttribute('inert');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.locator('body')).not.toHaveClass(/motion-locked/);
+  // The abandoned curtain must not commit its route once frames resume.
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+  await expect(page).toHaveURL(/#\/$/);
+});
+
 test('deep link from a Beranda card lands on its own experience entry', async ({ page }) => {
   for (const [label, id] of [
     ['Lihat pengalaman pemasaran afiliasi di AnyMind Group', 'entri-anymind'],

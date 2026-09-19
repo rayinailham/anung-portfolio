@@ -18,13 +18,13 @@ belum seluruhnya `DONE`/`SKIP`.
 |---|---|---|---|---|
 | 1 | Bug P0 + semua perbaikan mekanis | Claude Code | 10 | 10 |
 | 2 | Bukti kerja + ruang mati | Claude Code | 7 | 7 |
-| IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 0 |
+| IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 1 |
 | 3 | Visualisasi data + kosakata motion | Claude Code | 3 | 0 |
 | 4 | Konversi | Claude Code | 4 | 0 |
 | IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
 | 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
 | 6 | Pass poles visual | Codex | 1 | 0 |
-| — | **Total dikerjakan** | | **33** | **17** |
+| — | **Total dikerjakan** | | **33** | **18** |
 | — | Sengaja di-SKIP | | 3 | — |
 
 Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
@@ -86,11 +86,11 @@ Tidak ada angka lain yang ditambahkan. Permintaan "naikkan angka" tetap ditolak.
 
 ## IMG-1 — Cover placeholder galeri bukti · Codex
 
-Tiket: [`docs/image-jobs/IMG-1-bukti-placeholder.md`](docs/image-jobs/IMG-1-bukti-placeholder.md) — sudah ditulis oleh sesi Kirim 2, siap dikerjakan Codex. Tidak memblokir apa pun.
+Tiket: [`docs/image-jobs/IMG-1-bukti-placeholder.md`](docs/image-jobs/IMG-1-bukti-placeholder.md) — cover selesai pada sesi Codex IMG-1; gerbang test dibuka pada sesi tiket Claude Code, hasil verifikasi di bawah.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| IMG-1 | 3 cover abstrak (sosial / video / webinar) di `public/images/placeholder/` | TODO | Menunggu sesi **Codex**. Yang terpasang sekarang: blok geometris datar dari token warna brand, dihasilkan `scripts/make-placeholder-covers.mjs` — cukup untuk layout dan test, mentah secara visual. Provenance-nya sudah dicatat di [asset-provenance.md](docs/asset-provenance.md). Butuh: berkas ada di kedua jalur, 1200×900, tanpa teks/logo/wajah/tiruan antarmuka, prompt persis dicatat. |
+| IMG-1 | 3 cover abstrak (sosial / video / webinar) di `public/images/placeholder/` | DONE | Keenam berkas PNG/WebP 1200×900 selesai; generator bawaan `image_gen`, prompt persis di [provenance](docs/asset-provenance.md). [Ukuran + hash + DOM](docs/evidence/kirim-img-1/metrics.json), [screenshot](docs/evidence/kirim-img-1/README.md), build lolos. **Gerbang test sudah lolos**: kegagalan WebKit `interrupted transition` ternyata race di `src/App.jsx`, bukan aset — [diagnosis + bukti](docs/evidence/gerbang-img-1/README.md). WebKit `-g 'interrupted transition'` lolos 5/5 run berturut ([log](docs/evidence/gerbang-img-1/webkit-gerbang-5-run.txt)); `npm test` penuh exit 0 **116 passed** dua kali ([1](docs/evidence/gerbang-img-1/suite-penuh-sesudah.txt), [2](docs/evidence/gerbang-img-1/suite-penuh-sesudah-2.txt)). |
 
 ## Kirim 3 — Visualisasi data + kosakata motion
 
@@ -173,6 +173,10 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | Tanggal | Keputusan | Alasan |
 |---|---|---|
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
+| 2026-09-19 | Gerbang IMG-1: penjaga interupsi curtain berhenti bertanya ke GSAP dan memiliki statusnya sendiri (`stopTransition()`) | `transition.current?.isActive()` menjawab `false` untuk timeline yang sudah dibuat tapi belum dirender — GSAP baru menyalakan `_initted` pada tick ticker pertama, sementara React memasang `inert` tanpa menunggu frame. `hashchange` kedua yang jatuh di jendela itu lolos dari penjaga, curtain yatim tetap `commit()` route lama lalu melepas `inert` di route yang sudah ditinggalkan. Melonggarkan test atau menaikkan timeout hanya menyembunyikan urutan yang memang tidak dijamin; buktinya test regresi baru gagal di keempat project pada kode lama, bukan hanya WebKit. |
+| 2026-09-19 | IMG-1 tidak commit/push pada sesi Codex; fase WIP meski keenam aset selesai | Dua run suite penuh masih gagal pada transisi route WebKit. Batas tiket melarang perubahan source/test, sehingga kegagalan diserahkan ke harness kode; tidak menyamarkan hasil sebagai DONE atau mengklaim bug lama tanpa pembanding. Keputusan itu benar: penyebabnya memang bug kode, diselesaikan pada sesi tiket gerbang IMG-1. |
+| 2026-09-19 | IMG-1 memakai tiga still life hasil `image_gen`; PNG dinormalisasi 1448×1086 → 1200×900, WebP q82 | Rasio 4:3 tetap; tanpa crop. Latar tanah liat/bordo membedakan cover dari kedua tema. Bentuk dekoratif bukan angka CV. Caption dan flag placeholder tetap. |
+| 2026-09-19 | Bukti tiket IMG-1 disimpan di `docs/evidence/kirim-img-1/`; `progress.md` diperbarui sesuai penutup sesi universal | Instruksi langsung sesi mewajibkan orientasi/progres meski tiket lama membatasi pembacaan. Tidak membaca `plan.md` atau mengubah sumber aplikasi/test. |
 | 2026-09-19 | Galeri bukti jadi baris selebar kartu, bukan isi `.experience-side` | Versi pertama menaruh galeri di kolom samping seperti saran `prompt.md`. Terukur: kolom samping jadi 817/954px sementara kolom utama 510/488px — lubang 400px cuma pindah dari kiri ke kanan, dan tinggi kartu berhenti berubah saat disclosure dibuka sehingga `ResizeObserver` di `main` tidak lagi memicu refresh (test Kirim 1 gagal). Sebagai baris penuh: selisih kolom 562px total, disclosure kembali mengubah tinggi kartu. |
 | 2026-09-19 | Slot placeholder tetap merender `<img>`, dan berkas cover datar ikut di-commit | Kalau `<img>` menunjuk berkas yang tidak ada, Chromium mencatat 404 sebagai console error dan seluruh suite gagal — `afterEach` mewajibkan console bersih. Jalur "tanpa berkas gambar" tetap dibuktikan lewat test yang membatalkan `**/images/placeholder/**`, bukan dengan menghilangkan berkasnya. |
 | 2026-09-19 | Cover sementara dibuat Claude Code dari SVG token warna brand, bukan image gen | Blok geometris datar = artefak build yang deterministik (`scripts/make-placeholder-covers.mjs`), bukan artistry. Tugas artistik tetap milik Codex lewat IMG-1, yang menimpa berkas di jalur yang sama. `placeholder: true` tidak hilang saat IMG-1 selesai — flag itu baru dilepas kalau materi asli dari Anung yang masuk. |
@@ -225,6 +229,17 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 | 2026-09-19 | `npm test` | `112 passed (2.4m)` — 28 skenario × chromium/mobile/firefox/webkit. 22 skenario Kirim 1 tetap ada, 6 skenario baru ditambahkan, tidak ada yang dihapus. Console error 0 kecuali dua test yang memang menggagalkan request. [Output asli](docs/evidence/kirim-2/full-suite.txt). |
 | 2026-09-19 | `npm run build` | Exit 0; `✓ built in 263ms`. Bundle (css + index + motion-runtime) **445.599 B → 454.464 B mentah**, **143.037 B → 145.181 B gzip** (+2.144 B), diukur dengan metode sama pada kedua build. [Output](docs/evidence/kirim-2/build.txt). |
 | 2026-09-19 | Lighthouse mobile pada build statis, sebelum vs sesudah, mesin dan sesi sama | **Sebelum**: performance 95 · LCP 2,8s · FCP 1,5s · TBT 10ms · CLS 0 ([JSON](docs/evidence/kirim-2/lighthouse-mobile-before.json)). **Sesudah**: performance 93 · a11y 100 · best-practices 100 · SEO 100 · LCP 3,1s · FCP 1,5s · TBT 10ms · **CLS 0** ([JSON](docs/evidence/kirim-2/lighthouse-mobile.json)). Syarat fase CLS ≤ 0,01 terpenuhi (0,008 → 0). LCP turun 0,3s dibanding run hari ini dan 0,2s dibanding baseline tercatat 2,9s — dilaporkan apa adanya, alasannya di Catatan keputusan, penyelesaiannya P2-22/P2-26 di Kirim 5. |
+| 2026-09-19 | `npm test -- --project=webkit -g 'interrupted transition'` (sebelum perbaikan, sendirian, 3×) | `1 passed (5.7s)` · `1 passed (5.8s)` · `1 passed (5.8s)` — lolos 3/3. Test ini tidak gagal saat diisolasi. |
+| 2026-09-19 | `npx playwright test --project=webkit -g 'interrupted transition' --repeat-each=12 --workers=4` (sebelum perbaikan) | `12 passed (20.8s)`. Beban paralel saja tidak cukup untuk memicu race. |
+| 2026-09-19 | Sapuan jeda 0–800 ms antara dua `hashchange` di WebKit, 21 titik (sebelum perbaikan) | 21/21 heading kembali ke `"Halo, saya Anung."`. Panjang jeda bukan variabelnya; frame yang jadi variabelnya. |
+| 2026-09-19 | Probe deterministik: `requestAnimationFrame` ditahan 1500 ms lewat `addInitScript`, `src/App.jsx` diberi instrumentasi sementara (sebelum perbaikan) | **Gagal**, `Expected substring: "Halo, saya"` / `Received string: "Pengalaman magang saya."`. Log runtime: `change \| /pengalaman \| routeRef=/ \| active=false` → `curtain path start` → `change \| / \| routeRef=/ \| active=false` (tanpa reset) → `commit \| /pengalaman` → `timeline complete \| /pengalaman`. [Keluaran mentah](docs/evidence/gerbang-img-1/probe-sebelum-gagal.txt), [probe](docs/evidence/gerbang-img-1/probe-frame-gap.spec.js.txt). Instrumentasi dibuang sesudahnya. |
+| 2026-09-19 | `npx playwright test tests/portfolio.spec.js -g "first frame gap"` pada `src/App.jsx` **sebelum** perbaikan | Exit 1, **4 failed** — chromium, mobile, firefox, webkit, semuanya `Received string: "Pengalamanmagang saya."`. Racenya tidak pernah khusus WebKit; WebKit hanya paling sering menunda frame pertama. [Log](docs/evidence/gerbang-img-1/regresi-tanpa-perbaikan-gagal.txt). |
+| 2026-09-19 | `npx playwright test tests/portfolio.spec.js -g "first frame gap"` sesudah perbaikan | `4 passed (7.9s)`. |
+| 2026-09-19 | `npm test -- --project=webkit -g 'interrupted transition'` sesudah perbaikan, 5× berturut-turut | `1 passed (4.1s)` · `1 passed (4.0s)` · `1 passed (4.1s)` · `1 passed (3.8s)` · `1 passed (3.6s)`, `exit=0` lima-limanya. [Log](docs/evidence/gerbang-img-1/webkit-gerbang-5-run.txt). |
+| 2026-09-19 | `npm test` penuh sesudah perbaikan, run 1 | Exit 0, **116 passed (2.3m)**. [Log](docs/evidence/gerbang-img-1/suite-penuh-sesudah.txt). |
+| 2026-09-19 | `npm test` penuh sesudah perbaikan, run 2 (tanpa perubahan apa pun) | Exit 0, **116 passed (2.3m)**. Kegagalan aslinya baru stabil pada run kedua, jadi gerbangnya juga dibuktikan dua run. [Log](docs/evidence/gerbang-img-1/suite-penuh-sesudah-2.txt). |
+| 2026-09-19 | `npm run build` sesudah perbaikan | Exit 0, `✓ built in 264ms`. [Log](docs/evidence/gerbang-img-1/build.txt). |
+| 2026-09-19 | `npx playwright test` pada `git worktree` commit `main` 58003a9, tanpa aset IMG-1 yang belum di-commit | Exit 0, **116 passed (2.5m)**. `main` hijau berdiri sendiri, bukan hanya di working tree yang memuat gambar. [Log](docs/evidence/gerbang-img-1/suite-penuh-main-58003a9.txt). |
 | 2026-09-19 | `node scripts/make-placeholder-covers.mjs && node scripts/prepare-assets.mjs` | Exit 0; 3 PNG sumber + 3 WebP 1200×900 dihasilkan ulang dari SVG token warna brand. Foto tim `anymind-pantene-team.webp` 1200×900, 138 KB. |
 | 2026-09-19 | Berat bukti | 24 screenshot PNG dikonversi WebP q80 sebelum di-commit: **14.423 KB → 3.990 KB**, sesuai aturan "PNG bukti di atas 500 KB" di `prompt.md`. |
 
@@ -268,3 +283,40 @@ Sesudah implementasi ([output lengkap](docs/evidence/kirim-1/regression-after.tx
 - Cover placeholder yang ikut di-commit adalah blok warna datar, bukan tiruan tangkapan layar apa pun. Caption di halaman menyatakan statusnya; `alt` menggambarkan ilustrasinya, bukan pekerjaan yang tidak ditampilkan.
 - Tidak ada angka baru yang tidak ada di `Anung Hanindhita Ramadhan-CV.pdf`. Tabel "Kutipan CV untuk P1-7" mencantumkan pasangannya satu per satu.
 - Kirim 2 selesai seluruhnya. Giliran berikutnya: **IMG-1**, milik **Codex**, tiketnya sudah siap di `docs/image-jobs/IMG-1-bukti-placeholder.md`.
+
+### Verifikasi IMG-1 — 2026-09-19
+
+| Perintah / pemeriksaan | Hasil |
+|---|---|
+| `arch-playwright-provision --check` + launch Node Playwright | Nol library hilang; Chromium 153.0.8010.12, Firefox 155.0, WebKit 26.6 launch sukses. |
+| `npm run build` | Exit 0, build 551ms. [Log](docs/evidence/kirim-img-1/build.txt). |
+| `node docs/evidence/kirim-img-1/verify.mjs` | Exit 0; enam berkas 1200×900; byte WebP identik hasil pipeline PNG; 4 kombinasi viewport/tema lolos. Tiga slot termuat, caption “ilustrasi sementara”, atribut ukuran utuh, error 0, tanpa overflow. [JSON](docs/evidence/kirim-img-1/metrics.json). |
+| Inspeksi visual | Tiga cover satu keluarga; tanpa teks/logo/wajah/UI/grafik data. Screenshot halaman penuh dan close-up galeri di [bukti](docs/evidence/kirim-img-1/README.md). |
+| `npm test` — run pertama | Exit 1: 110 passed, 2 failed (4.2m). WebKit: `multiple disclosures animate height and refresh after opening and closing` gagal sampel tinggi antara awal/akhir (`portfolio.spec.js:93`); `interrupted transition and live reduced motion never lock the page` tetap pada Pengalaman saat menunggu Beranda (`portfolio.spec.js:392`). [Log asli](docs/evidence/kirim-img-1/full-suite-first.txt). Penyebab belum dipastikan; tidak mengubah aplikasi/test di luar tiket. |
+
+Lighthouse/CLS tidak diaudit ulang: di luar cakupan tiket gambar. Tidak ada perubahan CSS/token, sehingga tidak ada pasangan kontras teks yang diubah.
+
+| Perintah / keputusan lanjutan IMG-1 | Hasil |
+|---|---|
+| `npm test` — run ulang tanpa perubahan kode/config/test | Exit 1: **111 passed, 1 failed (4.2m)**. Disclosure WebKit sekarang lolos, tetapi `interrupted transition and live reduced motion never lock the page` kembali gagal pada `portfolio.spec.js:392`: expected “Halo, saya”, received “Pengalamanmagang saya.” [Log lengkap](docs/evidence/kirim-img-1/full-suite.txt). |
+| Git per fase (sesi Codex) | **Tidak commit dan tidak push**: gerbang `npm test` belum lolos saat itu. Tidak ada hash commit dari sesi tersebut. |
+
+Semua keluaran gambar IMG-1 dan pemeriksaan aset selesai pada sesi Codex; tiket gambar berstatus DONE, fase ditahan WIP oleh gerbang regresi. Keputusan menahan itu benar — penyebabnya memang bug kode, bukan aset.
+
+### Gerbang IMG-1 — sesi tiket Claude Code, 2026-09-19
+
+Kegagalan `[webkit] interrupted transition and live reduced motion never lock the page` dilacak sampai
+akarnya di `src/App.jsx`: penjaga interupsi curtain memakai `transition.current?.isActive()`, dan GSAP
+menjawab `false` untuk timeline yang sudah dibuat tapi belum dirender — `_initted` baru menyala pada tick
+ticker pertama, sedangkan React memasang `inert` tanpa menunggu frame. `hashchange` kedua yang jatuh di
+jendela itu lolos dari penjaga, sehingga curtain yatim tetap `commit()` route lama lalu melepas `inert`
+di route yang sudah ditinggalkan. Perbaikannya: status "ada curtain berjalan" dimiliki sendiri lewat
+`stopTransition()`, dipakai oleh cabang route-sama, cabang route-beda, cleanup listener, dan penyelamat
+reduced-motion. Tidak ada timeout dinaikkan, assertion dilonggarkan, `test.skip` ditambahkan, atau
+cakupan test dikurangi; satu test regresi ditambahkan (112 → 116 hasil di empat project).
+
+Diagnosis, probe deterministik, dan seluruh keluaran mentah: [`docs/evidence/gerbang-img-1/`](docs/evidence/gerbang-img-1/README.md).
+
+IMG-1 sekarang **DONE**; Ringkasan 17 → 18 dari 33.
+
+Fase berikutnya: **Kirim 3 — Claude Code**. Sesi tiket ini berhenti di sini.

@@ -1,0 +1,34 @@
+import { test, expect } from '@playwright/test';
+
+// Deterministic stand-in for a WebKit frame gap: the page keeps running React
+// (scheduler uses MessageChannel) while requestAnimationFrame - and therefore
+// the GSAP ticker - is held back for a fixed window.
+const FREEZE = `
+  const nativeRaf = window.requestAnimationFrame.bind(window);
+  let frozenUntil = 0;
+  window.__freezeRaf = (ms) => { frozenUntil = performance.now() + ms; };
+  window.requestAnimationFrame = (cb) => nativeRaf((t) => {
+    const wait = frozenUntil - performance.now();
+    if (wait > 0) setTimeout(() => cb(performance.now()), wait + 1);
+    else cb(t);
+  });
+`;
+
+test('interrupt inside the first frame gap', async ({ page }) => {
+  test.setTimeout(120000);
+  await page.addInitScript(FREEZE);
+  await page.goto('/#/');
+  await expect(page.locator('.splash')).toHaveCount(0);
+  await expect(page.locator('.app')).not.toHaveAttribute('inert');
+
+  await page.evaluate(() => { window.__freezeRaf(1500); location.hash = '/pengalaman'; });
+  await expect(page.locator('.app')).toHaveAttribute('inert');
+  await page.evaluate(() => { location.hash = '/'; });
+
+  await page.waitForTimeout(3000);
+  const inert = await page.locator('.app').getAttribute('inert');
+  const h1 = (await page.locator('h1').first().innerText()).replace(/\s+/g, ' ');
+  const log = await page.evaluate(() => (window.__rt || []).map(r => r.join(' | ')).join('\n'));
+  console.log(`\n##### PROBE inert=${inert === null ? 'no' : 'YES'} h1="${h1}" #####\n${log}\n##### END #####`);
+  expect(h1).toContain('Halo, saya');
+});

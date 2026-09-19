@@ -1,0 +1,52 @@
+
+Running 1 test using 1 worker
+
+[1/1] [webkit] › tests-dbg/probe.spec.js:17:1 › interrupt inside the first frame gap
+[webkit] › tests-dbg/probe.spec.js:17:1 › interrupt inside the first frame gap
+
+##### PROBE inert=no h1="Pengalaman magang saya." #####
+283 | render | route=/ | booting=true | transitioning=false | revealed=false | reduced=true | motion=loading
+283 | render | route=/ | booting=true | transitioning=false | revealed=false | reduced=true | motion=loading
+665 | LISTENER CLEANUP | reduced=true
+700 | render | route=/ | booting=true | transitioning=false | revealed=false | reduced=false | motion=ready
+700 | render | route=/ | booting=true | transitioning=false | revealed=false | reduced=false | motion=ready
+717 | LISTENER CLEANUP | reduced=true
+1472 | render | route=/ | booting=true | transitioning=false | revealed=true | reduced=false | motion=ready
+1472 | render | route=/ | booting=true | transitioning=false | revealed=true | reduced=false | motion=ready
+1812 | render | route=/ | booting=false | transitioning=false | revealed=true | reduced=false | motion=ready
+1813 | render | route=/ | booting=false | transitioning=false | revealed=true | reduced=false | motion=ready
+1978 | change | /pengalaman | routeRef=/ | active=false | reduced=false | keyboard=false
+1978 | curtain path start
+1980 | render | route=/ | booting=false | transitioning=true | revealed=true | reduced=false | motion=ready
+1980 | render | route=/ | booting=false | transitioning=true | revealed=true | reduced=false | motion=ready
+1991 | change | / | routeRef=/ | active=false | reduced=false | keyboard=false
+3902 | commit | /pengalaman
+3904 | render | route=/pengalaman | booting=false | transitioning=true | revealed=false | reduced=false | motion=ready
+3904 | render | route=/pengalaman | booting=false | transitioning=true | revealed=false | reduced=false | motion=ready
+4079 | render | route=/pengalaman | booting=false | transitioning=true | revealed=true | reduced=false | motion=ready
+4079 | render | route=/pengalaman | booting=false | transitioning=true | revealed=true | reduced=false | motion=ready
+4497 | timeline complete | /pengalaman
+4498 | render | route=/pengalaman | booting=false | transitioning=false | revealed=true | reduced=false | motion=ready
+4498 | render | route=/pengalaman | booting=false | transitioning=false | revealed=true | reduced=false | motion=ready
+##### END #####
+
+  1) [webkit] › tests-dbg/probe.spec.js:17:1 › interrupt inside the first frame gap ────────────────
+
+    Error: expect(received).toContain(expected) // indexOf
+
+    Expected substring: "Halo, saya"
+    Received string:    "Pengalaman magang saya."
+
+      31 |   const log = await page.evaluate(() => (window.__rt || []).map(r => r.join(' | ')).join('\n'));
+      32 |   console.log(`\n##### PROBE inert=${inert === null ? 'no' : 'YES'} h1="${h1}" #####\n${log}\n##### END #####`);
+    > 33 |   expect(h1).toContain('Halo, saya');
+         |              ^
+      34 | });
+      35 |
+        at /home/rayin/Projects/freelance/porto anung/tests-dbg/probe.spec.js:33:14
+
+    Error Context: test-results/probe-interrupt-inside-the-first-frame-gap-webkit/error-context.md
+
+
+  1 failed
+    [webkit] › tests-dbg/probe.spec.js:17:1 › interrupt inside the first frame gap ─────────────────

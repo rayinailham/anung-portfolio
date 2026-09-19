@@ -1,0 +1,120 @@
+
+Running 116 tests using 3 workers
+
+[1/116] [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi
+[2/116] [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua
+[3/116] [chromium] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout
+[4/116] [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL
+[5/116] [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital
+[6/116] [chromium] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing
+[7/116] [chromium] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry
+[8/116] [chromium] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker
+[9/116] [chromium] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value
+[10/116] [chromium] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route
+[11/116] [chromium] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading
+[12/116] [chromium] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session
+[13/116] [chromium] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements
+[14/116] [chromium] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work
+[15/116] [chromium] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work
+[16/116] [chromium] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF
+[17/116] [chromium] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff
+[18/116] [chromium] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works
+[19/116] [chromium] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation
+[20/116] [chromium] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes
+[21/116] [chromium] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path
+[22/116] [chromium] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+[23/116] [chromium] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+[24/116] [chromium] › tests/portfolio.spec.js:429:1 › deep link from a Beranda card lands on its own experience entry
+[25/116] [chromium] › tests/portfolio.spec.js:446:1 › every evidence slot is declared, sized and captioned honestly
+[26/116] [chromium] › tests/portfolio.spec.js:464:1 › placeholder covers missing still leave the evidence slots correct
+[27/116] [chromium] › tests/portfolio.spec.js:482:1 › no image is reused with a different crop
+[28/116] [chromium] › tests/portfolio.spec.js:507:1 › the contact callout says something different on each page
+[29/116] [chromium] › tests/portfolio.spec.js:518:1 › CV facts that were missing are on the page with their own numbers
+[30/116] [mobile] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout
+[31/116] [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua
+[32/116] [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi
+[33/116] [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL
+[34/116] [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital
+[35/116] [mobile] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing
+[36/116] [mobile] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry
+[37/116] [mobile] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker
+[38/116] [mobile] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value
+[39/116] [mobile] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route
+[40/116] [mobile] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading
+[41/116] [mobile] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session
+[42/116] [mobile] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements
+[43/116] [mobile] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work
+[44/116] [mobile] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work
+[45/116] [mobile] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF
+[46/116] [mobile] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff
+[47/116] [mobile] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works
+[48/116] [mobile] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation
+[49/116] [mobile] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes
+[50/116] [mobile] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path
+[51/116] [mobile] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+[52/116] [mobile] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+[53/116] [mobile] › tests/portfolio.spec.js:429:1 › deep link from a Beranda card lands on its own experience entry
+[54/116] [mobile] › tests/portfolio.spec.js:446:1 › every evidence slot is declared, sized and captioned honestly
+[55/116] [mobile] › tests/portfolio.spec.js:464:1 › placeholder covers missing still leave the evidence slots correct
+[56/116] [mobile] › tests/portfolio.spec.js:482:1 › no image is reused with a different crop
+[57/116] [mobile] › tests/portfolio.spec.js:507:1 › the contact callout says something different on each page
+[58/116] [mobile] › tests/portfolio.spec.js:518:1 › CV facts that were missing are on the page with their own numbers
+[59/116] [firefox] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout
+[60/116] [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua
+[61/116] [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi
+[62/116] [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL
+[63/116] [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital
+[64/116] [firefox] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing
+[65/116] [firefox] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry
+[66/116] [firefox] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker
+[67/116] [firefox] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value
+[68/116] [firefox] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route
+[69/116] [firefox] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading
+[70/116] [firefox] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session
+[71/116] [firefox] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements
+[72/116] [firefox] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work
+[73/116] [firefox] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work
+[74/116] [firefox] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF
+[75/116] [firefox] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff
+[76/116] [firefox] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works
+[77/116] [firefox] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation
+[78/116] [firefox] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes
+[79/116] [firefox] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path
+[80/116] [firefox] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+[81/116] [firefox] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+[82/116] [firefox] › tests/portfolio.spec.js:429:1 › deep link from a Beranda card lands on its own experience entry
+[83/116] [firefox] › tests/portfolio.spec.js:446:1 › every evidence slot is declared, sized and captioned honestly
+[84/116] [firefox] › tests/portfolio.spec.js:464:1 › placeholder covers missing still leave the evidence slots correct
+[85/116] [firefox] › tests/portfolio.spec.js:482:1 › no image is reused with a different crop
+[86/116] [firefox] › tests/portfolio.spec.js:507:1 › the contact callout says something different on each page
+[87/116] [firefox] › tests/portfolio.spec.js:518:1 › CV facts that were missing are on the page with their own numbers
+[88/116] [webkit] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout
+[89/116] [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua
+[90/116] [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi
+[91/116] [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL
+[92/116] [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital
+[93/116] [webkit] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing
+[94/116] [webkit] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry
+[95/116] [webkit] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker
+[96/116] [webkit] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value
+[97/116] [webkit] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route
+[98/116] [webkit] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading
+[99/116] [webkit] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session
+[100/116] [webkit] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements
+[101/116] [webkit] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work
+[102/116] [webkit] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work
+[103/116] [webkit] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF
+[104/116] [webkit] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff
+[105/116] [webkit] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works
+[106/116] [webkit] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation
+[107/116] [webkit] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes
+[108/116] [webkit] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path
+[109/116] [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page
+[110/116] [webkit] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+[111/116] [webkit] › tests/portfolio.spec.js:429:1 › deep link from a Beranda card lands on its own experience entry
+[112/116] [webkit] › tests/portfolio.spec.js:446:1 › every evidence slot is declared, sized and captioned honestly
+[113/116] [webkit] › tests/portfolio.spec.js:464:1 › placeholder covers missing still leave the evidence slots correct
+[114/116] [webkit] › tests/portfolio.spec.js:482:1 › no image is reused with a different crop
+[115/116] [webkit] › tests/portfolio.spec.js:507:1 › the contact callout says something different on each page
+[116/116] [webkit] › tests/portfolio.spec.js:518:1 › CV facts that were missing are on the page with their own numbers
+  116 passed (2.5m)

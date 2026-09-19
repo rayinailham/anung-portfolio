@@ -1,0 +1,172 @@
+
+Running 4 tests using 3 workers
+
+[1/4] [mobile] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+[2/4] [chromium] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+[3/4] [firefox] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+  1) [chromium] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('heading', { level: 1 })
+    Expected substring: "Halo, saya"
+    Received string:    "Pengalamanmagang saya."
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('heading', { level: 1 }) with timeout 5000ms
+      - waiting for getByRole('heading', { level: 1 })
+        14 × locator resolved to <h1 class="">…</h1>
+           - unexpected value "Pengalamanmagang saya."
+
+
+      419 |   await page.evaluate(() => { location.hash = '/'; });
+      420 |   await expect(page.locator('.app')).not.toHaveAttribute('inert');
+    > 421 |   await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+          |                                                         ^
+      422 |   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      423 |   await expect(page.locator('body')).not.toHaveClass(/motion-locked/);
+      424 |   // The abandoned curtain must not commit its route once frames resume.
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:421:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-chromium/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2) [mobile] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('heading', { level: 1 })
+    Expected substring: "Halo, saya"
+    Received string:    "Pengalamanmagang saya."
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('heading', { level: 1 }) with timeout 5000ms
+      - waiting for getByRole('heading', { level: 1 })
+        14 × locator resolved to <h1 class="">…</h1>
+           - unexpected value "Pengalamanmagang saya."
+
+
+      419 |   await page.evaluate(() => { location.hash = '/'; });
+      420 |   await expect(page.locator('.app')).not.toHaveAttribute('inert');
+    > 421 |   await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+          |                                                         ^
+      422 |   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      423 |   await expect(page.locator('body')).not.toHaveClass(/motion-locked/);
+      424 |   // The abandoned curtain must not commit its route once frames resume.
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:421:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-mobile/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-mobile/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-mobile/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-mobile/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[4/4] [webkit] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page
+  3) [firefox] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('heading', { level: 1 })
+    Expected substring: "Halo, saya"
+    Received string:    "Pengalamanmagang saya."
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('heading', { level: 1 }) with timeout 5000ms
+      - waiting for getByRole('heading', { level: 1 })
+        14 × locator resolved to <h1 class="">…</h1>
+           - unexpected value "Pengalamanmagang saya."
+
+
+      419 |   await page.evaluate(() => { location.hash = '/'; });
+      420 |   await expect(page.locator('.app')).not.toHaveAttribute('inert');
+    > 421 |   await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+          |                                                         ^
+      422 |   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      423 |   await expect(page.locator('body')).not.toHaveClass(/motion-locked/);
+      424 |   // The abandoned curtain must not commit its route once frames resume.
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:421:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  4) [webkit] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('heading', { level: 1 })
+    Expected substring: "Halo, saya"
+    Received string:    "Pengalamanmagang saya."
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('heading', { level: 1 }) with timeout 5000ms
+      - waiting for getByRole('heading', { level: 1 })
+        14 × locator resolved to <h1 class="">…</h1>
+           - unexpected value "Pengalamanmagang saya."
+
+
+      419 |   await page.evaluate(() => { location.hash = '/'; });
+      420 |   await expect(page.locator('.app')).not.toHaveAttribute('inert');
+    > 421 |   await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+          |                                                         ^
+      422 |   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+      423 |   await expect(page.locator('body')).not.toHaveClass(/motion-locked/);
+      424 |   // The abandoned curtain must not commit its route once frames resume.
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:421:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-a-route-change-i-19090-oes-not-strand-the-old-page-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  4 failed
+    [chromium] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
+    [mobile] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
+    [firefox] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
+    [webkit] › tests/portfolio.spec.js:401:1 › a route change inside the curtain's first frame gap does not strand the old page 
