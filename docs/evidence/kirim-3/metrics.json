@@ -1,0 +1,613 @@
+{
+  "baseURL": "http://127.0.0.1:4173",
+  "contrast": {
+    "light": {
+      "timeline-overlap-label": {
+        "kind": "text",
+        "front": "rgb(15, 61, 58)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.956,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-role-label": {
+        "kind": "text",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.881,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-period": {
+        "kind": "text",
+        "front": "rgb(117, 70, 60)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 5.806,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-axis": {
+        "kind": "text",
+        "front": "rgb(117, 70, 60)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 5.806,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-note": {
+        "kind": "text",
+        "front": "rgb(117, 70, 60)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 5.806,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-lead": {
+        "kind": "text",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.881,
+        "required": 4.5,
+        "passes": true
+      },
+      "split-legend": {
+        "kind": "text",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.881,
+        "required": 4.5,
+        "passes": true
+      },
+      "split-caption": {
+        "kind": "text",
+        "front": "rgb(117, 70, 60)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 5.806,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-value": {
+        "kind": "text",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.881,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-label": {
+        "kind": "text",
+        "front": "rgb(117, 70, 60)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 5.806,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-level": {
+        "kind": "text",
+        "front": "rgb(117, 70, 60)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 5.806,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-axis": {
+        "kind": "text",
+        "front": "rgb(117, 70, 60)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 5.806,
+        "required": 4.5,
+        "passes": true
+      },
+      "gpa-number": {
+        "kind": "text",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(249, 229, 209)",
+        "ratio": 9.728,
+        "required": 4.5,
+        "passes": true
+      },
+      "gpa-caption": {
+        "kind": "text",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(249, 229, 209)",
+        "ratio": 9.728,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-bar-fill": {
+        "kind": "graphic",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.881,
+        "required": 3,
+        "passes": true
+      },
+      "timeline-overlap-fill": {
+        "kind": "graphic",
+        "front": "rgb(15, 61, 58)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.956,
+        "required": 3,
+        "passes": true
+      },
+      "split-shopee": {
+        "kind": "graphic",
+        "front": "rgb(108, 21, 30)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.881,
+        "required": 3,
+        "passes": true
+      },
+      "split-tiktok": {
+        "kind": "graphic",
+        "front": "rgb(15, 61, 58)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.956,
+        "required": 3,
+        "passes": true
+      },
+      "score-fill": {
+        "kind": "graphic",
+        "front": "rgb(15, 61, 58)",
+        "back": "rgb(245, 218, 191)",
+        "ratio": 8.956,
+        "required": 3,
+        "passes": true
+      },
+      "gpa-arc": {
+        "kind": "graphic",
+        "front": "rgb(15, 61, 58)",
+        "back": "rgb(249, 229, 209)",
+        "ratio": 9.81,
+        "required": 3,
+        "passes": true
+      }
+    },
+    "dark": {
+      "timeline-overlap-label": {
+        "kind": "text",
+        "front": "rgb(127, 179, 168)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 6.159,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-role-label": {
+        "kind": "text",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 10.819,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-period": {
+        "kind": "text",
+        "front": "rgb(207, 185, 165)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 7.692,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-axis": {
+        "kind": "text",
+        "front": "rgb(207, 185, 165)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 7.692,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-note": {
+        "kind": "text",
+        "front": "rgb(207, 185, 165)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 7.692,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-lead": {
+        "kind": "text",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 10.819,
+        "required": 4.5,
+        "passes": true
+      },
+      "split-legend": {
+        "kind": "text",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 10.819,
+        "required": 4.5,
+        "passes": true
+      },
+      "split-caption": {
+        "kind": "text",
+        "front": "rgb(207, 185, 165)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 7.692,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-value": {
+        "kind": "text",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 10.819,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-label": {
+        "kind": "text",
+        "front": "rgb(207, 185, 165)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 7.692,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-level": {
+        "kind": "text",
+        "front": "rgb(207, 185, 165)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 7.692,
+        "required": 4.5,
+        "passes": true
+      },
+      "score-axis": {
+        "kind": "text",
+        "front": "rgb(207, 185, 165)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 7.692,
+        "required": 4.5,
+        "passes": true
+      },
+      "gpa-number": {
+        "kind": "text",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(22, 58, 54)",
+        "ratio": 9.254,
+        "required": 4.5,
+        "passes": true
+      },
+      "gpa-caption": {
+        "kind": "text",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(22, 58, 54)",
+        "ratio": 9.254,
+        "required": 4.5,
+        "passes": true
+      },
+      "timeline-bar-fill": {
+        "kind": "graphic",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 10.819,
+        "required": 3,
+        "passes": true
+      },
+      "timeline-overlap-fill": {
+        "kind": "graphic",
+        "front": "rgb(127, 179, 168)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 6.159,
+        "required": 3,
+        "passes": true
+      },
+      "split-shopee": {
+        "kind": "graphic",
+        "front": "rgb(245, 218, 191)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 10.819,
+        "required": 3,
+        "passes": true
+      },
+      "split-tiktok": {
+        "kind": "graphic",
+        "front": "rgb(127, 179, 168)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 6.159,
+        "required": 3,
+        "passes": true
+      },
+      "score-fill": {
+        "kind": "graphic",
+        "front": "rgb(127, 179, 168)",
+        "back": "rgb(16, 46, 43)",
+        "ratio": 6.159,
+        "required": 3,
+        "passes": true
+      },
+      "gpa-arc": {
+        "kind": "graphic",
+        "front": "rgb(127, 179, 168)",
+        "back": "rgb(22, 58, 54)",
+        "ratio": 5.268,
+        "required": 3,
+        "passes": true
+      }
+    }
+  },
+  "scales": {
+    "320": {
+      "gpaRing": {
+        "length": 326.726,
+        "offset": 21.237,
+        "drawnFraction": 0.935001,
+        "inlineOverride": null
+      },
+      "toefl": {
+        "declared": {
+          "value": "583",
+          "min": "310",
+          "max": "677"
+        },
+        "axisText": "310\n677",
+        "startsAtScaleFloorPx": 0,
+        "measuredFraction": 0.7439,
+        "expectedFraction": 0.7439
+      },
+      "split": {
+        "total": "150",
+        "caption": "100 Shopee + 50 TikTok = 150. Angka 150 di atas adalah penjumlahan dua platform, bukan hitungan orang unik.",
+        "segments": [
+          {
+            "segment": "shopee",
+            "width": 184
+          },
+          {
+            "segment": "tiktok",
+            "width": 92
+          }
+        ],
+        "gap": 2,
+        "trackWidth": 278,
+        "ratio": 2,
+        "coversWholeTrackPx": 0
+      },
+      "timeline": {
+        "span": "Sep 2025/Jul 2026",
+        "bars": {
+          ".timeline-row[data-entry=\"anima-digital\"]": {
+            "fromMonth": 0,
+            "toMonth": 4
+          },
+          ".timeline-row[data-entry=\"anymind\"]": {
+            "fromMonth": 4,
+            "toMonth": 8
+          },
+          ".timeline-row[data-entry=\"anima-coordination\"]": {
+            "fromMonth": 4,
+            "toMonth": 11
+          },
+          ".timeline-overlap": {
+            "fromMonth": 4,
+            "toMonth": 8
+          }
+        },
+        "sharedMonths": 4,
+        "lead": "Jan 2026 - Apr 2026: 4 bulan dengan dua magang berjalan bersamaan.",
+        "note": "PT Sutan Vet Medika muncul 2 kali: perusahaan yang sama, 2 periode magang, Digital Marketing Intern (Sep - Des 2025) lalu Marketing Intern (Coordination Role) (Jan - Jul 2026)."
+      }
+    },
+    "390": {
+      "gpaRing": {
+        "length": 326.726,
+        "offset": 21.237,
+        "drawnFraction": 0.935001,
+        "inlineOverride": null
+      },
+      "toefl": {
+        "declared": {
+          "value": "583",
+          "min": "310",
+          "max": "677"
+        },
+        "axisText": "310\n677",
+        "startsAtScaleFloorPx": 0,
+        "measuredFraction": 0.7439,
+        "expectedFraction": 0.7439
+      },
+      "split": {
+        "total": "150",
+        "caption": "100 Shopee + 50 TikTok = 150. Angka 150 di atas adalah penjumlahan dua platform, bukan hitungan orang unik.",
+        "segments": [
+          {
+            "segment": "shopee",
+            "width": 230.671875
+          },
+          {
+            "segment": "tiktok",
+            "width": 115.328125
+          }
+        ],
+        "gap": 2,
+        "trackWidth": 348,
+        "ratio": 2.0001,
+        "coversWholeTrackPx": 0
+      },
+      "timeline": {
+        "span": "Sep 2025/Jul 2026",
+        "bars": {
+          ".timeline-row[data-entry=\"anima-digital\"]": {
+            "fromMonth": 0,
+            "toMonth": 4
+          },
+          ".timeline-row[data-entry=\"anymind\"]": {
+            "fromMonth": 4,
+            "toMonth": 8
+          },
+          ".timeline-row[data-entry=\"anima-coordination\"]": {
+            "fromMonth": 4,
+            "toMonth": 11
+          },
+          ".timeline-overlap": {
+            "fromMonth": 4,
+            "toMonth": 8
+          }
+        },
+        "sharedMonths": 4,
+        "lead": "Jan 2026 - Apr 2026: 4 bulan dengan dua magang berjalan bersamaan.",
+        "note": "PT Sutan Vet Medika muncul 2 kali: perusahaan yang sama, 2 periode magang, Digital Marketing Intern (Sep - Des 2025) lalu Marketing Intern (Coordination Role) (Jan - Jul 2026)."
+      }
+    },
+    "1440": {
+      "gpaRing": {
+        "length": 326.726,
+        "offset": 21.237,
+        "drawnFraction": 0.935001,
+        "inlineOverride": null
+      },
+      "toefl": {
+        "declared": {
+          "value": "583",
+          "min": "310",
+          "max": "677"
+        },
+        "axisText": "310\n677",
+        "startsAtScaleFloorPx": 0,
+        "measuredFraction": 0.7439,
+        "expectedFraction": 0.7439
+      },
+      "split": {
+        "total": "150",
+        "caption": "100 Shopee + 50 TikTok = 150. Angka 150 di atas adalah penjumlahan dua platform, bukan hitungan orang unik.",
+        "segments": [
+          {
+            "segment": "shopee",
+            "width": 344
+          },
+          {
+            "segment": "tiktok",
+            "width": 172
+          }
+        ],
+        "gap": 2,
+        "trackWidth": 518,
+        "ratio": 2,
+        "coversWholeTrackPx": 0
+      },
+      "timeline": {
+        "span": "Sep 2025/Jul 2026",
+        "bars": {
+          ".timeline-row[data-entry=\"anima-digital\"]": {
+            "fromMonth": 0,
+            "toMonth": 4
+          },
+          ".timeline-row[data-entry=\"anymind\"]": {
+            "fromMonth": 4,
+            "toMonth": 8
+          },
+          ".timeline-row[data-entry=\"anima-coordination\"]": {
+            "fromMonth": 4,
+            "toMonth": 11
+          },
+          ".timeline-overlap": {
+            "fromMonth": 4,
+            "toMonth": 8
+          }
+        },
+        "sharedMonths": 4,
+        "lead": "Jan 2026 - Apr 2026: 4 bulan dengan dua magang berjalan bersamaan.",
+        "note": "PT Sutan Vet Medika muncul 2 kali: perusahaan yang sama, 2 periode magang, Digital Marketing Intern (Sep - Des 2025) lalu Marketing Intern (Coordination Role) (Jan - Jul 2026)."
+      }
+    }
+  },
+  "reducedMotion": {
+    "pengalaman": {
+      "counters": [
+        {
+          "declared": "150",
+          "shown": "150",
+          "parent": "150"
+        },
+        {
+          "declared": "40",
+          "shown": "40",
+          "parent": "40"
+        },
+        {
+          "declared": "200",
+          "shown": "200",
+          "parent": "200"
+        },
+        {
+          "declared": "150",
+          "shown": "150",
+          "parent": "150"
+        },
+        {
+          "declared": "30",
+          "shown": "30",
+          "parent": "30+"
+        },
+        {
+          "declared": "100",
+          "shown": "100",
+          "parent": "100+"
+        }
+      ],
+      "bars": [
+        {
+          "transform": "none",
+          "inline": null,
+          "width": 482.171875
+        },
+        {
+          "transform": "none",
+          "inline": null,
+          "width": 482.171875
+        },
+        {
+          "transform": "none",
+          "inline": null,
+          "width": 843.8125
+        },
+        {
+          "transform": "none",
+          "inline": null,
+          "width": 482.171875
+        },
+        {
+          "transform": "none",
+          "inline": null,
+          "width": 344
+        },
+        {
+          "transform": "none",
+          "inline": null,
+          "width": 172
+        }
+      ]
+    },
+    "tentang": {
+      "arc": {
+        "attribute": "21.237",
+        "computed": "21.237px",
+        "inline": null
+      },
+      "fill": {
+        "inlineWidth": "74.39%",
+        "transform": "none"
+      }
+    }
+  },
+  "layout": {
+    "320": {
+      "/": true,
+      "/pengalaman": true,
+      "/tentang": true,
+      "/kontak": true
+    },
+    "390": {
+      "/": true,
+      "/pengalaman": true,
+      "/tentang": true,
+      "/kontak": true
+    },
+    "1440": {
+      "/": true,
+      "/pengalaman": true,
+      "/tentang": true,
+      "/kontak": true
+    }
+  }
+}

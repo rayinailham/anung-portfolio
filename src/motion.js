@@ -36,6 +36,32 @@ const REVEAL_FROM = {
 };
 const REVEAL_TO = { x: 0, y: 0, opacity: 1, scale: 1 };
 
+// Per-kind timing for [data-reveal-kind]. Kirim 3 deliberately ships one shared
+// curve in every row: the vocabulary is the hook, the values belong to the
+// visual pass. Changing a row here changes only that kind of content.
+const REVEAL_TIMING = {
+  heading: { duration: 0.9, ease: 'power3.out' },
+  text: { duration: 0.9, ease: 'power3.out' },
+  stat: { duration: 0.9, ease: 'power3.out' },
+  media: { duration: 0.9, ease: 'power3.out' },
+  panel: { duration: 0.9, ease: 'power3.out' },
+  viz: { duration: 0.9, ease: 'power3.out' },
+};
+const REVEAL_GROUP_TIMING = {
+  heading: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
+  text: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
+  stat: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
+  media: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
+  panel: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
+  viz: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
+};
+// Data visuals draw towards the value the DOM already holds, never away from it.
+const VIZ_TIMING = {
+  arc: { duration: 1.1, ease: 'power2.out' },
+  bar: { duration: 0.9, ease: 'power2.out' },
+};
+const timingFor = (table, kind, fallback) => table[kind] || table[fallback];
+
 function revealFrom(name, scale) {
   const preset = REVEAL_FROM[name] || REVEAL_FROM.up;
   const vars = { ...preset };
@@ -110,9 +136,8 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
       gsap.utils.toArray('[data-reveal]').forEach((element) => {
         const tween = gsap.fromTo(element, revealFrom(element.dataset.reveal, scale), {
           ...REVEAL_TO,
-          duration: 0.9,
+          ...timingFor(REVEAL_TIMING, element.dataset.revealKind, 'text'),
           delay: Number(element.dataset.revealDelay) || 0,
-          ease: 'power3.out',
           clearProps: 'transform,opacity',
           scrollTrigger: { trigger: element, start: 'top 88%', once: true },
         });
@@ -123,9 +148,7 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
         if (!children.length) return;
         const tween = gsap.fromTo(children, revealFrom(group.dataset.revealGroup, scale), {
           ...REVEAL_TO,
-          duration: 0.85,
-          stagger: 0.09,
-          ease: 'power3.out',
+          ...timingFor(REVEAL_GROUP_TIMING, group.dataset.revealKind, 'text'),
           clearProps: 'transform,opacity',
           scrollTrigger: { trigger: group, start: 'top 86%', once: true },
         });
@@ -147,6 +170,28 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
       });
       gsap.utils.toArray('[data-spin]').forEach((element) => {
         gsap.fromTo(element, { rotate: -25 }, { rotate: 25, ease: 'none', scrollTrigger: { trigger: element, start: 'top bottom', end: 'bottom top', scrub: true } });
+      });
+      // The arc's resting `stroke-dashoffset` attribute is the honest value;
+      // the tween starts from an empty ring and lands exactly back on it.
+      gsap.utils.toArray('[data-arc]').forEach((element) => {
+        const length = Number(element.getAttribute('stroke-dasharray'));
+        gsap.from(element, {
+          strokeDashoffset: length,
+          ...VIZ_TIMING.arc,
+          clearProps: 'strokeDashoffset',
+          scrollTrigger: { trigger: element, start: 'top 92%', once: true },
+        });
+      });
+      // Bars grow from zero width, never from a non-zero baseline. The box keeps
+      // its measured size, so nothing shifts and no value is exaggerated.
+      gsap.utils.toArray('[data-bar], [data-bar-fill]').forEach((element) => {
+        gsap.from(element, {
+          scaleX: 0,
+          transformOrigin: 'left center',
+          ...VIZ_TIMING.bar,
+          clearProps: 'transform',
+          scrollTrigger: { trigger: element.closest('figure, li, section') || element, start: 'top 92%', once: true },
+        });
       });
       gsap.utils.toArray('[data-count]').forEach((element) => {
         const value = Number(element.dataset.count);
@@ -201,12 +246,14 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
     // Native timer, independent of the GSAP ticker. Readability wins after 5s,
     // including below-fold content that has not been visited yet.
     const safety = setTimeout(() => {
-      const elements = scope.querySelectorAll('[data-reveal], [data-reveal-group], [data-reveal-group] > *, [data-mask], .hero-enter, .title-line > span, .portrait-frame');
+      const elements = scope.querySelectorAll('[data-reveal], [data-reveal-group], [data-reveal-group] > *, [data-mask], .hero-enter, .title-line > span, .portrait-frame, [data-arc], [data-bar], [data-bar-fill]');
       gsap.killTweensOf(elements);
       for (const element of elements) {
         element.style.removeProperty('opacity');
         element.style.removeProperty('transform');
         element.style.removeProperty('clip-path');
+        // Dropping the inline override hands the arc back to its own attribute.
+        element.style.removeProperty('stroke-dashoffset');
       }
       counters.forEach(element => { element.textContent = `${element.dataset.count}${element.dataset.suffix || ''}`; });
     }, 5000);

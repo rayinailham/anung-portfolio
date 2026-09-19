@@ -527,3 +527,145 @@ test('CV facts that were missing are on the page with their own numbers', async 
   await expect(page.locator('.education-note')).toContainText('Profit lebih dari Rp100.000');
   await expect(page.locator('.education-note')).toContainText('inovasi produk');
 });
+
+// Geometry helper: percentages are resolved against a track's content box, so
+// borders never leak into a measured proportion.
+const trackGeometry = (locator) => locator.evaluate((track) => {
+  const box = track.getBoundingClientRect();
+  const style = getComputedStyle(track);
+  const left = box.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft);
+  return { left, width: track.clientWidth };
+});
+
+test('data visuals keep an honest scale in the DOM', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+
+  await ready(page, '/tentang');
+  // Ring: the drawn arc is exactly 3.74 of 4.00, taken off the rendered SVG.
+  const ring = page.locator('.gpa[data-viz="ring"]');
+  await expect(ring).toHaveAttribute('data-value', '3.74');
+  await expect(ring).toHaveAttribute('data-max', '4');
+  const arc = await page.locator('.gpa-ring-value').evaluate(circle => ({
+    length: Number(circle.getAttribute('stroke-dasharray')),
+    offset: Number(circle.getAttribute('stroke-dashoffset')),
+    inline: circle.style.strokeDashoffset,
+  }));
+  expect(arc.inline).toBe('');
+  expect(1 - arc.offset / arc.length).toBeCloseTo(3.74 / 4, 4);
+  await expect(ring.locator('strong')).toHaveText('3.74/4.00');
+
+  // TOEFL: the bar runs the full published ITP range and both ends are printed.
+  const scale = page.locator('.score-scale');
+  await expect(scale).toHaveAttribute('data-value', '583');
+  await expect(scale).toHaveAttribute('data-scale-min', '310');
+  await expect(scale).toHaveAttribute('data-scale-max', '677');
+  await expect(scale.locator('.score-scale-axis')).toHaveText('310677');
+  await expect(scale.locator('.score-scale-head strong')).toHaveText('583');
+  const track = await trackGeometry(scale.locator('.score-scale-track'));
+  const fill = await scale.locator('.score-scale-fill').evaluate(el => el.getBoundingClientRect());
+  // Starts at the floor of the scale, not at some flattering offset inside it.
+  expect(Math.abs(fill.left - track.left)).toBeLessThan(1.5);
+  expect(fill.width / track.width).toBeCloseTo((583 - 310) / (677 - 310), 2);
+
+  // Split: 150 is drawn as 100 + 50 and said to be a sum in words too.
+  await ready(page, '/pengalaman');
+  const split = page.locator('.split-bar');
+  await expect(split).toHaveCount(1);
+  await expect(split).toHaveAttribute('data-total', '150');
+  await expect(split.locator('figcaption')).toContainText('100 Shopee + 50 TikTok = 150');
+  await expect(split.locator('figcaption')).toContainText('penjumlahan dua platform, bukan hitungan orang unik');
+  await expect(split.locator('.split-legend li').nth(0)).toContainText('Shopee 100');
+  await expect(split.locator('.split-legend li').nth(1)).toContainText('TikTok 50');
+  const splitTrack = await trackGeometry(split.locator('.split-track'));
+  const segments = await split.locator('.split-segment').evaluateAll(list => list.map(el => el.getBoundingClientRect().width));
+  expect(segments).toHaveLength(2);
+  expect(segments[0] / segments[1]).toBeCloseTo(2, 1);
+  const gap = await split.locator('.split-track').evaluate(el => parseFloat(getComputedStyle(el).columnGap) || 0);
+  expect(Math.abs(segments[0] + segments[1] + gap - splitTrack.width)).toBeLessThan(1.5);
+});
+
+test('experience counters carry the CV number and keep their suffix outside it', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await ready(page, '/pengalaman');
+  const stats = await page.locator('.experience-stats > div').evaluateAll(list => list.map(item => ({
+    count: item.querySelector('[data-count]')?.getAttribute('data-count') ?? null,
+    counted: item.querySelector('[data-count]')?.textContent ?? null,
+    shown: item.querySelector('strong').textContent,
+  })));
+  expect(stats.map(stat => stat.shown)).toEqual(['150', '40', '200', '150', '30+', '100+']);
+  // A "+" never sits inside the counted element, so its text is only the number.
+  expect(stats.every(stat => stat.count !== null && stat.counted === stat.count)).toBe(true);
+  expect(stats.map(stat => stat.count)).toEqual(['150', '40', '200', '150', '30', '100']);
+});
+
+test('the career timeline draws the two overlapping internships on one axis', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await ready(page, '/pengalaman');
+  const timeline = page.locator('.timeline');
+  await expect(timeline).toHaveAttribute('data-span', 'Sep 2025/Jul 2026');
+  await expect(page.locator('.timeline-row')).toHaveCount(4);
+  await expect(page.locator('.timeline-lead')).toContainText('4 bulan dengan dua magang berjalan bersamaan');
+  await expect(page.locator('.timeline-note')).toContainText('PT Sutan Vet Medika muncul 2 kali: perusahaan yang sama');
+  await expect(page.locator('.timeline-note')).toContainText('Digital Marketing Intern (Sep - Des 2025) lalu Marketing Intern (Coordination Role) (Jan - Jul 2026)');
+
+  const span = 11; // Sep 2025 through Jul 2026, inclusive.
+  const bar = async (selector) => {
+    const row = page.locator(selector);
+    const track = await trackGeometry(row.locator('.timeline-track'));
+    const box = await row.locator('.timeline-bar').evaluate(el => el.getBoundingClientRect());
+    return { from: (box.left - track.left) / track.width, to: (box.right - track.left) / track.width, unit: track.width / span };
+  };
+  const digital = await bar('.timeline-row[data-entry="anima-digital"]');
+  const anymind = await bar('.timeline-row[data-entry="anymind"]');
+  const coordination = await bar('.timeline-row[data-entry="anima-coordination"]');
+  const overlap = await bar('.timeline-overlap');
+  expect(digital.from).toBeCloseTo(0, 2);
+  expect(digital.to).toBeCloseTo(4 / span, 2);
+  expect(anymind.from).toBeCloseTo(4 / span, 2);
+  expect(anymind.to).toBeCloseTo(8 / span, 2);
+  expect(coordination.from).toBeCloseTo(4 / span, 2);
+  expect(coordination.to).toBeCloseTo(11 / span, 2);
+  // The two 2026 roles really do cover the same months, and the marker row is
+  // exactly that shared stretch rather than a decorative band.
+  const shared = [Math.max(anymind.from, coordination.from), Math.min(anymind.to, coordination.to)];
+  expect(shared[1] - shared[0]).toBeCloseTo(4 / span, 2);
+  expect(overlap.from).toBeCloseTo(shared[0], 2);
+  expect(overlap.to).toBeCloseTo(shared[1], 2);
+  await expect(page.locator('.timeline-overlap .timeline-period')).toHaveText('Jan 2026 - Apr 2026');
+  await expect(page.locator('.timeline-axis')).toHaveText('Sep 2025Jul 2026');
+});
+
+test('every revealing element says what kind of content it is', async ({ page }) => {
+  const kinds = new Set();
+  for (const route of ['/', '/pengalaman', '/tentang', '/kontak']) {
+    await ready(page, route);
+    const found = await page.locator('[data-reveal], [data-reveal-group]').evaluateAll(list =>
+      list.map(el => ({ tag: el.className, kind: el.dataset.revealKind || '' })));
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.filter(item => !item.kind)).toEqual([]);
+    found.forEach(item => kinds.add(item.kind));
+  }
+  // A vocabulary, not one uniform word: the visual pass targets these.
+  expect(kinds.size).toBeGreaterThanOrEqual(4);
+});
+
+test('GSAP blocked still leaves every data visual on its final value', async ({ page }) => {
+  let blocked = 0;
+  await page.route(/\/node_modules\/.*gsap.*\.js/, route => { blocked++; return route.abort(); });
+  await ready(page, '/tentang');
+  const arc = await page.locator('.gpa-ring-value').evaluate(circle => ({
+    length: Number(circle.getAttribute('stroke-dasharray')),
+    offset: Number(getComputedStyle(circle).strokeDashoffset.replace('px', '')),
+  }));
+  expect(1 - arc.offset / arc.length).toBeCloseTo(3.74 / 4, 3);
+  const scaleTrack = await trackGeometry(page.locator('.score-scale-track'));
+  const scaleFill = await page.locator('.score-scale-fill').evaluate(el => el.getBoundingClientRect());
+  expect(scaleFill.width / scaleTrack.width).toBeCloseTo((583 - 310) / (677 - 310), 2);
+  await ready(page, '/pengalaman');
+  const segments = await page.locator('.split-segment').evaluateAll(list => list.map(el => el.getBoundingClientRect().width));
+  expect(segments[0] / segments[1]).toBeCloseTo(2, 1);
+  const bars = await page.locator('.timeline-bar').evaluateAll(list => list.map(el => el.getBoundingClientRect().width));
+  expect(bars).toHaveLength(4);
+  expect(bars.every(width => width > 20)).toBe(true);
+  expect(blocked).toBeGreaterThan(0);
+});

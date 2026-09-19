@@ -15,7 +15,7 @@ export const profile = {
 export const experience = [
   {
     id: 'anymind', company: 'AnyMind Group', role: 'Affiliate Marketing Intern',
-    period: 'Jan - Apr 2026', location: 'Jakarta', category: 'Pemasaran afiliasi',
+    period: 'Jan - Apr 2026', start: '2026-01', end: '2026-04', location: 'Jakarta', category: 'Pemasaran afiliasi',
     context: 'AnyMind Group adalah perusahaan teknologi BPaaS yang menyediakan solusi terpadu untuk pemasaran, e-commerce, transformasi digital, logistik, dan monetisasi kreator di 15 pasar Asia dan Timur Tengah.',
     title: 'Mengelola mitra afiliasi Unicharm dan acara Pantene.',
     summary: 'Saya menghubungi calon mitra afiliasi, menangani pengiriman sampel, dan memantau penyelesaian konten. Saya juga mengoordinasikan undangan dan kehadiran mitra dalam acara Pantene Affiliate Gathering.',
@@ -41,7 +41,7 @@ export const experience = [
   },
   {
     id: 'anima-coordination', company: 'PT Sutan Vet Medika', role: 'Marketing Intern (Coordination Role)',
-    period: 'Jan - Jul 2026', location: 'Bogor', category: 'Kerja sama KOL',
+    period: 'Jan - Jul 2026', start: '2026-01', end: '2026-07', location: 'Bogor', category: 'Kerja sama KOL',
     context: 'PT Sutan Vet Medika adalah startup kesehatan hewan dengan merek Anima Companion. Suplemennya teruji klinis dan difokuskan pada imunitas, pengelolaan stres, kesehatan kulit, serta nafsu makan.',
     title: 'Membantu tim mengelola kerja sama Anima Companion.',
     summary: 'Anima Companion adalah merek suplemen kesehatan hewan. Saya membantu tim mengelola kerja sama KOL dan memantau kerja sama dengan mitra afiliasi Shopee serta TikTok.',
@@ -50,10 +50,17 @@ export const experience = [
       'Membantu mengelola 200 kerja sama KOL untuk kegiatan pemasaran afiliasi Anima Companion.',
       'Memantau kerja sama dengan 100 mitra afiliasi Shopee dan 50 mitra afiliasi TikTok untuk mendukung penjualan dan memperkenalkan produk.',
     ],
+    // The 150 in the stat above is this sum and nothing else. Both parts stay
+    // visible so the figure can never be read as 150 unique individuals.
+    split: {
+      total: 150,
+      caption: 'Angka 150 di atas adalah penjumlahan dua platform, bukan hitungan orang unik.',
+      parts: [{ platform: 'Shopee', value: 100 }, { platform: 'TikTok', value: 50 }],
+    },
   },
   {
     id: 'anima-digital', company: 'PT Sutan Vet Medika', role: 'Digital Marketing Intern',
-    period: 'Sep - Des 2025', location: 'Bogor', category: 'Pemasaran digital',
+    period: 'Sep - Des 2025', start: '2025-09', end: '2025-12', location: 'Bogor', category: 'Pemasaran digital',
     context: 'PT Sutan Vet Medika adalah startup kesehatan hewan dengan merek Anima Companion. Suplemennya teruji klinis dan difokuskan pada imunitas, pengelolaan stres, kesehatan kulit, serta nafsu makan.',
     title: 'Membuat konten promosi dan mengelola mitra afiliasi.',
     summary: 'Saya membuat konten Instagram dan video promosi produk, bekerja sama dengan KOL, serta mengelola mitra afiliasi TikTok dan Shopee. Saya juga menyelenggarakan webinar B2B.',
@@ -102,3 +109,17 @@ export const skills = [
   { title: 'Konten & desain', items: ['Perencanaan konten', 'Canva', 'CapCut', 'Adobe Photoshop'] },
   { title: 'Kerja tim & administrasi', items: ['Koordinasi lintas tim', 'Microsoft Office', 'Google Workspace', 'Pemecahan masalah'] },
 ];
+
+// CV: "Bachelor of Business, 3.74/4.00", "Aug 2022 - Aug 2026".
+export const education = {
+  institution: 'IPB University', degree: 'Sarjana Bisnis', period: 'Agu 2022 - Agu 2026',
+  gpa: 3.74, gpaMax: 4,
+};
+
+// CV: "English (Professional Working Proficiency - TOEFL ITP Score 583)".
+// 310 and 677 are the lowest and highest possible TOEFL ITP total scores, the
+// published range of the test itself. They are the axis, not a claim about Anung.
+export const english = {
+  score: 583, scaleMin: 310, scaleMax: 677,
+  level: 'Professional Working Proficiency',
+};

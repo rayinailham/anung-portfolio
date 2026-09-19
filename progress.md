@@ -19,13 +19,13 @@ belum seluruhnya `DONE`/`SKIP`.
 | 1 | Bug P0 + semua perbaikan mekanis | Claude Code | 10 | 10 |
 | 2 | Bukti kerja + ruang mati | Claude Code | 7 | 7 |
 | IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 1 |
-| 3 | Kerangka visualisasi data + timeline | Claude Code | 2 | 0 |
+| 3 | Kerangka visualisasi data + timeline | Claude Code | 2 | 2 |
 | VIS-1 | Rasa visual + animasi untuk kerangka Kirim 3 | Codex | 1 | 0 |
 | 4 | Konversi | Claude Code | 4 | 0 |
 | IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
 | 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
 | 6 | Pass poles visual terakhir | Codex | 1 | 0 |
-| — | **Total dikerjakan** | | **33** | **18** |
+| — | **Total dikerjakan** | | **33** | **20** |
 | — | Sengaja di-SKIP | | 3 | — |
 
 Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
@@ -100,13 +100,13 @@ reduced-motion, test. Boleh selesai dalam keadaan polos — rasanya digarap VIS-
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P1-8 | Ring IPK · bar TOEFL · split 100/50 Shopee-TikTok · counter halaman Pengalaman | TODO | Butuh: semua terbaca benar dengan `prefers-reduced-motion: reduce` (nilai akhir langsung tampil), plus test yang mengunci skala jujur (bar tidak mulai dari angka bukan-nol, "150" tetap 100 + 50). |
-| P1-9 | Timeline karier yang menunjukkan periode tumpang tindih | TODO | Butuh: Jan–Apr 2026 dan Jan–Jul 2026 terbaca jelas berjalan bersamaan. |
+| P1-8 | Ring IPK · bar TOEFL · split 100/50 Shopee-TikTok · counter halaman Pengalaman | DONE | Empat visual SVG/CSS inline, tanpa pustaka chart. Skala dikunci berangka di [metrics.json](docs/evidence/kirim-3/metrics.json): arc IPK `drawnFraction 0.935001` = 3.74/4.00; bar TOEFL `measuredFraction 0.7439` = `expectedFraction 0.7439` pada skala penuh ITP 310–677 dengan `startsAtScaleFloorPx: 0`; split `ratio: 2` dengan dua segmen menutup seluruh track dan caption "penjumlahan dua platform, bukan hitungan orang unik"; 6 counter `[data-count]` dengan "+" di luar elemen counter. Reduced motion: 6 counter `shown === declared`, 6 `[data-bar]` `transform: none`, arc `inline: null`. Test `data visuals keep an honest scale in the DOM`, `experience counters carry the CV number and keep their suffix outside it`, `GSAP blocked still leaves every data visual on its final value` di 4 project. 40 pemeriksaan kontras lolos, terendah teks 5.806:1. [Screenshot + ringkasan](docs/evidence/kirim-3/README.md). |
+| P1-9 | Timeline karier yang menunjukkan periode tumpang tindih | DONE | Satu sumbu 11 bulan (Sep 2025 – Jul 2026) di atas daftar kartu, digerakkan `start`/`end` di `src/data.js`. Terukur di 1440, 390, dan 320: AnyMind bulan 4→8, Sutan Vet koordinasi 4→11, Sutan Vet digital 0→4, dan baris "Dua magang bersamaan" 4→8 — `sharedMonths: 4`. Bulan tumpang tindih dihitung dari data, tidak diketik. `.timeline-note` menyatakan PT Sutan Vet Medika muncul 2 kali sebagai perusahaan yang sama dengan dua periode dan dua peran. Test `the career timeline draws the two overlapping internships on one axis` di 4 project. [metrics.json](docs/evidence/kirim-3/metrics.json) → `scales.*.timeline`, [screenshot](docs/evidence/kirim-3/README.md). |
 
 ## VIS-1 — Rasa visual + animasi · Codex
 
-Hanya dijalankan setelah Kirim 3 `DONE`. Tiket:
-`docs/visual-jobs/VIS-1-visualisasi-data.md` (ditulis oleh sesi Kirim 3).
+Kirim 3 sudah `DONE`, jadi fase ini siap dijalankan. Tiket sudah ditulis:
+[`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md).
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
@@ -185,6 +185,14 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | Tanggal | Keputusan | Alasan |
 |---|---|---|
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
+| 2026-09-19 | Split 100/50 dipasang di kartu **Marketing Intern (Coordination Role)**, bukan di Beranda | `prompt.md` menulis "150 di Beranda adalah penjumlahan 100 + 50". Itu keliru, dan README sudah menyatakan yang benar: 150 yang merupakan penjumlahan adalah "100 mitra afiliasi Shopee dan 50 mitra afiliasi TikTok" pada peran koordinasi Sutan Vet. Angka 150 di Beranda adalah baris CV tersendiri, "Contacted and invited 150 new affiliates daily to join Unicharm's affiliate community" — bukan penjumlahan. Memasang bar penjumlahan di Beranda justru akan membuat angka CV yang benar terbaca sebagai gabungan. |
+| 2026-09-19 | Sumbu bar TOEFL 310–677, bukan 0–677 | 310 adalah skor total terendah yang mungkin pada TOEFL ITP, jadi itulah lantai skalanya; memaksa 0 bukan kejujuran melainkan skala yang tidak ada. Kedua ujung dicetak sebagai teks dan `startsAtScaleFloorPx: 0` dikunci test, sehingga bar tidak pernah dimulai di tempat yang menyanjung. Label "Professional Working Proficiency" dikutip persis dari baris Bahasa di CV dan ditulis di halaman sebagai kutipan CV, bukan sebagai pemetaan skor. |
+| 2026-09-19 | Dua entri Sutan Vet ditulis "perusahaan yang sama, 2 periode magang, peran A lalu peran B", bukan "promosi" | `prompt.md` menyebut "promosi peran". CV tidak menyatakan promosi; yang tertulis hanya dua periode dengan dua judul peran. Kalimatnya menunjukkan perkembangan yang sama tanpa mengklaim status kepegawaian yang tidak ada di sumber. |
+| 2026-09-19 | Bar dan timeline dibangun dari HTML/CSS, hanya ring IPK yang SVG | Batasan fase adalah "SVG inline + GSAP, jangan tambah pustaka chart" — yang dilarang pustaka chart, bukan CSS. Persegi panjang berposisi persen jauh lebih tahan di 320–390px daripada `viewBox` SVG yang harus diskalakan ulang, dan hooknya sama-sama berupa kelas CSS. Ring butuh arc, jadi ring tetap SVG. |
+| 2026-09-19 | Tumpang tindih jadi barisnya sendiri ("Dua magang bersamaan"), bukan pita vertikal di belakang seluruh timeline | Versi pertama memakai pita setinggi penuh. Terukur salah: pita `--line` menggelapkan latar di belakang teks label, jadi kontras `--muted` di situ tidak lagi sama dengan 5.806:1 yang tercatat. Sebagai baris tersendiri, bar tumpang tindih tetap sejajar tepat di bawah kedua bar 2026 (4→8 di ketiga lebar) dan tidak ada teks yang berdiri di atas warna campuran. |
+| 2026-09-19 | "+" pada "30+"/"100+" ditaruh di elemen saudara `.stat-unit`, bukan lewat `data-suffix` | Test Kirim 1 `reduced motion leaves every reveal, counter and disclosure at its final value` membandingkan `textContent` counter dengan atribut `data-count` persis. Memakai suffix di dalam elemen counter akan memaksa test lama diubah. Ini menambah cakupan tanpa melonggarkan apa pun. Efek sampingnya satu: `.experience-stats span` ternyata juga mengenai span di dalam `<strong>`, jadi aturannya dipersempit ke `.experience-stats > div > span`. |
+| 2026-09-19 | Kosakata reveal (P2-23) berhenti di penanda + tabel nilai yang semua barisnya identik | Batas fase: mekanismenya milik Kirim 3, nilainya milik VIS-1. Setiap elemen reveal kini membawa `data-reveal-kind` (`heading`/`text`/`stat`/`media`/`panel`/`viz`) dan `src/motion.js` punya satu baris tabel per jenis. Keenam baris diisi angka yang berlaku sekarang, jadi tidak ada satu piksel pun yang berubah di fase ini; Codex cukup mengganti nilainya. |
+| 2026-09-19 | Skrip bukti membaca `EVIDENCE_DIR` | VIS-1 perlu screenshot yang sebanding piksel per piksel dengan Kirim 3. Dengan env var, skrip yang sama dipakai tanpa menyalin berkas atau menimpa bukti fase ini. |
 | 2026-09-19 | Gerbang IMG-1: penjaga interupsi curtain berhenti bertanya ke GSAP dan memiliki statusnya sendiri (`stopTransition()`) | `transition.current?.isActive()` menjawab `false` untuk timeline yang sudah dibuat tapi belum dirender — GSAP baru menyalakan `_initted` pada tick ticker pertama, sementara React memasang `inert` tanpa menunggu frame. `hashchange` kedua yang jatuh di jendela itu lolos dari penjaga, curtain yatim tetap `commit()` route lama lalu melepas `inert` di route yang sudah ditinggalkan. Melonggarkan test atau menaikkan timeout hanya menyembunyikan urutan yang memang tidak dijamin; buktinya test regresi baru gagal di keempat project pada kode lama, bukan hanya WebKit. |
 | 2026-09-19 | IMG-1 tidak commit/push pada sesi Codex; fase WIP meski keenam aset selesai | Dua run suite penuh masih gagal pada transisi route WebKit. Batas tiket melarang perubahan source/test, sehingga kegagalan diserahkan ke harness kode; tidak menyamarkan hasil sebagai DONE atau mengklaim bug lama tanpa pembanding. Keputusan itu benar: penyebabnya memang bug kode, diselesaikan pada sesi tiket gerbang IMG-1. |
 | 2026-09-19 | IMG-1 memakai tiga still life hasil `image_gen`; PNG dinormalisasi 1448×1086 → 1200×900, WebP q82 | Rasio 4:3 tetap; tanpa crop. Latar tanah liat/bordo membedakan cover dari kedua tema. Bentuk dekoratif bukan angka CV. Caption dan flag placeholder tetap. |
@@ -255,6 +263,13 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 | 2026-09-19 | `npx playwright test` pada `git worktree` commit `main` 58003a9, tanpa aset IMG-1 yang belum di-commit | Exit 0, **116 passed (2.5m)**. `main` hijau berdiri sendiri, bukan hanya di working tree yang memuat gambar. [Log](docs/evidence/gerbang-img-1/suite-penuh-main-58003a9.txt). |
 | 2026-09-19 | `node scripts/make-placeholder-covers.mjs && node scripts/prepare-assets.mjs` | Exit 0; 3 PNG sumber + 3 WebP 1200×900 dihasilkan ulang dari SVG token warna brand. Foto tim `anymind-pantene-team.webp` 1200×900, 138 KB. |
 | 2026-09-19 | Berat bukti | 24 screenshot PNG dikonversi WebP q80 sebelum di-commit: **14.423 KB → 3.990 KB**, sesuai aturan "PNG bukti di atas 500 KB" di `prompt.md`. |
+
+| 2026-09-19 | `npx playwright test --project=chromium -g "honest scale\|experience counters\|career timeline\|revealing element\|GSAP blocked still leaves"` | Iterasi pertama **1 failed**: satu `.impact-stat` di Beranda tidak punya `data-reveal-kind` karena atribut bocor sebagai teks ke dalam `<strong>`. Diperbaiki, lalu `5 passed (9.8s)`. |
+| 2026-09-19 | `npm test` | Exit 0, **136 passed (3.0m)** — 34 skenario × chromium/mobile/firefox/webkit. 116 hasil sebelumnya tetap ada, 5 skenario baru ditambahkan (20 hasil), tidak ada yang dihapus atau dilonggarkan. [Log asli](docs/evidence/kirim-3/full-suite.txt). |
+| 2026-09-19 | `npm run build` | Exit 0, `✓ built in 250ms`. [Log](docs/evidence/kirim-3/build.txt). |
+| 2026-09-19 | `node scripts/verify-kirim-3.mjs` pada build statis | Exit 0. 40 pemeriksaan kontras lolos, terendah **5.268:1** (arc IPK sebagai objek grafis, ambang 3:1); terendah untuk teks **5.806:1**, sama dengan lantai yang sudah tercatat. Skala: TOEFL `0.7439` = harapan, split `ratio 2`, tumpang tindih `4` bulan, arc `0.935001`. Keempat route tidak meluber di 320/390/1440. [JSON](docs/evidence/kirim-3/metrics.json), [output](docs/evidence/kirim-3/verify.txt). |
+| 2026-09-19 | Kontras diukur ulang setelah tema diseed lewat `localStorage`, bukan lewat atribut | Run pertama melaporkan 15 pasangan gagal di tema gelap. Penyebabnya bukan warna: menyetel `documentElement.dataset.theme` langsung berlomba dengan efek tema React, sehingga warna depan terbaca dari satu tema dan latar dari tema lain (`gpa-number`: front `#6c151e` terang di atas `#163a36` gelap). Setelah diseed lewat pintu yang sama dengan penjaga tema di `index.html`, 40/40 lolos. |
+| 2026-09-19 | Ukuran bundle, metode sama pada kedua sisi (`gzip -c9`, css + index + motion-runtime) | `HEAD` cd44c68 di `git worktree`: **454.489 B mentah / 144.594 B gzip**. Sesudah Kirim 3: **464.921 B mentah / 147.233 B gzip** — **+10.432 B mentah, +2.639 B gzip (+1,8%)**. Tanpa dependensi baru; seluruh kenaikan adalah markup, CSS, dan logika timeline. [Rincian](docs/evidence/kirim-3/bundle.txt). |
 
 ### Output regresi gagal → lolos
 
@@ -334,3 +349,36 @@ IMG-1 sekarang **DONE**; Ringkasan 17 → 18 dari 33.
 
 Fase berikutnya: **Kirim 3 — Claude Code** (kerangka + angka + test). Sesudah itu
 **VIS-1 — Codex** untuk rasanya. Sesi tiket ini berhenti di sini.
+
+### Batas bukti dan pemeriksaan visual — Kirim 3
+
+- Semua angka di bagian ini berasal dari `docs/evidence/kirim-3/metrics.json`,
+  hasil `node scripts/verify-kirim-3.mjs` pada build statis. Tidak ada angka
+  yang dibaca dari screenshot.
+- Tidak ada bandingan "sebelum" untuk kelima visual: sebelum fase ini benda itu
+  tidak ada. Yang punya bandingan hanya ukuran bundle, dan itu diambil dari
+  `git worktree` pada commit `cd44c68` dengan metode pengukuran yang persis sama.
+- Screenshot diambil dari build statis pada `http://127.0.0.1:4173` lewat
+  `scripts/shoot-kirim-3.mjs`: 5 visual × {1440, 390} × {terang, gelap} dengan
+  motion menyala dan jeda 2,5 detik supaya tween dan counter sudah mendarat,
+  plus 5 versi `reducedMotion: 'reduce'` dan 2 halaman penuh. PNG dikonversi
+  WebP q80 sebelum di-commit; total folder bukti 780 KB.
+- Kontras dihitung dari warna terukur di browser, bukan dari token yang ditulis
+  tangan, dan warna semi-transparan dikomposit dulu ke atas latar nyatanya.
+  Ambangnya dipisah: teks 4.5:1, objek grafis 3:1 (WCAG 1.4.11).
+- Tidak ada angka baru di luar `Anung Hanindhita Ramadhan-CV.pdf`. Satu-satunya
+  angka yang bukan milik Anung adalah 310 dan 677, yaitu batas bawah dan atas
+  skor total TOEFL ITP — itu sumbu tesnya, dicetak sebagai teks, dan dijelaskan
+  di komentar `src/data.js`.
+- Lighthouse, LCP, dan CLS tidak diaudit ulang: itu P2-22/P2-26 di Kirim 5.
+  Baseline lama tidak disentuh dan tidak diklaim.
+- Tidak ada aset gambar baru, jadi `docs/asset-provenance.md` tidak berubah dan
+  tidak ada tiket gambar baru yang ditulis.
+- Rupanya memang masih polos. Itu bukan kekurangan yang terlewat; bentuk, kurva,
+  dan ritme adalah isi tiket VIS-1.
+
+Kirim 3 selesai seluruhnya; Ringkasan 18 → 20 dari 33.
+
+Fase berikutnya: **VIS-1 — Codex**, tiketnya siap di
+[`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md),
+branch `fase/vis-1`. Sesudah itu **Kirim 4 — Claude Code**.
