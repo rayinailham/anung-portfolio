@@ -1,0 +1,38 @@
+[
+  {
+    "file": "assets/source/placeholder/konten-sosial.png",
+    "width": 1200,
+    "height": 900,
+    "format": "png"
+  },
+  {
+    "file": "public/images/placeholder/konten-sosial.webp",
+    "width": 1200,
+    "height": 900,
+    "format": "webp"
+  },
+  {
+    "file": "assets/source/placeholder/video-produk.png",
+    "width": 1200,
+    "height": 900,
+    "format": "png"
+  },
+  {
+    "file": "public/images/placeholder/video-produk.webp",
+    "width": 1200,
+    "height": 900,
+    "format": "webp"
+  },
+  {
+    "file": "assets/source/placeholder/webinar-b2b.png",
+    "width": 1200,
+    "height": 900,
+    "format": "png"
+  },
+  {
+    "file": "public/images/placeholder/webinar-b2b.webp",
+    "width": 1200,
+    "height": 900,
+    "format": "webp"
+  }
+]

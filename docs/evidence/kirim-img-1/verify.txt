@@ -1,0 +1,199 @@
+{
+  "engines": {
+    "chromium": "153.0.8010.12",
+    "firefox": "155.0",
+    "webkit": "26.6"
+  },
+  "assets": [
+    {
+      "path": "assets/source/placeholder/konten-sosial.png",
+      "width": 1200,
+      "height": 900,
+      "format": "png",
+      "bytes": 2013050,
+      "sha256": "cc7a2b615d81f8efc1485a8cac1e8b8fe4b2141202e5fe931e05f96d1a3659e9"
+    },
+    {
+      "path": "public/images/placeholder/konten-sosial.webp",
+      "width": 1200,
+      "height": 900,
+      "format": "webp",
+      "bytes": 54856,
+      "sha256": "1f3d07475772f11e54753def0656dceba2f00a780f22ed72be1f44af6ad0a127"
+    },
+    {
+      "path": "assets/source/placeholder/video-produk.png",
+      "width": 1200,
+      "height": 900,
+      "format": "png",
+      "bytes": 1869487,
+      "sha256": "df5a414906069196fe4989f5d7905e0ada8a912b50d4cdc17840bbf9b4308c07"
+    },
+    {
+      "path": "public/images/placeholder/video-produk.webp",
+      "width": 1200,
+      "height": 900,
+      "format": "webp",
+      "bytes": 48522,
+      "sha256": "9c2a44ecae7b72a574f9a21fd9a5219da75e24d7bbfb1f38f932e089827718fd"
+    },
+    {
+      "path": "assets/source/placeholder/webinar-b2b.png",
+      "width": 1200,
+      "height": 900,
+      "format": "png",
+      "bytes": 1883968,
+      "sha256": "cfbff49aca49b493828279207f4c7228fca3cae0a31f6cd322e19c8a19bf70fb"
+    },
+    {
+      "path": "public/images/placeholder/webinar-b2b.webp",
+      "width": 1200,
+      "height": 900,
+      "format": "webp",
+      "bytes": 40112,
+      "sha256": "2ff81324fe94a288d36f9f752e01d3a26529fbbba4820fc573a530a55238a783"
+    }
+  ],
+  "pages": [
+    {
+      "width": 1440,
+      "theme": "light",
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "slots": [
+        {
+          "caption": "4+ konten InstagramMateri asli belum dipublikasikan — ilustrasi sementara, bukan tangkapan layar konten.",
+          "src": "/images/placeholder/konten-sosial.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "3 video produk + video profil perusahaanMateri asli belum dipublikasikan — ilustrasi sementara, bukan cuplikan video.",
+          "src": "/images/placeholder/video-produk.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "Webinar B2B 15+ pesertaRekaman dan materi webinar belum dipublikasikan — ilustrasi sementara, bukan dokumentasi acara.",
+          "src": "/images/placeholder/webinar-b2b.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "slots": [
+        {
+          "caption": "4+ konten InstagramMateri asli belum dipublikasikan — ilustrasi sementara, bukan tangkapan layar konten.",
+          "src": "/images/placeholder/konten-sosial.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "3 video produk + video profil perusahaanMateri asli belum dipublikasikan — ilustrasi sementara, bukan cuplikan video.",
+          "src": "/images/placeholder/video-produk.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "Webinar B2B 15+ pesertaRekaman dan materi webinar belum dipublikasikan — ilustrasi sementara, bukan dokumentasi acara.",
+          "src": "/images/placeholder/webinar-b2b.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "slots": [
+        {
+          "caption": "4+ konten InstagramMateri asli belum dipublikasikan — ilustrasi sementara, bukan tangkapan layar konten.",
+          "src": "/images/placeholder/konten-sosial.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "3 video produk + video profil perusahaanMateri asli belum dipublikasikan — ilustrasi sementara, bukan cuplikan video.",
+          "src": "/images/placeholder/video-produk.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "Webinar B2B 15+ pesertaRekaman dan materi webinar belum dipublikasikan — ilustrasi sementara, bukan dokumentasi acara.",
+          "src": "/images/placeholder/webinar-b2b.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        }
+      ]
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "noHorizontalOverflow": true,
+      "errors": [],
+      "slots": [
+        {
+          "caption": "4+ konten InstagramMateri asli belum dipublikasikan — ilustrasi sementara, bukan tangkapan layar konten.",
+          "src": "/images/placeholder/konten-sosial.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "3 video produk + video profil perusahaanMateri asli belum dipublikasikan — ilustrasi sementara, bukan cuplikan video.",
+          "src": "/images/placeholder/video-produk.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        },
+        {
+          "caption": "Webinar B2B 15+ pesertaRekaman dan materi webinar belum dipublikasikan — ilustrasi sementara, bukan dokumentasi acara.",
+          "src": "/images/placeholder/webinar-b2b.webp",
+          "width": "1200",
+          "height": "900",
+          "naturalWidth": 1200,
+          "naturalHeight": 900,
+          "visible": true
+        }
+      ]
+    }
+  ]
+}

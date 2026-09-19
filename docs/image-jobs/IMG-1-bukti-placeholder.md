@@ -1,6 +1,6 @@
 # IMG-1 — Cover placeholder galeri bukti
 
-Status: TODO
+Status: DONE
 Harness: Codex
 
 ## Kebutuhan
@@ -122,14 +122,14 @@ Boleh disesuaikan sesi Codex asal larangan di atas dipatuhi. Catat prompt yang
 
 ## Diterima kalau
 
-- [ ] berkas ada di kedua jalur, untuk ketiga slot
-- [ ] setiap `.webp` berukuran tepat 1200 × 900
-- [ ] tidak ada teks / logo / wajah / tiruan antarmuka / grafik data
-- [ ] terbaca jelas pada lebar ±420 px dan tetap enak pada ukuran penuh
-- [ ] ketiganya terbaca sebagai satu keluarga visual
-- [ ] cocok berdampingan dengan foto acara asli di halaman yang sama
-- [ ] tetap terbaca di tema terang (`#F5DABF`) dan gelap (`#102E2B`)
-- [ ] provenance tiap berkas dicatat di `docs/asset-provenance.md` lengkap
+- [x] berkas ada di kedua jalur, untuk ketiga slot
+- [x] setiap `.webp` berukuran tepat 1200 × 900
+- [x] tidak ada teks / logo / wajah / tiruan antarmuka / grafik data
+- [x] terbaca jelas pada lebar ±420 px dan tetap enak pada ukuran penuh
+- [x] ketiganya terbaca sebagai satu keluarga visual
+- [x] cocok berdampingan dengan foto acara asli di halaman yang sama
+- [x] tetap terbaca di tema terang (`#F5DABF`) dan gelap (`#102E2B`)
+- [x] provenance tiap berkas dicatat di `docs/asset-provenance.md` lengkap
       dengan prompt persis yang dipakai
 
 ## Yang TIDAK boleh disentuh sesi ini
@@ -141,3 +141,17 @@ sudah terpasang dan sudah diuji. Tiket ini hanya mengganti isi berkas gambar.
 Caption tetap menyatakan gambarnya ilustrasi sementara. Cover hasil tiket ini
 tetap placeholder — `placeholder: true` di `src/data.js` TIDAK boleh dihapus.
 Flag itu hanya hilang kalau materi asli dari Anung yang masuk.
+
+## Hasil sesi Codex — 2026-09-19
+
+Generator bawaan `image_gen`; tiga cover editorial selesai. Masing-masing PNG dan WebP tepat 1200×900.
+
+- `assets/source/placeholder/konten-sosial.png` → `public/images/placeholder/konten-sosial.webp`
+- `assets/source/placeholder/video-produk.png` → `public/images/placeholder/video-produk.webp`
+- `assets/source/placeholder/webinar-b2b.png` → `public/images/placeholder/webinar-b2b.webp`
+
+Prompt persis: [asset-provenance.md](../asset-provenance.md#img-1--cover-editorial-abstrak-2026-09-19).
+Bukti ukuran, pemeriksaan DOM, screenshot dua tema × dua viewport, serta log build/test: [kirim-img-1](../evidence/kirim-img-1/README.md).
+Seluruh caption dan flag placeholder tetap berlaku; cover ini bukan materi asli Anung.
+
+Gerbang penutup fase belum lolos: `npm test` run ulang 111 passed / 1 failed pada transisi route WebKit. Tidak commit/push. Status DONE di tiket ini hanya menyatakan keluaran gambar dan kriteria visual/teknis di atas selesai; status fase di `progress.md` tetap WIP.

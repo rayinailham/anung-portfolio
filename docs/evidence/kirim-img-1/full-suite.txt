@@ -1,0 +1,189 @@
+
+> anung-portfolio@1.0.0 test
+> playwright test
+
+
+Running 112 tests using 3 workers
+
+(node:27) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    3 [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua (5.8s)
+  ✓    2 [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi (6.0s)
+  ✓    1 [chromium] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout (6.3s)
+  ✓    4 [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL (5.4s)
+  ✓    5 [chromium] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital (5.4s)
+  ✓    6 [chromium] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing (7.9s)
+  ✓    7 [chromium] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry (3.8s)
+  ✓    9 [chromium] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value (4.5s)
+  ✓   10 [chromium] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route (4.6s)
+  ✓    8 [chromium] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker (9.3s)
+  ✓   11 [chromium] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading (3.4s)
+  ✓   13 [chromium] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements (4.0s)
+  ✓   12 [chromium] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session (8.2s)
+  ✓   15 [chromium] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work (4.4s)
+  ✓   14 [chromium] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work (9.9s)
+  ✓   17 [chromium] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff (4.2s)
+  ✓   18 [chromium] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works (3.7s)
+  ✓   16 [chromium] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF (8.4s)
+  ✓   19 [chromium] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation (5.9s)
+  ✓   21 [chromium] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path (4.5s)
+  ✓   20 [chromium] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes (6.0s)
+  ✓   22 [chromium] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page (5.5s)
+  ✓   24 [chromium] › tests/portfolio.spec.js:418:1 › every evidence slot is declared, sized and captioned honestly (4.0s)
+  ✓   25 [chromium] › tests/portfolio.spec.js:436:1 › placeholder covers missing still leave the evidence slots correct (4.2s)
+  ✓   26 [chromium] › tests/portfolio.spec.js:454:1 › no image is reused with a different crop (4.1s)
+  ✓   23 [chromium] › tests/portfolio.spec.js:401:1 › deep link from a Beranda card lands on its own experience entry (13.5s)
+(node:846) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   28 [chromium] › tests/portfolio.spec.js:490:1 › CV facts that were missing are on the page with their own numbers (5.4s)
+(node:902) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   27 [chromium] › tests/portfolio.spec.js:479:1 › the contact callout says something different on each page (8.0s)
+(node:1020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   29 [mobile] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout (6.4s)
+  ✓   30 [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua (6.0s)
+  ✓   31 [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi (6.4s)
+  ✓   32 [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL (5.9s)
+  ✓   33 [mobile] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital (5.8s)
+  ✓   35 [mobile] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry (3.9s)
+  ✓   34 [mobile] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing (8.3s)
+  ✓   37 [mobile] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value (4.7s)
+  ✓   36 [mobile] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker (9.4s)
+  ✓   38 [mobile] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route (5.4s)
+  ✓   39 [mobile] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading (3.5s)
+  ✓   41 [mobile] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements (3.9s)
+  ✓   40 [mobile] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session (8.3s)
+  ✓   43 [mobile] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work (4.5s)
+  ✓   42 [mobile] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work (10.7s)
+  ✓   45 [mobile] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff (4.2s)
+  ✓   46 [mobile] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works (3.6s)
+  ✓   44 [mobile] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF (8.4s)
+  ✓   47 [mobile] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation (5.9s)
+  ✓   49 [mobile] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path (4.6s)
+  ✓   48 [mobile] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes (6.6s)
+  ✓   50 [mobile] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page (5.5s)
+  ✓   52 [mobile] › tests/portfolio.spec.js:418:1 › every evidence slot is declared, sized and captioned honestly (4.2s)
+  ✓   53 [mobile] › tests/portfolio.spec.js:436:1 › placeholder covers missing still leave the evidence slots correct (4.4s)
+  ✓   54 [mobile] › tests/portfolio.spec.js:454:1 › no image is reused with a different crop (4.2s)
+  ✓   51 [mobile] › tests/portfolio.spec.js:401:1 › deep link from a Beranda card lands on its own experience entry (12.5s)
+(node:1654) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   56 [mobile] › tests/portfolio.spec.js:490:1 › CV facts that were missing are on the page with their own numbers (5.4s)
+  ✓   55 [mobile] › tests/portfolio.spec.js:479:1 › the contact callout says something different on each page (8.2s)
+(node:1870) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1882) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   57 [firefox] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout (8.8s)
+  ✓   58 [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua (8.3s)
+  ✓   59 [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi (8.3s)
+  ✓   60 [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL (6.6s)
+  ✓   61 [firefox] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital (6.5s)
+  ✓   63 [firefox] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry (4.6s)
+  ✓   62 [firefox] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing (9.2s)
+  ✓   65 [firefox] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value (5.4s)
+  ✓   66 [firefox] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route (5.5s)
+  ✓   64 [firefox] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker (9.7s)
+  ✓   67 [firefox] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading (4.4s)
+  ✓   69 [firefox] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements (4.8s)
+  ✓   68 [firefox] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session (9.3s)
+  ✓   71 [firefox] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work (5.2s)
+  ✓   70 [firefox] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work (10.5s)
+  ✓   73 [firefox] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff (5.1s)
+  ✓   74 [firefox] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works (4.4s)
+  ✓   72 [firefox] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF (9.7s)
+  ✓   75 [firefox] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation (7.0s)
+  ✓   77 [firefox] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path (5.3s)
+  ✓   76 [firefox] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes (7.5s)
+  ✓   78 [firefox] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page (6.4s)
+  ✓   80 [firefox] › tests/portfolio.spec.js:418:1 › every evidence slot is declared, sized and captioned honestly (4.7s)
+  ✓   81 [firefox] › tests/portfolio.spec.js:436:1 › placeholder covers missing still leave the evidence slots correct (6.0s)
+  ✓   82 [firefox] › tests/portfolio.spec.js:454:1 › no image is reused with a different crop (6.2s)
+  ✓   79 [firefox] › tests/portfolio.spec.js:401:1 › deep link from a Beranda card lands on its own experience entry (13.2s)
+(node:3320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   84 [firefox] › tests/portfolio.spec.js:490:1 › CV facts that were missing are on the page with their own numbers (6.2s)
+  ✓   85 [webkit] › tests/portfolio.spec.js:27:1 › filter layout refresh reveals organizations, every card and contact callout (5.2s)
+(node:3445) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   83 [firefox] › tests/portfolio.spec.js:479:1 › the contact callout says something different on each page (9.5s)
+(node:3617) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   86 [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran afiliasi (4.1s)
+  ✓   87 [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Semua (4.3s)
+  ✓   88 [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Kerja sama KOL (4.3s)
+  ✓   89 [webkit] › tests/portfolio.spec.js:51:3 › every filter keeps lower sections visible: Pemasaran digital (4.1s)
+  ✓   91 [webkit] › tests/portfolio.spec.js:107:1 › refresh recovers stopped once-reveals using their current geometry (3.0s)
+  ✓   90 [webkit] › tests/portfolio.spec.js:68:1 › multiple disclosures animate height and refresh after opening and closing (9.9s)
+  ✓   93 [webkit] › tests/portfolio.spec.js:144:1 › reduced motion leaves every reveal, counter and disclosure at its final value (6.5s)
+  ✓   92 [webkit] › tests/portfolio.spec.js:130:1 › native reveal deadline restores below-fold content even with a stopped GSAP ticker (7.9s)
+  ✓   95 [webkit] › tests/portfolio.spec.js:201:1 › fresh contact deep link skips intro immediately even while motion is loading (2.5s)
+  ✓   94 [webkit] › tests/portfolio.spec.js:167:1 › GSAP blocked still renders readable content and usable navigation on every route (6.2s)
+  ✓   96 [webkit] › tests/portfolio.spec.js:214:1 › intro lasts about one second and stays skipped for the session (7.3s)
+  ✓   97 [webkit] › tests/portfolio.spec.js:229:1 › mobile touch targets, marquee text and dark accent meet their requirements (5.2s)
+  ✓   99 [webkit] › tests/portfolio.spec.js:273:1 › experience filters and contribution disclosures work (4.4s)
+  ✓  100 [webkit] › tests/portfolio.spec.js:286:1 › theme persists and CV download contains a PDF (8.0s)
+  ✓  101 [webkit] › tests/portfolio.spec.js:298:1 › contact form validates inputs and prepares an honest email handoff (3.8s)
+  ✓   98 [webkit] › tests/portfolio.spec.js:255:1 › intro completes; route transition, back and deep links work (13.5s)
+  ✓  102 [webkit] › tests/portfolio.spec.js:314:1 › reduced motion bypasses intro and smooth scroll; keyboard navigation works (4.3s)
+  ✓  105 [webkit] › tests/portfolio.spec.js:379:1 › unknown route has a usable recovery path (3.2s)
+  ✓  103 [webkit] › tests/portfolio.spec.js:325:1 › mobile menu supports open, escape and navigation (8.5s)
+  ✓  104 [webkit] › tests/portfolio.spec.js:339:1 › all pages keep readable text, fit narrow screens and load images in both themes (7.1s)
+  ✓  108 [webkit] › tests/portfolio.spec.js:418:1 › every evidence slot is declared, sized and captioned honestly (2.6s)
+  ✓  109 [webkit] › tests/portfolio.spec.js:436:1 › placeholder covers missing still leave the evidence slots correct (4.1s)
+  ✘  106 [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page (14.1s)
+  ✓  110 [webkit] › tests/portfolio.spec.js:454:1 › no image is reused with a different crop (5.5s)
+(node:5762) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  107 [webkit] › tests/portfolio.spec.js:401:1 › deep link from a Beranda card lands on its own experience entry (16.1s)
+  ✓  111 [webkit] › tests/portfolio.spec.js:490:1 › CV facts that were missing are on the page with their own numbers (5.6s)
+  ✓  112 [webkit] › tests/portfolio.spec.js:479:1 › the contact callout says something different on each page (10.8s)
+
+
+  1) [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('heading', { level: 1 })
+    Expected substring: "Halo, saya"
+    Received string:    "Pengalamanmagang saya."
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('heading', { level: 1 }) with timeout 5000ms
+      - waiting for getByRole('heading', { level: 1 })
+        13 × locator resolved to <h1 class="">…</h1>
+           - unexpected value "Pengalamanmagang saya."
+
+
+      390 |   await page.evaluate(() => { location.hash = '/'; });
+      391 |   await expect(page.locator('.app')).not.toHaveAttribute('inert');
+    > 392 |   await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+          |                                                         ^
+      393 |   await page.evaluate(() => { location.hash = '/kontak'; });
+      394 |   await expect(page.locator('.app')).toHaveAttribute('inert');
+      395 |   await page.emulateMedia({ reducedMotion: 'reduce' });
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:392:57
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-interrupted-tran-22dcd--motion-never-lock-the-page-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-interrupted-tran-22dcd--motion-never-lock-the-page-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-interrupted-tran-22dcd--motion-never-lock-the-page-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-interrupted-tran-22dcd--motion-never-lock-the-page-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › tests/portfolio.spec.js:386:1 › interrupted transition and live reduced motion never lock the page 
+  111 passed (4.2m)
