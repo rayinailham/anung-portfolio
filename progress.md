@@ -20,12 +20,12 @@ belum seluruhnya `DONE`/`SKIP`.
 | 2 | Bukti kerja + ruang mati | Claude Code | 7 | 7 |
 | IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 1 |
 | 3 | Kerangka visualisasi data + timeline | Claude Code | 2 | 2 |
-| VIS-1 | Rasa visual + animasi untuk kerangka Kirim 3 | Codex | 1 | 0 |
+| VIS-1 | Rasa visual + animasi untuk kerangka Kirim 3 | Codex | 1 | 1 |
 | 4 | Konversi | Claude Code | 4 | 0 |
 | IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
 | 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
 | 6 | Pass poles visual terakhir | Codex | 1 | 0 |
-| — | **Total dikerjakan** | | **33** | **20** |
+| — | **Total dikerjakan** | | **33** | **21** |
 | — | Sengaja di-SKIP | | 3 | — |
 
 Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
@@ -105,12 +105,12 @@ reduced-motion, test. Boleh selesai dalam keadaan polos — rasanya digarap VIS-
 
 ## VIS-1 — Rasa visual + animasi · Codex
 
-Kirim 3 sudah `DONE`, jadi fase ini siap dijalankan. Tiket sudah ditulis:
+VIS-1 selesai diverifikasi pada sesi Codex 2026-09-19. Tiket:
 [`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md).
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P2-23 | Kosakata reveal terlalu seragam, plus pass rasa atas seluruh keluaran Kirim 3 | TODO | Butuh: screenshot terang/gelap × 1440px/390px, screenshot reduced motion, angka kontras tiap pasangan yang berubah, `npm test` lolos tanpa mengubah test. Branch `fase/vis-1`. |
+| P2-23 | Kosakata reveal terlalu seragam, plus pass rasa atas seluruh keluaran Kirim 3 | DONE | Ring menyatu dengan angka; timeline berkisi bulanan; hierarki TOEFL/split/counter; timing berbeda per jenis konten. [Bukti sebelum/sesudah + reduced motion](docs/evidence/vis-1/README.md). `npm test`: **136 passed (3.0m)**, test tidak diubah; [log](docs/evidence/vis-1/full-suite.txt). [Verifikasi skala + 40 pasangan kontras](docs/evidence/vis-1/metrics.json), minimum teks **5.806:1**. Pasangan baru isian TOEFL terhadap track: **6.223:1** terang / **3.627:1** gelap, lolos grafis ≥ 3:1 ([JSON](docs/evidence/vis-1/presentation.json)). 320/390/1440 tanpa overflow, reduced motion final. Branch `fase/vis-1`. |
 
 ## Kirim 4 — Konversi
 
@@ -185,6 +185,10 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | Tanggal | Keputusan | Alasan |
 |---|---|---|
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
+| 2026-09-19 | VIS-1: ring dipusatkan lewat CSS, timeline diberi kisi dekoratif 11 bulan, teks tidak ditaruh di atas kisi | JSX dan data tetap utuh; posisi/lebar bar tetap memakai `--from`/`--span`. Kisi mengikuti rentang Sep 2025–Jul 2026 yang ada; bila rentang data berubah, jumlah sel perlu disesuaikan. |
+| 2026-09-19 | VIS-1: hanya nilai tiga tabel timing yang berubah; durasi counter tetap | Tabel adalah batas izin tiket. Reveal teks dipercepat, media/arc lebih tenang, tanpa mengubah lifecycle, fallback, atau reduced motion. |
+| 2026-09-19 | VIS-1: bukti di `docs/evidence/vis-1/`, progres dan status tiket ditutup oleh Codex | Jalur mengikuti tiket; update progres mengikuti instruksi penutup sesi pengguna. Tidak ada gambar publik baru, jadi provenance dan tiket gambar tidak berubah. |
+| 2026-09-19 | VIS-1: crop halaman penuh tambahan untuk timeline 390px | Screenshot locator skrip lama memotong bagian atas judul saat motion aktif pada section yang lebih tinggi dari viewport. Crop frame halaman penuh merekam judul utuh tanpa mengubah aplikasi; keluaran mentah tetap disimpan. |
 | 2026-09-19 | Split 100/50 dipasang di kartu **Marketing Intern (Coordination Role)**, bukan di Beranda | `prompt.md` menulis "150 di Beranda adalah penjumlahan 100 + 50". Itu keliru, dan README sudah menyatakan yang benar: 150 yang merupakan penjumlahan adalah "100 mitra afiliasi Shopee dan 50 mitra afiliasi TikTok" pada peran koordinasi Sutan Vet. Angka 150 di Beranda adalah baris CV tersendiri, "Contacted and invited 150 new affiliates daily to join Unicharm's affiliate community" — bukan penjumlahan. Memasang bar penjumlahan di Beranda justru akan membuat angka CV yang benar terbaca sebagai gabungan. |
 | 2026-09-19 | Sumbu bar TOEFL 310–677, bukan 0–677 | 310 adalah skor total terendah yang mungkin pada TOEFL ITP, jadi itulah lantai skalanya; memaksa 0 bukan kejujuran melainkan skala yang tidak ada. Kedua ujung dicetak sebagai teks dan `startsAtScaleFloorPx: 0` dikunci test, sehingga bar tidak pernah dimulai di tempat yang menyanjung. Label "Professional Working Proficiency" dikutip persis dari baris Bahasa di CV dan ditulis di halaman sebagai kutipan CV, bukan sebagai pemetaan skor. |
 | 2026-09-19 | Dua entri Sutan Vet ditulis "perusahaan yang sama, 2 periode magang, peran A lalu peran B", bukan "promosi" | `prompt.md` menyebut "promosi peran". CV tidak menyatakan promosi; yang tertulis hanya dua periode dengan dua judul peran. Kalimatnya menunjukkan perkembangan yang sama tanpa mengklaim status kepegawaian yang tidak ada di sumber. |
@@ -230,6 +234,13 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 
 | Tanggal | Perintah | Hasil |
 |---|---|---|
+| 2026-09-19 | VIS-1: `arch-playwright-provision --check` + launch Node Playwright | Nol library WebKit hilang. Chromium 153.0.8010.12, Firefox 155.0, WebKit 26.6 launch sukses; [bukti](docs/evidence/vis-1/env-check.txt). |
+| 2026-09-19 | VIS-1: `npm run build` | Exit 0, 217ms; [log](docs/evidence/vis-1/build.txt). |
+| 2026-09-19 | VIS-1: `EVIDENCE_DIR=docs/evidence/vis-1 node scripts/verify-kirim-3.mjs` dengan `PORTFOLIO_URL=http://127.0.0.1:4175` | Exit 0. Arc 0.935001, TOEFL 0.7439, split 2.0001 di desktop (pembulatan subpiksel), overlap 4 bulan. 40 pasangan kontras lolos, teks minimum 5.806:1. [Log](docs/evidence/vis-1/verify.txt). |
+| 2026-09-19 | VIS-1: `node docs/evidence/vis-1/verify-presentation.mjs` | Exit 0. Kontras track TOEFL baru 6.223:1 / 3.627:1; enam bar reduced motion tanpa transform; tiga split menutup track; ring 320px memuat angka di kedua tema, error aplikasi 0. [Log](docs/evidence/vis-1/presentation.txt). |
+| 2026-09-19 | VIS-1: `scripts/shoot-kirim-3.mjs` sebelum/sesudah + `capture-mobile-timeline.mjs` | Exit 0; 60 WebP termasuk empat gambar 320px dan dua crop timeline 390px. [Indeks bukti](docs/evidence/vis-1/README.md). |
+| 2026-09-19 | VIS-1: `npm test` | Exit 0, **136 passed (3.0m)** pada chromium/mobile/firefox/webkit, tanpa mengubah test. [Log penuh](docs/evidence/vis-1/full-suite.txt). |
+
 | 2026-09-18 | `Playwright MCP: #/pengalaman → filter → scroll → getComputedStyle` | `opacity: "0"` pada `top: 166px` — P0-1 dikonfirmasi |
 | 2026-09-18 | perhitungan kontras semua token | terendah 5.81:1 (`--muted` di `--paper`) — lolos AA |
 | 2026-09-18 | ukur target sentuh di 390px | 3 elemen 22px tinggi — P3-32 dikonfirmasi |
@@ -382,3 +393,9 @@ Kirim 3 selesai seluruhnya; Ringkasan 18 → 20 dari 33.
 Fase berikutnya: **VIS-1 — Codex**, tiketnya siap di
 [`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md),
 branch `fase/vis-1`. Sesudah itu **Kirim 4 — Claude Code**.
+
+### Penutup VIS-1 — 2026-09-19
+
+VIS-1 **DONE**; Ringkasan **21/33**. Perubahan aplikasi hanya `src/styles.css` dan nilai tiga tabel timing `src/motion.js`. Bukti, batas pengukuran, dan cara mengulang ada di [docs/evidence/vis-1/README.md](docs/evidence/vis-1/README.md). Tidak ada kebutuhan gambar baru. Lighthouse/CLS tidak diaudit ulang pada tiket ini.
+
+Satu commit fase ditujukan ke `fase/vis-1`, remote personal `origin`; hash dan hasil push dilaporkan dalam penutup sesi. Tidak merge ke `main`. Fase berikutnya: **Kirim 4 — Claude Code**. Sesi ini berhenti setelah push.

@@ -1,6 +1,6 @@
 # VIS-1 — Rasa visual untuk lima visualisasi data dan timeline karier
 
-Status: TODO
+Status: DONE
 Harness: Codex
 Branch: fase/vis-1
 
@@ -129,17 +129,17 @@ Ini bukan selera; semuanya dikunci test di `main` dan dihitung di
 
 ## Diterima kalau
 
-- [ ] `npm test` lolos tanpa mengubah test (patokan sekarang: **136 passed**)
-- [ ] `node scripts/verify-kirim-3.mjs` tetap `exit 0` pada build statis
-- [ ] kontras AA terang dan gelap, angkanya dilampirkan; teks ≥ 4.5:1, objek
+- [x] `npm test` lolos tanpa mengubah test (patokan sekarang: **136 passed**)
+- [x] `node scripts/verify-kirim-3.mjs` tetap `exit 0` pada build statis
+- [x] kontras AA terang dan gelap, angkanya dilampirkan; teks ≥ 4.5:1, objek
       grafis ≥ 3:1. Terendah sekarang: teks 5.806:1, grafis 5.268:1
-- [ ] reduced motion menampilkan nilai akhir: 6 counter sama dengan
+- [x] reduced motion menampilkan nilai akhir: 6 counter sama dengan
       `data-count`, 6 `[data-bar]` bertransform `none`, arc memakai atribut
       `stroke-dashoffset` tanpa inline override
-- [ ] tetap masuk akal di 390px, dan tidak meluber horizontal di 320px
-- [ ] tidak ada angka, skala, atau label yang berubah
-- [ ] tidak ada dependensi baru
-- [ ] bukti tersimpan di `docs/evidence/vis-1/`
+- [x] tetap masuk akal di 390px, dan tidak meluber horizontal di 320px
+- [x] tidak ada angka, skala, atau label yang berubah
+- [x] tidak ada dependensi baru
+- [x] bukti tersimpan di `docs/evidence/vis-1/`
 
 Cara mengambil bukti yang sebanding: jalankan `npm run build`, sajikan dengan
 `npx vite preview --host 127.0.0.1 --port 4173`, lalu jalankan dua skrip yang
@@ -157,3 +157,9 @@ berkas Kirim 3 tidak tersentuh.
 
 Tulis di sini temuan apa pun yang keluar dari batas tiket — untuk Claude Code,
 bukan untuk dikerjakan di sini.
+
+Selesai 2026-09-19 oleh Codex. [Bukti lengkap](../evidence/vis-1/README.md): build dan verifikasi skala exit 0; `npm test` 136 passed; screenshot sebelum/sesudah, reduced motion, dan kontras lengkap. Perubahan sumber hanya CSS dan nilai tiga tabel timing. Tidak ada kebutuhan gambar baru.
+
+Catatan untuk Claude Code: kisi dekoratif memiliki 11 sel sesuai rentang data sekarang. Jika rentang magang berubah kelak, jumlah sel harus disesuaikan atau disuplai dari data. Tidak ada perubahan logika yang dibutuhkan untuk menutup tiket ini. Screenshot locator timeline 390px dari skrip lama memotong sedikit judul saat motion aktif; bukti crop halaman penuh tambahan merekamnya utuh tanpa mengubah aplikasi.
+
+Pemeriksaan tautan menemukan tujuh rujukan lama di `progress.md` menuju `docs/evidence/kirim-img-1/` yang tidak ada pada checkout ini. Ketujuh rujukan sudah ada di `HEAD` sebelum VIS-1. Tidak diperbaiki di tiket visual ini; seluruh tautan bukti VIS-1 tersedia.

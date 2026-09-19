@@ -1,0 +1,47 @@
+{
+  "scoreTrackContrast": {
+    "light": {
+      "fill": "rgb(15, 61, 58)",
+      "track": "rgba(108, 21, 30, 0.2)",
+      "paper": "rgb(245, 218, 191)",
+      "compositedTrack": [
+        217.6,
+        178.6,
+        158.8
+      ],
+      "ratio": 6.223,
+      "required": 3
+    },
+    "dark": {
+      "fill": "rgb(127, 179, 168)",
+      "track": "rgba(245, 218, 191, 0.2)",
+      "paper": "rgb(16, 46, 43)",
+      "compositedTrack": [
+        61.8,
+        80.4,
+        72.6
+      ],
+      "ratio": 3.627,
+      "required": 3
+    }
+  },
+  "narrowLayout": {
+    "light": {
+      "viewport": 320,
+      "ringWidth": 192,
+      "figureWidth": 106.5625,
+      "figureInsideRing": true,
+      "overflow": false
+    },
+    "dark": {
+      "viewport": 320,
+      "ringWidth": 192,
+      "figureWidth": 106.5625,
+      "figureInsideRing": true,
+      "overflow": false
+    }
+  },
+  "errors": [],
+  "reducedMotionBarsChecked": 6,
+  "splitTracksChecked": 3
+}

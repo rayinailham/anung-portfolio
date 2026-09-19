@@ -40,25 +40,25 @@ const REVEAL_TO = { x: 0, y: 0, opacity: 1, scale: 1 };
 // curve in every row: the vocabulary is the hook, the values belong to the
 // visual pass. Changing a row here changes only that kind of content.
 const REVEAL_TIMING = {
-  heading: { duration: 0.9, ease: 'power3.out' },
-  text: { duration: 0.9, ease: 'power3.out' },
-  stat: { duration: 0.9, ease: 'power3.out' },
-  media: { duration: 0.9, ease: 'power3.out' },
-  panel: { duration: 0.9, ease: 'power3.out' },
-  viz: { duration: 0.9, ease: 'power3.out' },
+  heading: { duration: 0.78, ease: 'power4.out' },
+  text: { duration: 0.52, ease: 'power2.out' },
+  stat: { duration: 0.64, ease: 'power3.out' },
+  media: { duration: 1.05, ease: 'power3.inOut' },
+  panel: { duration: 0.72, ease: 'power3.out' },
+  viz: { duration: 0.68, ease: 'power2.out' },
 };
 const REVEAL_GROUP_TIMING = {
-  heading: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
-  text: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
-  stat: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
-  media: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
-  panel: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
-  viz: { duration: 0.85, stagger: 0.09, ease: 'power3.out' },
+  heading: { duration: 0.74, stagger: 0.08, ease: 'power4.out' },
+  text: { duration: 0.48, stagger: 0.055, ease: 'power2.out' },
+  stat: { duration: 0.62, stagger: 0.12, ease: 'power3.out' },
+  media: { duration: 0.98, stagger: 0.14, ease: 'power3.inOut' },
+  panel: { duration: 0.7, stagger: 0.1, ease: 'power3.out' },
+  viz: { duration: 0.66, stagger: 0.11, ease: 'power2.out' },
 };
 // Data visuals draw towards the value the DOM already holds, never away from it.
 const VIZ_TIMING = {
-  arc: { duration: 1.1, ease: 'power2.out' },
-  bar: { duration: 0.9, ease: 'power2.out' },
+  arc: { duration: 1.35, ease: 'power3.inOut' },
+  bar: { duration: 0.95, ease: 'power3.out' },
 };
 const timingFor = (table, kind, fallback) => table[kind] || table[fallback];
 
