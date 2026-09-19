@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 // Tests that deliberately abort a request get a browser network diagnostic on
 // the console; every other test still has to keep the console clean.
-const NETWORK_FAULT_TESTS = ['GSAP blocked', 'placeholder covers missing'];
+const NETWORK_FAULT_TESTS = ['GSAP blocked', 'placeholder covers missing', 'contact send survives a dead network', 'contact form offers the email draft'];
 
 test.afterEach(async ({ page }, testInfo) => {
   expect(page.runtimeErrors, 'uncaught runtime errors').toEqual([]);
@@ -18,8 +18,13 @@ test.afterEach(async ({ page }, testInfo) => {
   }
 });
 
-async function ready(page, route = '/') {
-  await page.goto(`/#${route}`);
+// The second dev server is built with a Web3Forms key (playwright.config.js),
+// so it serves the backend path of the contact form. The default origin has no
+// key and serves the mailto fallback.
+const BACKEND_ORIGIN = 'http://127.0.0.1:5174';
+
+async function ready(page, route = '/', origin = '') {
+  await page.goto(`${origin}/#${route}`);
   await expect(page.locator('.splash')).toHaveCount(0);
   await expect(page.locator('.app')).not.toHaveAttribute('inert');
 }
@@ -231,7 +236,7 @@ test('mobile touch targets, marquee text and dark accent meet their requirements
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await ready(page);
   const heights = await page.locator('.header-cv, .site-footer > div > a').evaluateAll(elements => elements.map(el => el.getBoundingClientRect().height));
-  expect(heights).toHaveLength(3);
+  expect(heights).toHaveLength(4);
   expect(heights.every(height => height >= 24)).toBe(true);
   await expect(page.locator('.marquee')).not.toHaveAttribute('role', 'img');
   await expect(page.locator('.marquee > .sr-only')).toHaveText('Bidang: pemasaran afiliasi, kerja sama KOL, perencanaan konten.');
@@ -668,4 +673,151 @@ test('GSAP blocked still leaves every data visual on its final value', async ({ 
   expect(bars).toHaveLength(4);
   expect(bars.every(width => width > 20)).toBe(true);
   expect(blocked).toBeGreaterThan(0);
+});
+
+// --- Kirim 4: konversi ---------------------------------------------------
+
+async function fillContactForm(page) {
+  await page.getByLabel('Nama', { exact: true }).fill('Test Portfolio');
+  await page.getByLabel('Email', { exact: true }).fill('portfolio@example.com');
+  await page.getByLabel('Topik pesan').selectOption('Kerja sama promosi');
+  await page.getByLabel('Pesan', { exact: true }).fill('Halo Anung, mari berdiskusi tentang kolaborasi brand.');
+}
+
+test('WhatsApp stands beside email and LinkedIn with a prefilled Indonesian message', async ({ page }) => {
+  await ready(page, '/kontak');
+  const whatsapp = page.locator('.contact-info').getByRole('link', { name: 'WhatsApp', exact: true });
+  await expect(whatsapp).toBeVisible();
+  const href = await whatsapp.getAttribute('href');
+  expect(href.startsWith('https://wa.me/6281388116739?text=')).toBe(true);
+  const greeting = new URL(href).searchParams.get('text');
+  expect(greeting).toContain('Halo Anung');
+  expect(greeting.length).toBeGreaterThan(30);
+  // Same weight as the other two channels, and repeated in the footer.
+  await expect(page.locator('.contact-info .contact-social')).toHaveCount(3);
+  await expect(page.locator('.contact-info').getByRole('link', { name: 'LinkedIn', exact: true })).toBeVisible();
+  await expect(page.locator('.site-footer').getByRole('link', { name: 'WhatsApp', exact: true })).toHaveAttribute('href', href);
+});
+
+// A share preview is built by a crawler that never runs JavaScript, so this
+// reads the served document instead of the live DOM.
+test('share metadata is complete in the served document and shares one origin', async ({ request }) => {
+  const html = await (await request.get('/')).text();
+  const content = (attribute, key) => {
+    const match = html.match(new RegExp(`<meta ${attribute}="${key}" content="([^"]*)"`));
+    return match && match[1].replace(/&amp;/g, '&');
+  };
+  const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)[1];
+  expect(canonical).toBeTruthy();
+  expect(content('property', 'og:url')).toBe(canonical);
+  const image = content('property', 'og:image');
+  expect(new URL(image).origin).toBe(new URL(canonical).origin);
+  expect(new URL(image).pathname).toBe('/images/og-cover.png');
+  expect(content('property', 'og:image:width')).toBe('1200');
+  expect(content('property', 'og:image:height')).toBe('630');
+  expect(content('property', 'og:image:alt').length).toBeGreaterThan(30);
+  expect(content('property', 'og:type')).toBe('website');
+  expect(content('property', 'og:description').length).toBeGreaterThan(30);
+  expect(content('name', 'description').length).toBeGreaterThan(30);
+  expect(content('name', 'twitter:card')).toBe('summary_large_image');
+  expect(content('name', 'twitter:image')).toBe(image);
+  expect(content('name', 'twitter:description')).toBe(content('property', 'og:description'));
+  // og:title and the document title come from the same constant in src/site.js,
+  // so the shared card and the tab can never drift apart.
+  const title = html.match(/<title>([^<]*)<\/title>/)[1].replace(/&amp;/g, '&');
+  expect(content('property', 'og:title')).toBe(title);
+  expect(content('name', 'twitter:title')).toBe(title);
+  // Exactly one canonical and one og:url; no repeated strings to drift.
+  expect(html.match(/rel="canonical"/g)).toHaveLength(1);
+  expect(html.match(/property="og:url"/g)).toHaveLength(1);
+});
+
+test('the CV can be read on the page without downloading it', async ({ page }) => {
+  await ready(page, '/tentang');
+  const pages = page.locator('.cv-pages img');
+  await expect(pages).toHaveCount(2);
+  const first = pages.first();
+  await first.scrollIntoViewIfNeeded();
+  const rendered = await first.evaluate(async (image) => {
+    await image.decode().catch(() => {});
+    return { natural: image.naturalWidth, width: image.getAttribute('width'), height: image.getAttribute('height'), alt: image.alt };
+  });
+  // width + height on every new image is what keeps CLS where it is.
+  expect(rendered.natural).toBeGreaterThan(0);
+  expect(rendered.width).toBe('1000');
+  expect(rendered.height).toBe('1413');
+  expect(rendered.alt).toContain('Halaman 1');
+  await expect(page.locator('.cv-pages figcaption').first()).toHaveText('Halaman 1 dari 2');
+  // The download button does not go away.
+  await expect(page.locator('.cv-preview').getByRole('link', { name: 'Download CV', exact: true })).toHaveAttribute('download', '');
+});
+
+test('contact form reports a real send when the backend accepts it', async ({ page }) => {
+  await ready(page, '/kontak', BACKEND_ORIGIN);
+  let payload = null;
+  await page.route('https://api.web3forms.com/submit', async (route) => {
+    payload = JSON.parse(route.request().postData());
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, message: 'Email sent successfully' }) });
+  });
+  await expect(page.locator('.form-footer p')).toContainText('Situs ini tidak menyimpan pesan Anda.');
+  await fillContactForm(page);
+  await page.getByRole('button', { name: 'Kirim pesan', exact: true }).click();
+  await expect(page.locator('.form-status')).toContainText('Pesan terkirim ke anungramadhan17@gmail.com');
+  await expect(page.locator('.form-status')).toHaveAttribute('data-status', 'sent');
+  expect(payload.access_key).toBe('uji-kunci-bukan-kunci-asli');
+  expect(payload.email).toBe('portfolio@example.com');
+  expect(payload.name).toBe('Test Portfolio');
+  expect(payload.message).toContain('kolaborasi brand');
+  expect(payload.subject).toContain('Kerja sama promosi');
+  // A sent message is cleared; nothing is promised about a reply.
+  await expect(page.getByLabel('Pesan', { exact: true })).toHaveValue('');
+  await expect(page.locator('.form-status')).not.toContainText('24 jam');
+  await expect(page.locator('.form-fallback')).toHaveCount(0);
+});
+
+test('contact form offers the email draft when the backend rejects the send', async ({ page }) => {
+  await ready(page, '/kontak', BACKEND_ORIGIN);
+  await page.route('https://api.web3forms.com/submit', route => route.fulfill({
+    status: 500, contentType: 'application/json', body: JSON.stringify({ success: false, message: 'Internal error' }),
+  }));
+  await fillContactForm(page);
+  await page.getByRole('button', { name: 'Kirim pesan', exact: true }).click();
+  await expect(page.locator('.form-status')).toContainText('Pesan belum terkirim');
+  await expect(page.locator('.form-status')).toContainText('anungramadhan17@gmail.com');
+  const fallback = page.locator('.form-fallback a');
+  await expect(fallback).toBeVisible();
+  const href = await fallback.getAttribute('href');
+  expect(href.startsWith('mailto:anungramadhan17@gmail.com?subject=')).toBe(true);
+  expect(decodeURIComponent(href)).toContain('kolaborasi brand');
+  // What the visitor typed is still in the form.
+  await expect(page.getByLabel('Pesan', { exact: true })).toHaveValue(/kolaborasi brand/);
+});
+
+test('contact send survives a dead network and keeps the draft reachable', async ({ page }) => {
+  await ready(page, '/kontak', BACKEND_ORIGIN);
+  await page.route('https://api.web3forms.com/submit', route => route.abort('failed'));
+  await fillContactForm(page);
+  await page.getByRole('button', { name: 'Kirim pesan', exact: true }).click();
+  await expect(page.locator('.form-status')).toHaveAttribute('data-status', 'failed');
+  await expect(page.locator('.form-status')).toContainText('Pesan belum terkirim');
+  expect(await page.locator('.form-fallback a').getAttribute('href')).toContain('mailto:anungramadhan17@gmail.com');
+  // The button comes back; a dead network does not lock the form.
+  await expect(page.getByRole('button', { name: 'Kirim pesan', exact: true })).toBeEnabled();
+});
+
+test('a filled honeypot sends nothing and the trap stays out of the way', async ({ page }) => {
+  await ready(page, '/kontak', BACKEND_ORIGIN);
+  let calls = 0;
+  await page.route('https://api.web3forms.com/submit', (route) => {
+    calls++;
+    return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
+  });
+  await expect(page.locator('.form-trap')).toHaveAttribute('aria-hidden', 'true');
+  await expect(page.locator('input[name="website"]')).toHaveAttribute('tabindex', '-1');
+  await fillContactForm(page);
+  await page.locator('input[name="website"]').evaluate((element) => { element.value = 'https://spam.example'; });
+  await page.getByRole('button', { name: 'Kirim pesan', exact: true }).click();
+  await page.waitForTimeout(700);
+  expect(calls).toBe(0);
+  await expect(page.locator('.form-status')).toHaveAttribute('data-status', 'idle');
 });

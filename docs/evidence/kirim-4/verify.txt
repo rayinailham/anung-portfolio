@@ -1,0 +1,11 @@
+canonical https://anung-ramadhan.example/
+og:image https://anung-ramadhan.example/images/og-cover.png (berkas ada: false — menunggu docs/image-jobs/IMG-2-og-image.md)
+whatsapp https://wa.me/6281388116739?text=Halo%20Anung%2C%20saya%20melihat%20portofolio%20Anda%20dan%20ingin%20berdiskusi%20soal%20peluang%20kerja.
+tanpa kunci: tombol "Buka draf email", status "drafted"
+dengan kunci: sending(tombol terkunci true) -> sent("Pesan terkirim ke anungramadhan17@gmail.com. Saya membacanya dari sana.") -> jaringan mati("failed", draf ada)
+preview CV: 2 halaman, 1000x1413 lazy + 1000x1413 lazy
+layout-shift /tentang: 0
+kontras terendah: cv-preview-lead light 5.806:1
+bundel dipindai: 2, bocor: 0
+
+Semua pemeriksaan Kirim 4 lolos.
