@@ -1,0 +1,7 @@
+=== SEBELUM (d1fca7b) ===
+chromium | frame=108 | frame pertama=0px | bentuk=[0,325,271,203,149,110,81,59] | tarikan mundur=1
+firefox | frame=90 | frame pertama=0px | bentuk=[0,271,189,158,118,86,64,46] | tarikan mundur=1
+#/            trigger dimatikan=13  tersembunyi di layar: langsung=3  setelah 6 detik=0
+#/pengalaman  trigger dimatikan=14  tersembunyi di layar: langsung=6  setelah 6 detik=0
+#/tentang     trigger dimatikan=10  tersembunyi di layar: langsung=2  setelah 6 detik=0
+#/kontak      trigger dimatikan= 2  tersembunyi di layar: langsung=1  setelah 6 detik=0

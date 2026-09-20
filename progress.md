@@ -147,6 +147,21 @@ ritme reveal) tetap harus mendarat lebih dulu.
 
 ---
 
+## Setelah papan tutup — perbaikan lapangan
+
+Dilaporkan dari pemakaian langsung di `npm run dev` setelah `d1fca7b`. Bukan
+item papan putaran 2; dicatat di sini supaya jejaknya tidak hilang.
+
+| ID | Item | Status | Bukti |
+|---|---|---|---|
+| PERBAIKAN-1a | Kata intro sempat terbaca utuh sebelum dianimasikan | DONE | [`docs/evidence/perbaikan-1/`](docs/evidence/perbaikan-1/): `intro.mjs` mencicip tiap frame; frame pertama 0px → **419px** (di bawah topengnya sendiri), tarikan mundur 1 → **0**, di Chromium dan Firefox. Test baru `the intro word is never painted finished before it animates`. |
+| PERBAIKAN-1b | Isi halaman hilang saat digulir pada muat pertama | DONE | [`docs/evidence/perbaikan-1/`](docs/evidence/perbaikan-1/): `pemulihan.mjs` mematikan setiap trigger reveal yang belum menyala; tersembunyi di layar `#/` 3 → **0**, `#/pengalaman` 6 → **0**, `#/tentang` 2 → **0**, `#/kontak` 1 → **0**. Test baru `a reveal whose trigger is gone still arrives when it is scrolled to`. |
+
+Keduanya: `npx playwright test` **208 passed**, dan dua test baru itu **8
+failed / 8** terhadap `d1fca7b`.
+
+---
+
 ## Yang sengaja tidak dikerjakan putaran ini
 
 | Item | Alasan |
@@ -278,6 +293,29 @@ dilepas.
   dan di luar scope item ini. Yang bisa dibuktikan di mesin yang sama hanya arah
   dan besarnya: 90 → 97–98 di dua rute terburuk, dua putaran di tiap kolom.
 
+- **Keadaan diam intro dipindah ke CSS, bukan disembunyikan lewat kelas.**
+  Menyembunyikan `.splash-content` sampai runtime datang tetap menyisakan satu
+  frame di mana kelasnya sudah lepas tetapi GSAP belum merender frame nol.
+  Memarkir kata di bawah topengnya lewat `transform` dan kapsinya di
+  `opacity: 0` membuat frame pertama yang bisa dilihat siapa pun sama dengan
+  frame pertama animasi, jadi tidak ada yang perlu disembunyikan. `from` diganti
+  `fromTo` karena `from` akan membaca posisi parkir itu sebagai tujuan.
+- **Posisi gulir jadi pendapat kedua untuk setiap reveal.** Sebab persis
+  meleset-nya trigger di peramban pelapor tidak berhasil saya tirukan — Chromium,
+  Firefox, WebKit tanpa kepala, throttle CPU 4–10×, jaringan lambat, deep link,
+  gulir cepat, gulir saat intro, dan tur empat halaman semuanya bersih. Karena
+  itu yang diperbaiki akibatnya, bukan tebakan tentang lombanya: elemen yang
+  sudah melewati garis mulainya sendiri berhak atas reveal-nya apa pun yang
+  diyakini trigger-nya. Jaring pengaman 5 detik yang lama tetap ada, tetapi
+  sekarang ia jarang jadi satu-satunya yang menolong, dan ia membuang animasi
+  untuk semua orang sekaligus.
+- **`[data-mask]`, `[data-arc]` dan `[data-bar]` ikut masuk daftar pemulihan.**
+  Bar atau cincin yang tidak pernah tumbuh terbaca sebagai nilai nol. Itu bukan
+  animasi yang hilang, itu angka yang salah — aturan 1.
+- **`tests/` ditambah dua, tidak ada yang diubah atau dihapus.** Keduanya gagal
+  di keempat project terhadap `d1fca7b` dan lulus di keempatnya sesudahnya, jadi
+  keduanya benar-benar menjaga perbaikan ini, bukan sekadar ikut lulus.
+
 ## Log verifikasi
 
 Diisi per item saat selesai: perintah yang dijalankan, keluarannya, dan di
@@ -330,3 +368,12 @@ mana buktinya disimpan (`docs/evidence/putaran-2/`).
   `mercusuar.mjs`: CLS Tentang dan Kontak **0,1602 → 0,0000**, performance
   **90 → 97–98**, a11y/best-practices/SEO 100 di semua halaman. Bukti:
   [`docs/evidence/putaran-2/polish-1/`](docs/evidence/putaran-2/polish-1/).
+- **PERBAIKAN-1 — 2026-09-20, setelah papan tutup.** `npx playwright test`:
+  **208 passed (4,3 menit)**, exit 0, 4 project. Dua test baru terhadap
+  `d1fca7b`: **8 failed / 8**. `intro.mjs`: frame pertama kata intro **0 →
+  419px**, tarikan mundur **1 → 0** di Chromium dan Firefox. `pemulihan.mjs`:
+  dengan seluruh trigger reveal yang belum menyala dimatikan paksa, elemen
+  tersembunyi di layar **3/6/2/1 → 0/0/0/0** untuk Beranda, Pengalaman, Tentang,
+  Kontak. `npm run build`: exit 0, 4579 modul, CSS 42,03 kB mentah / 11,04 kB
+  gzip. Tanpa dependensi baru. Bukti:
+  [`docs/evidence/perbaikan-1/`](docs/evidence/perbaikan-1/).

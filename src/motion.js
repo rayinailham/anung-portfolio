@@ -178,6 +178,7 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
           const base = Number(gsap.getProperty(media, 'scaleX')) || 1;
           timeline.fromTo(media, { scale: base * 1.16 }, { scale: base, duration: 1.3, ease: 'power3.out' }, 0);
         }
+        reveals.push({ element, tween: timeline, start: 0.9 });
       });
       gsap.utils.toArray('[data-parallax]').forEach((element) => {
         gsap.fromTo(element, { yPercent: -4 }, { yPercent: 4, ease: 'none', scrollTrigger: { trigger: element.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } });
@@ -189,23 +190,28 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
       // the tween starts from an empty ring and lands exactly back on it.
       gsap.utils.toArray('[data-arc]').forEach((element) => {
         const length = Number(element.getAttribute('stroke-dasharray'));
-        gsap.from(element, {
+        const tween = gsap.from(element, {
           strokeDashoffset: length,
           ...VIZ_TIMING.arc,
           clearProps: 'strokeDashoffset',
           scrollTrigger: { trigger: element, start: 'top 92%', once: true },
         });
+        reveals.push({ element, tween, start: 0.92 });
       });
       // Bars grow from zero width, never from a non-zero baseline. The box keeps
       // its measured size, so nothing shifts and no value is exaggerated.
       gsap.utils.toArray('[data-bar], [data-bar-fill]').forEach((element) => {
-        gsap.from(element, {
+        const trigger = element.closest('figure, li, section') || element;
+        const tween = gsap.from(element, {
           scaleX: 0,
           transformOrigin: 'left center',
           ...VIZ_TIMING.bar,
           clearProps: 'transform',
-          scrollTrigger: { trigger: element.closest('figure, li, section') || element, start: 'top 92%', once: true },
+          scrollTrigger: { trigger, start: 'top 92%', once: true },
         });
+        // A bar that never grows reads as a value of zero, so it is measured
+        // against the element its trigger actually watches, not against itself.
+        reveals.push({ element: trigger, tween, start: 0.92 });
       });
       gsap.utils.toArray('[data-count]').forEach((element) => {
         const value = Number(element.dataset.count);
@@ -236,20 +242,42 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
         });
       }
     }, scope);
-    // ResizeObserver runs after React commits and also sees intermediate heights
-    // during disclosure transitions. Coalesce to one refresh per animation frame.
-    // Use current geometry as a backstop for once-triggers with stale positions.
-    const revealPassed = () => {
+    // Every reveal hides its own content first and waits for a scroll position to
+    // hand it back. A once-trigger that misses its start — a stale measurement, a
+    // route chunk that landed after the layout was measured, a refresh that fell
+    // inside a smooth-scroll frame — therefore costs the content itself, with
+    // nothing left to fire it. Current geometry is the second opinion: an element
+    // already past its own start line is owed its reveal whatever its trigger
+    // believes. On a refresh that means snapping to the finished frame, because
+    // the page was already scrolled there; on a scroll it means playing the
+    // reveal, because the reader is watching it arrive.
+    let checking;
+    const settle = (snap) => {
+      let waiting = false;
       for (const { element, tween, start } of reveals) {
-        if (element.isConnected && element.getBoundingClientRect().top <= innerHeight * start) {
-          tween.progress(1);
-        }
+        if (tween.progress() >= 1 || !element.isConnected) continue;
+        waiting = true;
+        // Leave anything already under way alone; snapping it would cut the
+        // very animation this exists to protect.
+        if (tween.isActive() || tween.progress() > 0) continue;
+        if (element.getBoundingClientRect().top > innerHeight * start) continue;
+        if (snap) tween.progress(1); else tween.play();
       }
+      // Nothing left to rescue: stop reading layout on every scroll frame.
+      if (!waiting) removeEventListener('scroll', onScroll);
+    };
+    const revealPassed = () => settle(true);
+    const onScroll = () => {
+      cancelAnimationFrame(checking);
+      checking = requestAnimationFrame(() => settle(false));
     };
     ScrollTrigger.addEventListener('refresh', revealPassed);
+    addEventListener('scroll', onScroll, { passive: true });
     // Do not depend on a later refresh event: stale once-triggers need a check
     // as soon as every tween and recovery hook exists.
     revealPassed();
+    // ResizeObserver runs after React commits and also sees intermediate heights
+    // during disclosure transitions. Coalesce to one refresh per animation frame.
     let frame;
     const refresh = () => {
       cancelAnimationFrame(frame);
@@ -260,8 +288,10 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
     refresh();
     return () => {
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(checking);
       if (!scope.isConnected || reveals.every(({ tween }) => tween.progress() >= 1)) clearTimeout(safety);
       observer.disconnect();
+      removeEventListener('scroll', onScroll);
       ScrollTrigger.removeEventListener('refresh', revealPassed);
       context.revert();
       counters.forEach(element => { element.textContent = `${element.dataset.count}${element.dataset.suffix || ''}`; });

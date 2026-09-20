@@ -1,0 +1,7 @@
+=== SESUDAH ===
+chromium | frame=113 | frame pertama=419px | bentuk=[419,302,239,179,132,96,70,50] | tarikan mundur=0
+firefox | frame=91 | frame pertama=419px | bentuk=[419,281,252,182,137,100,74,52] | tarikan mundur=0
+#/            trigger dimatikan=13  tersembunyi di layar: langsung=0  setelah 6 detik=0
+#/pengalaman  trigger dimatikan=14  tersembunyi di layar: langsung=0  setelah 6 detik=0
+#/tentang     trigger dimatikan=10  tersembunyi di layar: langsung=0  setelah 6 detik=0
+#/kontak      trigger dimatikan= 2  tersembunyi di layar: langsung=0  setelah 6 detik=0

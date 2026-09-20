@@ -781,6 +781,29 @@ test('the intro word is never painted finished before it animates', async ({ pag
   expect(travel[travel.length - 1]).toBeLessThan(3);
 });
 
+// Every reveal hides its own content and waits for a scroll position to hand it
+// back, so a trigger that never fires costs the content, not just its animation.
+// Scroll position is the second opinion, and this proves it is consulted.
+test('a reveal whose trigger is gone still arrives when it is scrolled to', async ({ page }) => {
+  for (const route of ['/', '/pengalaman', '/tentang']) {
+    await ready(page, route);
+    await page.waitForTimeout(350);
+    const killed = await page.evaluate(async () => {
+      const { ScrollTrigger } = await import('/src/motion-runtime.js');
+      let gone = 0;
+      for (const trigger of ScrollTrigger.getAll()) {
+        if (trigger.animation && !trigger.animation.progress()) { trigger.kill(false); gone++; }
+      }
+      return gone;
+    });
+    expect(killed, `no pending reveal trigger on ${route}`).toBeGreaterThan(0);
+    for (const element of await page.locator('[data-reveal], [data-reveal-group] > *').all()) {
+      await element.evaluate(el => el.scrollIntoView({ block: 'center' }));
+      await expect(element).toHaveCSS('opacity', '1', { timeout: 2500 });
+    }
+  }
+});
+
 test('GSAP blocked still leaves every data visual on its final value', async ({ page }) => {
   let blocked = 0;
   await page.route(/\/node_modules\/.*gsap.*\.js/, route => { blocked++; return route.abort(); });
