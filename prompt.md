@@ -6,9 +6,11 @@ yang sudah tutup; peta itu sekarang salah dan dibuang. Riwayatnya ada di git.
 Referensi: `plan.md` (rencana + spesifikasi desain), `progress.md` (papan
 status, satu-satunya sumber kebenaran item mana yang sudah selesai).
 
-**Perubahan penting dari versi lama:** dulu berkas ini memberi izin git
-selimut ("commit dan push tiap akhir fase"). Izin itu **dicabut**. Tidak ada
-commit, push, branch, atau PR tanpa perintah eksplisit pemilik di sesi itu.
+**Alur git: trunk-based, hanya `main`.** Tidak ada branch fase — putaran 1
+memakainya dan dua branch tidak pernah di-merge, sehingga papan menyatakan
+selesai padahal `main` tidak memilikinya. Commit setiap satu item lolos
+gerbangnya, bukan sekali di akhir sesi. Push ke `origin` dengan akun personal.
+Jangan pernah membuka PR, rebase, atau force push.
 
 ---
 
@@ -74,7 +76,8 @@ Perintah:
 5. Gambar baru wajib punya `width` + `height`. CLS ≤ 0,01.
 6. Jangan hapus cakupan test. `tests/` hanya boleh diubah di BLOK C, dan hanya
    dengan menulis ulang invarian ke DOM baru — tidak melonggarkan.
-7. Jangan operasi git kecuali diminta eksplisit di sesi itu.
+7. Kerjakan langsung di `main`. Jangan bikin branch. Jangan force push,
+   rebase, atau buka PR.
 8. Tanpa dependensi baru.
 9. Copy bahasa Indonesia. Nada: lugas, orang pertama, tanpa kata sifat
    pemasaran berlebihan.
@@ -100,15 +103,18 @@ Perintah:
    "Catatan keputusan", "Log verifikasi".
 2. Tulis ringkasan pendek: apa yang berubah, bukti apa yang ada, apa yang
    tersisa, blok berikutnya apa.
-3. JANGAN commit, push, atau buka PR. Laporkan diff dan tunggu perintah.
-4. Berhenti. Jangan lanjut ke blok berikutnya walau konteks masih sisa.
+3. Commit ke `main` setiap item yang lolos gerbangnya, satu commit per item,
+   pesan commit menjelaskan ALASAN bukan sekadar daftar perubahan. Gerbang
+   gagal atau item belum tuntas -> JANGAN commit, lapor apa adanya.
+4. Push ke `origin main` di akhir sesi.
+5. Berhenti. Jangan lanjut ke blok berikutnya walau konteks masih sisa.
 ````
 
 ---
 
 # BLOK A — Bug
 
-Tiga item: `BUG-1`, `BUG-2`, `BUG-3`. Detail dan gerbangnya di `plan.md`.
+Dua item: `BUG-1` dan `BUG-2`. Detail dan gerbangnya di `plan.md`.
 
 **`BUG-1` — sepertiga bawah `#/pengalaman` permanen `opacity: 0`. P0.**
 Cari akarnya dulu. Jaring pengaman 5 detik di `src/motion.js:253` sudah ada
@@ -123,11 +129,6 @@ jendela baca ≥ 0,9 detik, total intro < 2,2 detik. Naikkan juga
 `setTimeout(skip, 2000)` di `src/App.jsx:53`; jaring itu tetap ada dan tetap
 lebih panjang dari intro. "Lewati intro" tetap bekerja kapan saja, reduced
 motion tetap melewati intro, intro tetap sekali per sesi.
-
-**`BUG-3` — glitch, status `BLOCKED`.** Jangan menebak perbaikan. Reproduksi
-dulu: klik cepat berpindah route, Back di tengah tirai, ganti tema di tengah
-tirai — 4 project + CPU throttle. Tidak ada yang rusak → tulis apa adanya dan
-minta langkah reproduksi dari pemilik. Jangan tandai `DONE`.
 
 ---
 

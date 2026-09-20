@@ -32,7 +32,9 @@ konten benar-benar terlihat setelah pengguna berhenti menggulir.
 4. `tests/` boleh diubah **hanya** di BLOK C, dan hanya dengan menulis ulang
    invarian ke DOM baru — tidak melonggarkan.
 5. Tanpa dependensi baru.
-6. Tidak ada commit, push, atau PR tanpa perintah eksplisit pemilik.
+6. **Trunk-based: hanya branch `main`.** Tidak ada branch fase. Commit setiap
+   satu item lolos gerbangnya, bukan sekali di akhir. Push ke `origin` dengan
+   akun personal. Tidak pernah membuka PR.
 
 ---
 
@@ -50,27 +52,76 @@ ADDVENTURES 8.0, ABEST Internship Program), dan `section.contact-callout`
 lalu diam. `opacity` diambil tiap 1,2 detik sampai 10,8 detik: **tetap `0` di
 sepuluh pengukuran berturut-turut.**
 
-**Kenapa ini lebih dari sekadar reveal gagal.** `src/motion.js:253` memasang
-jaring pengaman 5 detik yang seharusnya membuang `opacity`/`transform` inline
-dari setiap `[data-reveal]`. Jaring itu **tidak menyelamatkan elemen-elemen
-ini**. Jadi P0-2 lama ("jaring pengaman kalau ScrollTrigger gagal") yang
-ditandai DONE sebenarnya bocor.
+**Akar masalah — sudah ditemukan 2026-09-20, jangan diinvestigasi ulang.**
 
-**Yang harus dikerjakan.**
-- Cari akarnya dulu, jangan langsung tambal. Pertanyaannya: kenapa jaring 5
-  detik tidak menjangkau elemen ini — timer-nya di-clear oleh cleanup effect
-  yang berjalan ulang, selektornya tidak cocok, atau tween dibuat ulang
-  sesudah jaring lewat?
-- Perbaiki akarnya, bukan gejalanya. Menaikkan `opacity` lewat CSS paksa
-  adalah tambalan, bukan perbaikan.
-- Jaring pengaman harus jadi jaminan, bukan harapan: setelah diperbaiki,
-  tidak boleh ada jalan di mana `[data-reveal]` bisa berakhir `opacity: 0`
-  secara permanen.
+Ini bukan "reveal gagal muncul". Kebalikannya: **konten disembunyikan lalu tidak
+pernah dilepas.** Inline style elemennya `opacity: 0; transform: translate(0px,
+44px)` — persis from-state GSAP untuk `[data-reveal="up"]` (`y: 44`,
+`src/motion.js:47`). Tween dibuat, merender keadaan awal, lalu berhenti selamanya.
+
+Empat mekanisme penyelamat diuji satu per satu, semuanya tidak jalan:
+
+| Penyelamat | Lokasi | Hasil uji |
+|---|---|---|
+| ScrollTrigger `start: 'top 88%'` | `motion.js:147` | Tidak fire, padahal `rect.top = -630` (jauh terlewat) |
+| Jaring pengaman 5 detik | `motion.js:253` | Tidak fire. MutationObserver mencatat **0 tulisan** ke atribut `style` selama 9 detik |
+| Backstop `revealPassed` di event `refresh` | `motion.js:242` | Tidak fire |
+| ResizeObserver → `refresh()` | `motion.js:248` | Resize viewport 1440→1441 px: **nihil**, opacity tetap 0 |
+
+Resize yang tidak berefek adalah bukti kuncinya: ResizeObserver-nya sendiri tidak
+terpasang untuk run itu.
+
+**Urutan yang salah di `src/motion.js`:**
+
+    const context = gsap.context(() => {
+      ...                        // SEMUA tween reveal dibuat di sini -> konten disembunyikan
+    }, scope);
+
+    if (!revealed) return () => context.revert();   // ln 231: keluar duluan
+
+    // SEMUA penyelamat baru dipasang SETELAH baris itu:
+    ScrollTrigger.addEventListener('refresh', revealPassed);   // ln 242
+    const observer = new ResizeObserver(refresh);              // ln 248
+    refresh();                                                 // ln 250
+    const safety = setTimeout(..., 5000);                      // ln 253
+
+Menyembunyikan terjadi **sebelum** gerbang; menyelamatkan terjadi **sesudah**
+gerbang. Kalau `revealed` masih `false` saat effect berjalan dan effect itu tidak
+pernah berjalan ulang dengan `revealed === true`, hasilnya: konten tersembunyi,
+tanpa ScrollTrigger hidup, tanpa backstop, tanpa observer, tanpa jaring 5 detik.
+
+**Ini race, bukan deterministik.** Load pertama: 6 dari 10 elemen `[data-reveal]`
+tersangkut. Load berikutnya di sesi yang sama: **9 dari 10**. Jumlahnya berubah
+tiap muat — konsisten dengan teori "tergantung nilai `revealed` pada run effect
+terakhir". Ini juga menjelaskan kenapa 196 test bisa lolos: Playwright jarang
+kena timing yang sial, dan tidak ada test yang menuntut konten terlihat setelah
+pengguna berhenti menggulir.
+
+Jadi P0-2 lama ("jaring pengaman kalau ScrollTrigger gagal") yang ditandai DONE
+memang bocor.
+
+**Arah perbaikan.** Prinsipnya satu: **jangan pernah menyembunyikan apa pun
+sebelum penyelamatnya terpasang.**
+
+1. Pindahkan gerbang `revealed` ke ATAS `gsap.context`. Kalau belum boleh reveal,
+   jangan buat tween sama sekali — bukan buat dulu lalu kabur. Satu perubahan ini
+   mematikan seluruh kelas bug tersebut.
+2. Jaring pengaman jadi jaminan, bukan harapan: pasang timernya sebelum tween
+   dibuat, dan jangan di-clear cleanup kecuali tweennya benar-benar selesai.
+3. Backstop `revealPassed` dijalankan langsung sekali setelah setup, bukan hanya
+   menunggu event `refresh` yang mungkin tidak pernah datang.
+
+Yang ditolak: menaikkan `opacity` lewat CSS paksa. Itu menutup gejala dan
+mematikan animasi reveal.
 
 **Gerbang.** Test baru yang gagal pada `main` hari ini dan lolos sesudahnya:
 untuk keempat route, gulir ke dasar, tunggu melewati ambang jaring pengaman,
 lalu tuntut **nol** elemen `[data-reveal]`/`[data-reveal-group] > *` dengan
 `opacity < 0.99`. Jalankan di 4 project.
+
+Satu test pendamping wajib ada: pada timing normal animasi reveal **masih
+berjalan** (elemen sempat `opacity < 1` lalu naik ke 1). Tanpa itu, "perbaikan"
+yang sekadar mematikan animasi akan lolos gerbang.
 
 ## BUG-2 · Intro splash terlalu cepat untuk dibaca · P1
 
@@ -102,19 +153,6 @@ Intro tetap hanya sekali per sesi (`sessionStorage`).
 **Gerbang.** Test yang mengukur jendela baca: teks splash terlihat dan diam
 ≥ 0,9 detik; intro selesai < 2,2 detik; klik "Lewati intro" di tengah animasi
 langsung membuka halaman.
-
-## BUG-3 · Glitch yang dilaporkan pemilik · belum direproduksi
-
-Pemilik melaporkan "sering banyak glitch" tanpa langkah reproduksi.
-Kandidat paling kuat: tirai transisi antar-route (`transitioning` di
-`src/App.jsx`), terutama saat route diganti sebelum tirai sebelumnya selesai.
-
-**Yang harus dikerjakan.** Jangan menebak perbaikan. Reproduksi dulu:
-klik cepat berpindah route berulang-ulang, tekan tombol Back browser di
-tengah tirai, dan ganti tema di tengah tirai — di 4 project, dan pada mesin
-yang di-throttle CPU. Catat apa yang rusak sebelum menyentuh kode.
-Kalau tidak ada yang rusak, tulis itu apa adanya dan minta langkah
-reproduksi dari pemilik; **jangan** tandai DONE.
 
 ---
 

@@ -16,11 +16,11 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 
 | Blok | Isi | Item | Done |
 |---|---|---|---|
-| A | Bug | 3 | 0 |
+| A | Bug | 2 | 0 |
 | B | Hutang yang belum mendarat di `main` | 2 | 0 |
 | C | Rombak visualisasi timeline | 1 | 0 |
 | D | Poles visual menyeluruh | 1 | 0 |
-| — | **Total** | **7** | **0** |
+| — | **Total** | **6** | **0** |
 
 Urutan kerja: A → B → C → D. BLOK D hanya dimulai setelah A, B, C lolos.
 
@@ -35,7 +35,7 @@ sesi yang sama, bukan dikutip dari catatan lama.
 | Build entry JS | 279,73 kB raw / 85,62 kB gzip | `npm run build` |
 | Chunk route | Experience 10,59 · About 6,16 · Contact 15,82 kB | keluaran build |
 | Console error | 0 | Playwright MCP, `#/pengalaman` |
-| Elemen `[data-reveal]` tersangkut `opacity: 0` di `#/pengalaman` | **6** | gulir ke dasar, ukur 10× sampai 10,8 s |
+| Elemen `[data-reveal]` tersangkut `opacity: 0` di `#/pengalaman` | **6–9 dari 10** (race) | gulir ke dasar, ukur 10× sampai 10,8 s |
 | `dist/images/og-cover.png` | **tidak ada** | `ls` setelah build |
 | Lighthouse mobile | belum diukur ulang putaran ini | — |
 
@@ -45,9 +45,8 @@ sesi yang sama, bukan dikutip dari catatan lama.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| BUG-1 | Sepertiga bawah `#/pengalaman` permanen `opacity: 0`; jaring pengaman 5 detik tidak menyelamatkannya | TODO | Butuh: akar masalah ditulis (bukan tambalan), test baru yang **gagal di `main` 7b3e322** dan lolos sesudahnya, nol elemen tersangkut di 4 route × 4 project. |
+| BUG-1 | Sepertiga bawah `#/pengalaman` permanen `opacity: 0`; tween dibuat sebelum gerbang `revealed`, semua penyelamat dipasang sesudahnya | TODO | **Akar sudah ditemukan** (lihat catatan di bawah + `plan.md`). Butuh: perbaikan di akarnya, test baru yang **gagal di `a49750b`** dan lolos sesudahnya, nol elemen tersangkut di 4 route × 4 project, plus test pendamping bahwa animasi reveal masih hidup. |
 | BUG-2 | Intro splash terlalu cepat; teks utuh hanya ±20 ms | TODO | Butuh: jendela baca ≥ 0,9 s terukur, total intro < 2,2 s, "Lewati intro" tetap bekerja di tengah animasi, reduced motion tetap melewati intro, jaring `skip` tetap lebih panjang dari intro. |
-| BUG-3 | Glitch yang dilaporkan pemilik | BLOCKED | Belum ada langkah reproduksi. Butuh: hasil percobaan route cepat / Back di tengah tirai / ganti tema di tengah tirai, 4 project + CPU throttle. Kalau tidak ada yang rusak, tulis apa adanya dan minta langkah dari pemilik — **jangan** tandai DONE. |
 
 ### Catatan BUG-1
 
@@ -59,10 +58,22 @@ Enam elemen: `section.organizations`, empat `<article>` di dalamnya (BEM SB
 IPB, IDEANATION, ADDVENTURES 8.0, ABEST Internship Program), dan
 `section.contact-callout`.
 
-`src/motion.js:253` memasang jaring 5 detik yang seharusnya membuang
-`opacity`/`transform` inline dari setiap `[data-reveal]`. Jaring itu tidak
-menjangkau elemen-elemen ini. **P0-2 dari putaran 1 dengan demikian bocor**,
-meski ditandai DONE di papan lama.
+**Akarnya sudah ditemukan — jangan investigasi ulang.** Uraian lengkap beserta
+tabel empat penyelamat yang gagal ada di `plan.md` BLOK A. Ringkasnya: tween
+reveal dibuat di dalam `gsap.context` **sebelum** gerbang
+`if (!revealed) return` di `src/motion.js:231`, sedangkan keempat penyelamat
+(backstop `refresh`, ResizeObserver, `refresh()`, jaring 5 detik) baru dipasang
+**sesudah** gerbang itu. Menyembunyikan sebelum gerbang, menyelamatkan sesudah
+gerbang.
+
+Bukti kunci: resize viewport 1440→1441 px tidak mengubah apa pun, jadi
+ResizeObserver-nya memang tidak terpasang; dan MutationObserver mencatat **0
+tulisan** ke atribut `style` selama 9 detik, jadi jaring 5 detik memang tidak
+pernah berjalan.
+
+Ini race: load pertama 6 dari 10 elemen tersangkut, load berikutnya **9 dari
+10**. **P0-2 dari putaran 1 dengan demikian bocor**, meski ditandai DONE di
+papan lama.
 
 196 test lolos sambil bug ini hidup. Tidak ada test yang menuntut konten
 benar-benar terlihat setelah pengguna berhenti menggulir.
@@ -169,6 +180,10 @@ dilepas.
   kerapian: papan lama menyatakan VIS-1 sudah mendarat padahal tidak, dan
   menyatakan P0-2 tertutup padahal bocor. Papan yang salah lebih berbahaya
   daripada papan yang panjang.
+- **2026-09-20** — `BUG-3` (glitch) dicabut atas keputusan pemilik: dianggap
+  tidak ada. Tidak pernah direproduksi, jadi tidak ada yang hilang selain
+  baris `BLOCKED`. Kalau gejalanya muncul lagi, buka sebagai item baru
+  dengan langkah reproduksi.
 - **2026-09-20** — `tests/` dibuka untuk BLOK C saja. Empat assertion timeline
   memotret bentuk lama; mempertahankannya berarti mengunci desain yang sudah
   ditolak pemilik.
