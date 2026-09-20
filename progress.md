@@ -20,12 +20,12 @@ belum seluruhnya `DONE`/`SKIP`.
 | 2 | Bukti kerja + ruang mati | Claude Code | 7 | 7 |
 | IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 1 |
 | 3 | Kerangka visualisasi data + timeline | Claude Code | 2 | 2 |
-| VIS-1 | Rasa visual + animasi untuk kerangka Kirim 3 | Codex | 1 | 0 |
+| VIS-1 | Rasa visual + animasi (gerbang test ditutup Claude Code) | Codex | 1 | 1 |
 | 4 | Konversi | Claude Code | 4 | 4 |
 | IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
 | 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
 | 6 | Pass poles visual terakhir | Codex | 1 | 0 |
-| — | **Total dikerjakan** | | **33** | **24** |
+| — | **Total dikerjakan** | | **33** | **25** |
 | — | Sengaja di-SKIP | | 3 | — |
 
 Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
@@ -105,12 +105,15 @@ reduced-motion, test. Boleh selesai dalam keadaan polos — rasanya digarap VIS-
 
 ## VIS-1 — Rasa visual + animasi · Codex
 
-Kirim 3 sudah `DONE`, jadi fase ini siap dijalankan. Tiket sudah ditulis:
+Implementasi rupa dan bukti dikerjakan sesi Codex; gerbang `npm test` yang
+tertinggal ditutup sesi tiket Claude Code 2026-09-20
+([`docs/evidence/gerbang-vis-1/`](docs/evidence/gerbang-vis-1/README.md)).
+Catatan balik ada di
 [`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md).
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P2-23 | Kosakata reveal terlalu seragam, plus pass rasa atas seluruh keluaran Kirim 3 | TODO | Butuh: screenshot terang/gelap × 1440px/390px, screenshot reduced motion, angka kontras tiap pasangan yang berubah, `npm test` lolos tanpa mengubah test. Branch `fase/vis-1`. |
+| P2-23 | Kosakata reveal terlalu seragam, plus pass rasa atas seluruh keluaran Kirim 3 | DONE | Ring–angka menyatu, kisi timeline 11 bulan, bar/counter dan timing per jenis selesai. Build + skrip Kirim 3 + probe rupa/motion lolos; 56 screenshot sebelum/sesudah, 40 pasangan kontras standar dan 6 pasangan terhadap lapisan kisi/track lolos. [Bukti rupa](docs/evidence/vis-1/README.md). **Gerbang:** kegagalan `npm test` yang ditinggalkan sesi Codex — Firefox, preview CV, `naturalWidth` 0 — dilacak sampai akarnya dan diperbaiki di sesi tiket Claude Code: `img.decode()` ditolak Firefox (`EncodingError: Invalid image request.`) selama permintaan gambar lazy-nya masih di jalan, penolakan itu ditelan `.catch(() => {})`, lalu `naturalWidth` dibaca sebelum muatannya mendarat. Bukan ulah VIS-1: kegagalan yang sama muncul 3/3 pada `main` 54f05e1 tanpa satu pun perubahan VIS-1. Perbaikan ada di test, bukan aplikasi, dan menambah assertion alih-alih melonggarkan. Sesudahnya `npm test` **164 passed** dua run berturut, `verify-kirim-3.mjs` dan `verify-polish.mjs` mengembalikan angka VIS-1 yang sama persis. [Bukti gerbang](docs/evidence/gerbang-vis-1/README.md). |
 
 ## Kirim 4 — Konversi
 
@@ -193,6 +196,15 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | Tanggal | Keputusan | Alasan |
 |---|---|---|
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
+| 2026-09-20 | Gerbang VIS-1 diperbaiki di `tests/portfolio.spec.js`, bukan di aplikasi | Probe tiga engine menunjukkan gambar CV sehat di chromium/firefox/webkit: begitu muatannya mendarat, `naturalWidth` 1000 dan `decode()` sukses di semuanya. Yang keliru cara test mengukur — `decode()` dipakai sebagai penunggu muatan, padahal Firefox menolaknya selama permintaan masih di jalan. Mengubah aplikasi (misal membuang `loading="lazy"`) berarti mengubah perilaku yang benar demi menyenangkan test. |
+| 2026-09-20 | Penolakan `decode()` yang tadinya ditelan `.catch(() => {})` sekarang diperiksa assertion | Menunggu muatan saja sudah cukup membuat test hijau, tapi itu menyisakan `decode()` sebagai panggilan tanpa arti. Sekalian dijadikan bukti: gambar CV harus benar-benar bisa didekode, bukan sekadar kotak seukuran benar. Cakupan naik, tidak ada yang dilonggarkan; jumlah hasil tetap 164. |
+| 2026-09-20 | Kegagalan disebut bukan ulah VIS-1 hanya setelah dijalankan pada `main` 54f05e1 yang bersih | Catatan balik Codex melarang menyebut "bug lama" atau "flaky" tanpa pembanding. Dua log dengan `git diff --stat` di kepalanya menjadi pembanding itu: 3/3 gagal dengan VIS-1 terpasang, 3/3 gagal tanpa VIS-1. |
+| 2026-09-20 | `verify-polish.mjs` dijalankan ulang dan menimpa `polish-metrics.json` + `motion-*-raw.json` milik sesi Codex di `docs/evidence/vis-1/` | Skrip itu menulis ke foldernya sendiri dan tidak punya `EVIDENCE_DIR`. Berkasnya belum pernah di-commit, dan angka hasilnya identik dengan yang diklaim sesi Codex (6 pasangan, terendah 3,164:1), jadi yang tertimpa adalah hasil run yang sama pada sumber yang sama. Salinan log sesi ini ada di `docs/evidence/gerbang-vis-1/verify-polish.txt`. |
+| 2026-09-20 | Pekerjaan rupa VIS-1 di-commit ke `fase/vis-1` lewat merge `main`, bukan rebase atau force | Branch `fase/vis-1` sudah punya commit VIS-1 lama (`3bfef9f`) yang berdiri di atas Kirim 3, sementara sesi Codex terakhir menggarap ulang rupanya di atas Kirim 4. `prompt.md` melarang force dan rebase, jadi `main` di-merge masuk ke branch dan isi pohon kerja yang sudah diverifikasi dipasang sebagai hasil merge. Keputusan merge ke `main` tetap milik Milord. |
+| 2026-09-20 | VIS-1 tetap WIP dan tidak commit/push setelah suite 163 passed / 1 failed | Preview CV gagal di Firefox (`naturalWidth` 0). Instruksi `prompt.md` melarang Codex memperbaiki bug/test dan melarang commit pada suite gagal. Tidak mengklaim ini bug lama atau flaky tanpa pembanding. Semua item rupa dan bukti lain selesai; tindak lanjut gerbang milik Claude Code. |
+| 2026-09-19 | VIS-1 dipilih sebagai fase belum tuntas paling awal menurut urutan Papan Fase | Kirim 4 sudah DONE; tiket VIS-1 tetap mendahului IMG-2 dan Kirim 5. Tidak melompati tiket atau mengerjakan fase lain. |
+| 2026-09-19 | VIS-1 memakai CSS dan hanya nilai tiga tabel timing; `progress.md` diperbarui sesuai instruksi sesi langsung | Ring–angka disatukan melalui grid, tanpa mengubah JSX; semua angka, teks, logika, test, pipeline dan dependensi tetap. Kisi 11 sel dekoratif mengikuti kontrak timeline saat ini; kalau rentang tanggal berubah nanti, kisi perlu ditinjau oleh harness kode. |
+| 2026-09-19 | Bukti utama VIS-1 mengikuti lokasi tiket `docs/evidence/vis-1/`; indeks fase di `docs/evidence/kirim-vis-1/` | Menjaga tautan tiket dan pola penutup sesi sekaligus, tanpa menggandakan gambar. Tidak membutuhkan aset baru atau tiket gambar baru. |
 | 2026-09-19 | Kirim 4 memakai kolom Default apa adanya: Web3Forms via `VITE_WEB3FORMS_KEY`, `VITE_SITE_URL` untuk domain, keduanya kosong | Tidak ada kredensial dan tidak ada domain. Berhenti bertanya berarti fase tidak jalan. UI lengkap di kedua jalur, copy jujur di kedua jalur, dan test menutup keduanya, jadi mengisi env var nanti tidak menuntut perubahan kode sebaris pun. |
 | 2026-09-19 | `src/site.js` jadi satu-satunya sumber URL + metadata share; `vite.config.js` merendernya ke `index.html` lewat plugin `anung-site-meta` | `prompt.md` menuntut canonical dan `og:url` dari satu sumber. Menaruh tag di `index.html` berarti URL ditulis 4 kali (canonical, `og:url`, `og:image`, `twitter:image`) dan judul 3 kali. Perayap LinkedIn/WhatsApp tidak menjalankan JS, jadi menulis tag dari React tidak menyelesaikan apa pun — harus saat build. Plugin melempar error kalau penanda `<!--site-meta-->` hilang, jadi kegagalannya berisik, bukan diam. |
 | 2026-09-19 | Host fallback `https://anung-ramadhan.example`, bukan domain tebakan | `.example` adalah TLD cadangan RFC 2606 — mustahil disalahartikan sebagai alamat nyata, dan kalau tidak sengaja ter-deploy, canonical yang salah menunjuk ke tempat yang jelas tidak ada alih-alih ke situs orang lain. `npm run build` menulis peringatan setiap kali dipakai. |
@@ -297,6 +309,9 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 | 2026-09-19 | `node scripts/shoot-kirim-4.mjs` | Exit 0. 12 screenshot bagian (3 × {1440,390} × {terang,gelap}) + 4 keadaan form. Permintaan ke `api.web3forms.com` dijawab Playwright secara lokal — tidak ada permintaan yang keluar dari mesin dan tidak ada pesan yang benar-benar terkirim. PNG dikonversi WebP q80 sebelum di-commit. |
 | 2026-09-19 | Uji kirim sampai inbox | **Belum dijalankan.** Butuh kunci Web3Forms asli yang belum ada. Jalur `mailto:` dan seluruh keadaan backend sudah dibuktikan dengan permintaan yang dicegat; yang menunggu hanya konfirmasi bahwa email benar-benar mendarat. |
 | 2026-09-19 | Validasi LinkedIn Post Inspector + pratinjau WhatsApp nyata | **Belum dijalankan.** Butuh `VITE_SITE_URL` berisi domain nyata, situs ter-deploy, dan `public/images/og-cover.png` dari IMG-2. Markup-nya sendiri sudah dibuktikan pada dokumen yang dilayani. |
+| 2026-09-20 | `npx playwright test --project=firefox -g 'the CV can be read' --repeat-each=3` sebelum perbaikan, dua keadaan pohon kerja | Exit 1 dua-duanya: **3/3 gagal** dengan VIS-1 terpasang, **3/3 gagal** pada `main` 54f05e1 yang bersih. Kegagalannya bukan ulah VIS-1. [Log](docs/evidence/gerbang-vis-1/sebelum-vis-1-terpasang.txt), [log](docs/evidence/gerbang-vis-1/sebelum-tanpa-vis-1.txt). |
+| 2026-09-20 | `node docs/evidence/gerbang-vis-1/probe-cv.mjs` | Exit 0. Respons gambar CV ditahan 600 ms supaya balapannya selalu terbuka: urutan lama gagal 4/9 (firefox 3/3, webkit 1/3), urutan baru 0/9 gagal. `EncodingError: Invalid image request.` hanya muncul selama permintaan masih di jalan. [Log](docs/evidence/gerbang-vis-1/probe-cv.txt). |
+| 2026-09-20 | `npm test` sesudah perbaikan, dua run berturut | Exit 0 dua-duanya, **164 passed (3.2m)** dan **164 passed (3.3m)**. [Log 1](docs/evidence/gerbang-vis-1/suite-penuh-1.txt), [log 2](docs/evidence/gerbang-vis-1/suite-penuh-2.txt). |
 
 ### Output regresi gagal → lolos
 
@@ -409,3 +424,52 @@ Kirim 3 selesai seluruhnya; Ringkasan 18 → 20 dari 33.
 Fase berikutnya: **VIS-1 — Codex**, tiketnya siap di
 [`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md),
 branch `fase/vis-1`. Sesudah itu **Kirim 4 — Claude Code**.
+
+
+### Verifikasi VIS-1 — sesi Codex 2026-09-19, penutup 2026-09-20
+
+| Perintah / pemeriksaan | Hasil |
+|---|---|
+| `arch-playwright-provision --check` + launch tiga engine | Nol library hilang. Chromium 153.0.8010.12, Firefox 155.0, WebKit 26.6 berhasil launch. [Lingkungan](docs/evidence/vis-1/env-check.md). |
+| `npm run build` | Exit 0. Peringatan canonical placeholder sesuai default Kirim 4. [Log](docs/evidence/vis-1/build.txt). |
+| `EVIDENCE_DIR=docs/evidence/vis-1 node scripts/verify-kirim-3.mjs` | Exit 0: arc 0,935001, TOEFL 0,7439, split ≈2:1 (pembulatan subpiksel), cakupan track tepat (delta 0 px), overlap 4 bulan; empat route tanpa overflow pada 320/390/1440. Kontras standar 40/40: teks minimum 5,806:1, grafis terhadap permukaan 5,268:1. [Log](docs/evidence/vis-1/verify.txt), [metrik](docs/evidence/vis-1/metrics.json). |
+| `node docs/evidence/vis-1/verify-polish.mjs` | Exit 0: 8 pemeriksaan ring–angka (4 lebar × 2 tema), sampel tween arc/bar langsung dari browser, 6 pasangan tambahan grafis terhadap campuran kisi/track, minimum 3,164:1 ≥ 3:1. [Log](docs/evidence/vis-1/verify-polish.txt), [metrik](docs/evidence/vis-1/polish-metrics.json). |
+| Probe arc awal | Gagal pada batas pecahan nilai antara yang terlalu ketat: GSAP membulatkan offset CSS sementara menjadi 21 unit, fraksi 0,935726. Nilai akhir kembali ke atribut 21,237, fraksi 0,935001. Probe tambahan mengizinkan setengah unit SVG selama tween, dengan pemeriksaan nilai akhir tetap. Tidak mengubah test aplikasi atau logika GSAP. [Log probe](docs/evidence/vis-1/probe-arc-first.txt). |
+| Reduced motion | 6 counter final, 6 `[data-bar]` tanpa transform, TOEFL tanpa transform, arc tanpa inline override. [Bukti](docs/evidence/vis-1/reduced-motion.txt). |
+| `scripts/shoot-kirim-3.mjs` sebelum/sesudah + `shoot-mobile.mjs` | Exit 0; 56 WebP sebelum/sesudah. Lima visual × dua tema × desktop/mobile, reduced motion dan halaman penuh. Tambahan timeline mobile utuh karena header sticky menutupi atas tangkapan standar saat section lebih tinggi dari viewport. [Indeks](docs/evidence/vis-1/README.md). |
+| SHA-256 sebelum/sesudah | 14 berkas terlindungi identik pada sesi implementasi: JSX, data, tests, scripts, package + lockfile. [Hasil](docs/evidence/vis-1/protected-files.txt). Snapshot pembanding sementara di `/tmp` tidak lagi tersedia saat sesi dilanjutkan; hasil lama dipertahankan, tidak diklaim diperiksa ulang. |
+| `npm test` | **163 passed, 1 failed (3.3m)**. Firefox: `the CV can be read on the page without downloading it`, `tests/portfolio.spec.js:746:28`, `expect(rendered.natural).toBeGreaterThan(0)` menerima 0. Penyebab belum dipastikan; tidak mengubah source/test di luar tiket atau mengulang sampai hijau. [Log lengkap](docs/evidence/vis-1/full-suite.txt). |
+| Penutup Git | Tidak ada commit, push, atau hash commit VIS-1: gerbang suite belum lolos. |
+
+VIS-1 tetap **WIP**; total tetap **24/33**. Tindak lanjut: Claude Code memeriksa gerbang Firefox preview CV. Sesudah gerbang lolos dan VIS-1 ditutup, fase berikutnya **IMG-2 — Codex**, lalu **Kirim 5 — Claude Code**. Sesi ini tidak melanjutkan fase lain.
+
+### Gerbang VIS-1 — sesi tiket Claude Code, 2026-09-20
+
+Kegagalan `[firefox] the CV can be read on the page without downloading it`
+(`tests/portfolio.spec.js:746`) dilacak sampai akarnya. `scrollIntoViewIfNeeded()`
+hanya memulai permintaan gambar `loading="lazy"`; test lalu memanggil
+`img.decode()` dan menelan penolakannya, mengira `decode()` menunggu muatan itu
+mendarat. Firefox tidak menunggu — selama permintaannya masih di jalan,
+`decode()` ditolak dengan `EncodingError: Invalid image request.` — jadi
+`naturalWidth` dibaca pada gambar yang belum mendarat dan bernilai 0.
+
+| Perintah / pemeriksaan | Hasil |
+|---|---|
+| Sebelum perbaikan, sumber dengan VIS-1 terpasang, `--repeat-each=3` | Exit 1: **3 dari 3 gagal**. [Log berkepala `git diff --stat`](docs/evidence/gerbang-vis-1/sebelum-vis-1-terpasang.txt). |
+| Sebelum perbaikan, pohon kerja persis `main` 54f05e1, nol perubahan VIS-1 | Exit 1: **3 dari 3 gagal**. Kegagalannya sudah ada di commit Kirim 4 — bukan ulah VIS-1, dan ini pembanding yang diminta catatan balik Codex. [Log](docs/evidence/gerbang-vis-1/sebelum-tanpa-vis-1.txt). |
+| `node docs/evidence/gerbang-vis-1/probe-cv.mjs` (respons gambar ditahan 600 ms, 3 engine × 3 ronde × 2 urutan) | Exit 0. Urutan lama: firefox **0/3** lolos (`EncodingError: Invalid image request.`), webkit 2/3 (`Aborted by source change.`), chromium 3/3. Urutan baru: **9/9** lolos. Di semua engine, setelah muatannya mendarat `naturalWidth` 1000 dan `decode()` sukses — gambarnya sehat, pengukurannya yang salah. [Log](docs/evidence/gerbang-vis-1/probe-cv.txt). |
+| Perbaikan | `tests/portfolio.spec.js`, satu test: tunggu `naturalWidth > 0` (batas 10 detik) sebelum mengukur, lalu `decode()` yang tadinya ditelan diperiksa `expect(rendered.decoded).toBe('ok')`. Aplikasi tidak disentuh. Tidak ada timeout dinaikkan, assertion dilonggarkan, `test.skip` ditambahkan, atau cakupan dikurangi — satu assertion justru ditambah. |
+| `npx playwright test -g 'the CV can be read…' --repeat-each=5` di 4 project | Exit 0, **20 passed (23.8s)**. [Log](docs/evidence/gerbang-vis-1/sesudah-ulang-5.txt). |
+| `npm test` run 1 | Exit 0, **164 passed (3.2m)** — jumlah hasil sama dengan Kirim 4, tidak ada yang dihapus. [Log](docs/evidence/gerbang-vis-1/suite-penuh-1.txt). |
+| `npm test` run 2, tanpa perubahan apa pun | Exit 0, **164 passed (3.3m)**. [Log](docs/evidence/gerbang-vis-1/suite-penuh-2.txt). |
+| `npm run build` | Exit 0; peringatan canonical placeholder tetap seperti default Kirim 4. [Log](docs/evidence/gerbang-vis-1/build.txt). |
+| `EVIDENCE_DIR=docs/evidence/gerbang-vis-1 node scripts/verify-kirim-3.mjs` | Exit 0 pada pohon kerja final: arc IPK 0,935001, TOEFL 0,7439 = harapan, rasio split 2,0001, tumpang tindih 4 bulan, 40 pasangan kontras terendah 5,268:1. Identik dengan sesi Codex. [Log](docs/evidence/gerbang-vis-1/verify-kirim-3.txt), [metrik](docs/evidence/gerbang-vis-1/metrics.json). |
+| `node docs/evidence/vis-1/verify-polish.mjs` | Exit 0: 8 pemeriksaan ring–angka, sampel tween langsung, 6 pasangan kontras cat terendah 3,164:1 — sama persis dengan angka sesi Codex. [Log](docs/evidence/gerbang-vis-1/verify-polish.txt). |
+| Lighthouse / LCP / CLS | Tidak diaudit ulang; itu P2-22/P2-26 di Kirim 5. Baseline lama tidak disentuh dan tidak diklaim. |
+
+VIS-1 sekarang **DONE**; Ringkasan 24 → 25 dari 33.
+
+Fase berikutnya: **IMG-2 — Codex**, tiketnya siap di
+[`docs/image-jobs/IMG-2-og-image.md`](docs/image-jobs/IMG-2-og-image.md),
+branch `fase/img-2`. Sesudah itu **Kirim 5 — Claude Code**. Sesi tiket ini
+berhenti di sini.

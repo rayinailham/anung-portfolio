@@ -1,0 +1,26 @@
+[WebServer] [site-meta] VITE_SITE_URL belum diisi. og:url dan canonical memakai host placeholder https://anung-ramadhan.example. Isi VITE_SITE_URL sebelum deploy.
+
+
+Running 20 tests using 3 workers
+
+[1/20] [chromium] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[2/20] [chromium] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[3/20] [chromium] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[4/20] [chromium] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[5/20] [chromium] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[6/20] [mobile] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[7/20] [mobile] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[8/20] [mobile] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[9/20] [mobile] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[10/20] [mobile] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[11/20] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[12/20] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[13/20] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[14/20] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[15/20] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[16/20] [webkit] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[17/20] [webkit] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[18/20] [webkit] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[19/20] [webkit] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+[20/20] [webkit] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+  20 passed (23.8s)

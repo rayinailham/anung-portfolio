@@ -738,11 +738,18 @@ test('the CV can be read on the page without downloading it', async ({ page }) =
   await expect(pages).toHaveCount(2);
   const first = pages.first();
   await first.scrollIntoViewIfNeeded();
+  // Scrolling only starts the lazy request. Firefox rejects decode() while that
+  // request is still in flight ("EncodingError: Invalid image request") instead
+  // of waiting for it, so decode() alone measures an image that has not landed
+  // yet. Wait for the load, then decode has to succeed: that is what proves the
+  // bytes are a readable page and not just a box of the right size.
+  await expect.poll(() => first.evaluate(image => image.naturalWidth), { timeout: 10000 }).toBeGreaterThan(0);
   const rendered = await first.evaluate(async (image) => {
-    await image.decode().catch(() => {});
-    return { natural: image.naturalWidth, width: image.getAttribute('width'), height: image.getAttribute('height'), alt: image.alt };
+    const decoded = await image.decode().then(() => 'ok', error => `${error.name}: ${error.message}`);
+    return { decoded, natural: image.naturalWidth, width: image.getAttribute('width'), height: image.getAttribute('height'), alt: image.alt };
   });
   // width + height on every new image is what keeps CLS where it is.
+  expect(rendered.decoded).toBe('ok');
   expect(rendered.natural).toBeGreaterThan(0);
   expect(rendered.width).toBe('1000');
   expect(rendered.height).toBe('1413');

@@ -1,0 +1,5 @@
+contrast pairs checked: 40, lowest 5.268:1
+TOEFL fraction 0.7439 (expected 0.7439)
+split ratio 2.0001, shared months 4
+GPA arc fraction 0.935001
+verify-kirim-3 OK
