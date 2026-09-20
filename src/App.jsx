@@ -1,35 +1,45 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowRight, ArrowDown, Asterisk, DownloadSimple, Sun, Moon, List, X, LinkedinLogo, WhatsappLogo, Copy, Check, Plus, Minus } from '@phosphor-icons/react';
-import { profile, experience, organizations, skills, education, english, cvPreview } from './data';
-import { site, WHATSAPP_URL } from './site';
+import { ArrowRight, Asterisk, DownloadSimple, Sun, Moon, List, X, ArrowUpRight, ArrowDown } from '@phosphor-icons/react';
+import { profile } from './data';
+import { WHATSAPP_URL } from './site';
+import { routes, getAnchor, getRoute } from './routes.js';
+import { isRoute, loadPage, pageFor, prefetchPages } from './pages.js';
+import { Link } from './ui.jsx';
 import { gsap, useMotionStatus, useReducedMotion, useSmoothScroll, usePageMotion } from './motion';
 
-const routes = { '/': 'Beranda', '/pengalaman': 'Pengalaman', '/tentang': 'Tentang', '/kontak': 'Kontak' };
-// `#/pengalaman#entri-anymind` carries a route and a deep-link anchor in one
-// hash. Everything before the second '#' is the route; the rest is the anchor.
-const splitHash = () => {
-  const raw = window.location.hash.slice(1);
-  const at = raw.indexOf('#');
-  return at < 0 ? { path: raw || '/', anchor: '' } : { path: raw.slice(0, at) || '/', anchor: raw.slice(at + 1) };
-};
-const getRoute = () => splitHash().path;
-const getAnchor = () => splitHash().anchor;
-const canMove = () => gsap && matchMedia('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches;
-
-function Link({ to, children, className = '', onNavigate, ...props }) {
-  return <a href={`#${to}`} className={className} onClick={onNavigate} {...props}>{children}</a>;
+// The route's own module, kept out of React's Suspense on purpose: the page has
+// to be mounted before `usePageMotion` measures it, otherwise a chunk landing
+// late would leave a page with no reveals set up at all. A chunk that never
+// arrives returns `failed`, because an empty <main> is not an acceptable answer.
+function usePage(route) {
+  const [state, setState] = useState(() => ({ Page: pageFor(route), failed: false }));
+  useEffect(() => {
+    const ready = pageFor(route);
+    setState({ Page: ready, failed: false });
+    if (ready || !isRoute(route)) return;
+    let active = true;
+    loadPage(route).then(
+      next => { if (active) setState({ Page: next, failed: false }); },
+      () => { if (active) setState({ Page: null, failed: true }); },
+    );
+    return () => { active = false; };
+  }, [route]);
+  return state;
 }
 
-function Magnet({ children, className = '' }) {
-  const ref = useRef(null);
-  const move = (event) => {
-    if (!canMove()) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    gsap.to(ref.current, { x: (event.clientX - bounds.left - bounds.width / 2) * 0.12, y: (event.clientY - bounds.top - bounds.height / 2) * 0.18, duration: 0.25, overwrite: true });
-  };
-  const reset = () => gsap?.to(ref.current, { x: 0, y: 0, duration: 0.35, ease: 'power3.out', overwrite: true });
-  useEffect(() => { const node = ref.current; return () => gsap?.killTweensOf(node); }, []);
-  return <span className={`magnet ${className}`} onPointerMove={move} onPointerLeave={reset}><span ref={ref}>{children}</span></span>;
+// A browser keeps a failed module fetch in its module map for the rest of the
+// session, so re-importing the same URL cannot recover. A reload can, and this
+// says so instead of pretending a retry button would work.
+function PageUnavailable() {
+  return <section className="not-found wrap">
+    <p>Gagal dimuat</p>
+    <h1>Halaman ini gagal dimuat.</h1>
+    <p className="page-description">Berkas halaman ini tidak sampai ke peramban Anda. Muat ulang halaman untuk mencoba lagi, atau hubungi saya langsung di {profile.email}.</p>
+    <div className="hero-actions">
+      <button className="button" onClick={() => window.location.reload()}>Muat ulang halaman <ArrowRight /></button>
+      <Link to="/" className="text-link">Kembali ke beranda <ArrowRight size={18} /></Link>
+    </div>
+  </section>;
 }
 
 function Splash({ reveal, done, reduced, motionStatus }) {
@@ -38,7 +48,7 @@ function Splash({ reveal, done, reduced, motionStatus }) {
   useLayoutEffect(() => {
     let seen = false;
     try { seen = sessionStorage.getItem('anung-intro') === 'seen'; } catch { /* Storage is optional. */ }
-    if (reduced || seen || motionStatus === 'unavailable') { reveal(); done(); return; }
+    if (reduced || seen || motionStatus === 'unavailable' || motionStatus === 'skipped') { reveal(); done(); return; }
     if (motionStatus === 'loading') return;
     const safety = setTimeout(skip, 2000);
     const ctx = gsap.context(() => {
@@ -92,356 +102,6 @@ function Header({ route, theme, setTheme, reduced }) {
   </header>;
 }
 
-function Title({ lines, className = '' }) {
-  return <h1 className={className}>{lines.map((line, i) => <span className="title-line" key={line}><span className={i === lines.length - 1 ? 'last-line' : ''}>{line}</span></span>)}</h1>;
-}
-
-function Portrait({ compact = false }) {
-  const ref = useRef(null);
-  const tilt = (event) => {
-    if (!canMove()) return;
-    const r = event.currentTarget.getBoundingClientRect();
-    gsap.to(ref.current, { rotateY: ((event.clientX - r.left) / r.width - 0.5) * 6, rotateX: -((event.clientY - r.top) / r.height - 0.5) * 6, duration: 0.6, overwrite: true });
-  };
-  return <div className={`portrait-scene ${compact ? 'compact' : ''}`} onPointerMove={tilt} onPointerLeave={() => gsap?.to(ref.current, { rotateX: 0, rotateY: 0, duration: 0.6, overwrite: true })}>
-    <div className="portrait-backplate" aria-hidden="true" />
-    <div className="portrait-frame" ref={ref}><img src="/images/anung-profile.webp" alt="Anung Hanindhita Ramadhan di kantor AnyMind Group" width="900" height="1200" fetchPriority={compact ? 'auto' : 'high'} /></div>
-    <Asterisk className="portrait-asterisk" weight="bold" aria-hidden="true" />
-    <div className="portrait-caption"><span>Anung Hanindhita Ramadhan</span><span>Lulusan Bisnis, IPB University</span></div>
-  </div>;
-}
-
-function ContactCallout({ heading, lead, action }) {
-  return <section className="contact-callout wrap" data-reveal="zoom" data-reveal-kind="panel">
-    <Asterisk className="callout-star" weight="bold" aria-hidden="true" data-spin />
-    <h2>{heading}</h2>
-    {lead && <p className="callout-lead">{lead}</p>}
-    <Magnet><Link to="/kontak" className="button">{action} <ArrowUpRight size={20} /></Link></Magnet>
-  </section>;
-}
-
-// One slot per claim. A slot whose material is not published yet keeps its
-// cover, its honest caption and `data-placeholder`; dropping a real file at the
-// same path and removing `placeholder: true` in `data.js` is the whole swap.
-function EvidenceGallery({ evidence }) {
-  if (!evidence?.items?.length) return null;
-  return <div className="evidence-gallery">
-    <h3 className="evidence-title">{evidence.title}</h3>
-    <ul>{evidence.items.map(item => <li key={item.id}>
-      <figure className="evidence-item" data-placeholder={item.placeholder ? 'true' : undefined}>
-        {/* The cover is a brand-colour block in CSS, so the slot stays correct
-            even when the image file is missing or blocked. */}
-        <span className="evidence-cover"><img src={item.src} alt={item.alt} width={item.width} height={item.height} loading="lazy" fetchPriority="low" decoding="async" onError={event => { event.currentTarget.dataset.missing = 'true'; }} /></span>
-        <figcaption><span className="evidence-type">{item.type}</span>{item.caption}</figcaption>
-      </figure>
-    </li>)}</ul>
-  </div>;
-}
-
-// Every data visual below ships its final value in the DOM: the arc's
-// `stroke-dashoffset`, the bar's inline width, the bar's own box. Motion only
-// animates towards that value, so reduced motion, a blocked GSAP chunk and a
-// stalled ticker all leave the real number on screen. Shape, curve and rhythm
-// are VIS-1's job; every part that might change its look carries a class.
-function GpaRing({ gpa, max }) {
-  const fraction = gpa / max;
-  const radius = 52;
-  const circumference = 2 * Math.PI * radius;
-  return <div className="gpa" data-viz="ring" data-value={gpa} data-max={max}>
-    <svg className="gpa-ring" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false">
-      <circle className="gpa-ring-track" cx="60" cy="60" r={radius} />
-      <circle className="gpa-ring-value" cx="60" cy="60" r={radius} data-arc={fraction}
-        strokeDasharray={circumference.toFixed(3)} strokeDashoffset={(circumference * (1 - fraction)).toFixed(3)} />
-    </svg>
-    <div className="gpa-figure">
-      <strong>{gpa.toFixed(2)}<span>/{max.toFixed(2)}</span></strong>
-      <span>IPK</span>
-    </div>
-  </div>;
-}
-
-// The axis is the full TOEFL ITP total range, both ends printed. A bar that
-// started at anything other than the scale floor would overstate the score.
-function ScoreScale({ score, scaleMin, scaleMax, level }) {
-  const fraction = (score - scaleMin) / (scaleMax - scaleMin);
-  return <figure className="score-scale" data-viz="scale" data-value={score} data-scale-min={scaleMin} data-scale-max={scaleMax}>
-    <figcaption className="score-scale-head">
-      <span className="score-scale-label">TOEFL ITP</span>
-      <strong>{score}</strong>
-      <span className="score-scale-level">{level}, seperti tertulis di CV saya.</span>
-    </figcaption>
-    <div className="score-scale-track" aria-hidden="true">
-      <span className="score-scale-fill" data-bar-fill style={{ width: `${(fraction * 100).toFixed(2)}%` }} />
-    </div>
-    <p className="score-scale-axis" aria-hidden="true"><span>{scaleMin}</span><span>{scaleMax}</span></p>
-    <p className="sr-only">Skor {score} pada skala total TOEFL ITP yang berjalan dari {scaleMin} sampai {scaleMax}.</p>
-  </figure>;
-}
-
-// A sum shown as its parts. The segments are flex shares of the total, so the
-// track starts at zero and 100 always reads twice as wide as 50.
-function SplitBar({ split }) {
-  return <figure className="split-bar" data-viz="split" data-total={split.total}>
-    <div className="split-track" aria-hidden="true">
-      {split.parts.map(part => <span key={part.platform} className="split-segment" data-segment={part.platform.toLowerCase()} data-bar style={{ flexGrow: part.value }} />)}
-    </div>
-    <ul className="split-legend">
-      {split.parts.map(part => <li key={part.platform}>
-        <span className="split-key" data-segment={part.platform.toLowerCase()} aria-hidden="true" />
-        {part.platform} <strong>{part.value}</strong>
-      </li>)}
-    </ul>
-    <figcaption>{split.parts.map(part => `${part.value} ${part.platform}`).join(' + ')} = {split.total}. {split.caption}</figcaption>
-  </figure>;
-}
-
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-const monthIndex = (value) => { const [year, month] = value.split('-').map(Number); return year * 12 + month - 1; };
-const monthLabel = (index) => `${MONTHS[index % 12]} ${Math.floor(index / 12)}`;
-
-// Overlapping internships read like a typo in a vertical list. On one axis they
-// read as what they are: two roles carried at the same time. The overlapping
-// months are counted from the data, never typed in.
-function CareerTimeline() {
-  const entries = [...experience].sort((a, b) => monthIndex(a.start) - monthIndex(b.start));
-  const first = Math.min(...entries.map(item => monthIndex(item.start)));
-  const last = Math.max(...entries.map(item => monthIndex(item.end)));
-  const total = last - first + 1;
-  const share = (from, to) => ({ '--from': (from - first) / total, '--span': (to - from + 1) / total });
-  const bands = [];
-  for (let month = first; month <= last; month++) {
-    const active = entries.filter(item => monthIndex(item.start) <= month && month <= monthIndex(item.end));
-    if (active.length < 2) continue;
-    const previous = bands.at(-1);
-    if (previous && previous.to === month - 1) previous.to = month;
-    else bands.push({ from: month, to: month });
-  }
-  const companies = [...new Set(entries.map(item => item.company))]
-    .map(company => ({ company, periods: entries.filter(item => item.company === company) }))
-    .filter(group => group.periods.length > 1);
-  return <section className="timeline-section wrap" aria-labelledby="timeline-title" data-reveal="fade" data-reveal-kind="viz">
-    <h2 id="timeline-title">Rentang waktu magang.</h2>
-    {bands.map(band => <p className="timeline-lead" key={band.from}>
-      {monthLabel(band.from)} - {monthLabel(band.to)}: {band.to - band.from + 1} bulan dengan dua magang berjalan bersamaan.
-    </p>)}
-    <ol className="timeline" data-viz="timeline" data-span={`${monthLabel(first)}/${monthLabel(last)}`}>
-      {entries.map(item => <li className="timeline-row" key={item.id} data-entry={item.id}>
-        <div className="timeline-label">
-          <strong>{item.company}</strong>
-          <span>{item.role}</span>
-          <span className="timeline-period">{item.period}</span>
-        </div>
-        <div className="timeline-track">
-          <span className="timeline-bar" data-bar aria-hidden="true" style={share(monthIndex(item.start), monthIndex(item.end))} />
-        </div>
-      </li>)}
-      {/* The shared months get a bar of their own, lined up under the two roles
-          that produced them, so the overlap is a row and not a reading trick. */}
-      {bands.map(band => <li className="timeline-row timeline-overlap" key={`band-${band.from}`} data-band={`${monthLabel(band.from)}/${monthLabel(band.to)}`}>
-        <div className="timeline-label">
-          <strong>Dua magang bersamaan</strong>
-          <span className="timeline-period">{monthLabel(band.from)} - {monthLabel(band.to)}</span>
-        </div>
-        <div className="timeline-track">
-          <span className="timeline-bar" data-bar aria-hidden="true" style={share(band.from, band.to)} />
-        </div>
-      </li>)}
-    </ol>
-    <p className="timeline-axis" aria-hidden="true"><span>{monthLabel(first)}</span><span>{monthLabel(last)}</span></p>
-    {companies.map(group => <p className="timeline-note" key={group.company}>
-      {group.company} muncul {group.periods.length} kali: perusahaan yang sama, {group.periods.length} periode magang, {group.periods.map(item => `${item.role} (${item.period})`).join(' lalu ')}.
-    </p>)}
-  </section>;
-}
-
-function Home() {
-  return <>
-    <section className="hero wrap page-opening">
-      <div className="hero-copy">
-        <p className="availability hero-enter"><span className="pulse" aria-hidden="true" />Terbuka untuk kerja sama</p>
-        <p className="eyebrow hero-enter">AFILIASI & PEMASARAN DIGITAL</p>
-        <Title lines={['Halo, saya', 'Anung.']} />
-        <p className="hero-description hero-enter">Saya membantu tim pemasaran mengelola mitra afiliasi dan kerja sama dengan kreator, mulai dari menghubungi mereka hingga memantau konten yang terbit.</p>
-        <div className="hero-actions hero-enter"><Magnet><Link to="/pengalaman" className="button">Lihat pengalaman <ArrowUpRight size={20} /></Link></Magnet><Link to="/tentang" className="text-link">Tentang saya <ArrowRight size={18} /></Link></div>
-        <dl className="hero-meta hero-enter">
-          <div><dt>Pendidikan</dt><dd>Sarjana Bisnis, IPB University</dd></div>
-          <div><dt>Magang</dt><dd>AnyMind Group · PT Sutan Vet Medika</dd></div>
-          <div><dt>Domisili</dt><dd>Bekasi, Jawa Barat</dd></div>
-        </dl>
-      </div>
-      <div className="hero-portrait hero-enter"><Portrait /></div>
-      <p className="scroll-cue hero-enter" aria-hidden="true"><ArrowDown size={16} />Scroll</p>
-    </section>
-    <section className="impact-section wrap" aria-label="Sorotan pengalaman">
-      <div className="impact-intro" data-reveal="left" data-reveal-kind="text"><span>Selama magang,</span><strong>saya ikut menangani:</strong></div>
-      <div className="impact-stat" data-reveal="up" data-reveal-kind="stat"><strong><span data-count="200">200</span></strong><p>Kerja sama KOL yang<br />saya bantu kelola</p><small>PT Sutan Vet Medika</small></div>
-      <div className="impact-stat" data-reveal="up" data-reveal-delay="0.1" data-reveal-kind="stat"><strong><span data-count="150">150</span><span className="stat-unit">/hari</span></strong><p>Mitra afiliasi baru<br />dihubungi</p><small>AnyMind Group</small></div>
-      <div className="impact-stat" data-reveal="up" data-reveal-delay="0.2" data-reveal-kind="stat"><strong><span data-count="40">40</span></strong><p>Mitra afiliasi yang saya koordinasikan<br />untuk acara Pantene</p><small>AnyMind Group</small></div>
-    </section>
-    <section className="selected-section wrap">
-      <div className="section-heading" data-reveal="left" data-reveal-kind="heading"><h2>Yang saya kerjakan<br />selama magang.</h2><p>Saya pernah magang di tim pemasaran AnyMind Group dan PT Sutan Vet Medika. Berikut beberapa pekerjaan saya selama magang.</p></div>
-      <div className="selected-grid">
-        <Link to="/pengalaman#entri-anymind" className="feature-story" data-reveal="left" data-reveal-kind="media" aria-label="Lihat pengalaman pemasaran afiliasi di AnyMind Group">
-          <div className="feature-photo" data-mask><img src="/images/anymind-pantene-team.webp" width="1200" height="900" loading="lazy" fetchPriority="low" alt="Tim AnyMind Group berfoto bersama di depan layar acara AnyMind x Pantene New Product Launch" data-parallax /></div>
-          <div className="story-meta"><span>AnyMind Group</span><ArrowUpRight size={26} /></div><h3>Mengelola mitra<br />afiliasi Unicharm.</h3><p>Pemasaran afiliasi / 2026</p>
-        </Link>
-        <Link to="/pengalaman#entri-anima-digital" className="feature-story secondary-story" data-reveal="right" data-reveal-kind="media" aria-label="Lihat pengalaman kolaborasi KOL di PT Sutan Vet Medika">
-          <div className="feature-art" data-mask><img src="/images/connections.webp" width="1200" height="800" loading="lazy" fetchPriority="low" alt="Ilustrasi dua bentuk saling terhubung dalam warna bordo dan hijau" data-parallax /></div>
-          <div className="story-meta"><span>PT Sutan Vet Medika</span><ArrowUpRight size={26} /></div><h3>Konten dan KOL<br />Anima Companion.</h3><p>KOL & pemasaran digital / 2025 - 2026</p>
-        </Link>
-      </div>
-    </section>
-    <div className="marquee"><p className="sr-only">Bidang: pemasaran afiliasi, kerja sama KOL, perencanaan konten.</p><div className="marquee-track" aria-hidden="true">{[0, 1].map(i => <div className="marquee-group" key={i}><span>Pemasaran afiliasi</span><Asterisk weight="bold" /><span>Kerja sama KOL</span><Asterisk weight="bold" /><span>Perencanaan konten</span><Asterisk weight="bold" /></div>)}</div></div>
-    <section className="intro-section wrap" data-reveal-group="up" data-reveal-kind="text"><div className="intro-aside"><span className="section-kicker">SEDIKIT TENTANG SAYA</span><dl className="intro-facts"><div><dt>IPK</dt><dd>3.74<span>/4.00</span></dd></div><div><dt>TOEFL ITP</dt><dd>583</dd></div><div><dt>Lulus</dt><dd>Agu 2026</dd></div></dl></div><div><h2>Lulusan Bisnis<br />IPB University.</h2><p>Selama magang, saya menangani pengiriman sampel, memantau penyelesaian konten kreator, dan menyusun laporan. Pengalaman ini membantu saya memahami pekerjaan tim pemasaran secara langsung.</p><Link to="/tentang" className="text-link">Tentang saya <ArrowUpRight size={20} /></Link></div></section>
-    <ContactCallout heading={<>Membutuhkan anggota<br />tim pemasaran?</>} action="Hubungi saya" />
-  </>;
-}
-
-function Experience() {
-  const [filter, setFilter] = useState('Semua');
-  const [expanded, setExpanded] = useState(() => new Set());
-  const toggleDetail = (id) => setExpanded(previous => {
-    const next = new Set(previous);
-    if (next.has(id)) next.delete(id); else next.add(id);
-    return next;
-  });
-  const list = filter === 'Semua' ? experience : experience.filter(item => item.category === filter);
-  return <>
-    <section className="page-heading wrap"><p className="eyebrow hero-enter">PENGALAMAN KERJA</p><Title lines={['Pengalaman', 'magang saya.']} /><p className="page-description hero-enter">Saya pernah mengelola mitra afiliasi, membantu kerja sama KOL, dan membuat konten. Berikut tanggung jawab saya di setiap tempat magang.</p></section>
-    <CareerTimeline />
-    <section className="experience-section wrap" aria-label="Pengalaman kerja">
-      <div className="filter-list hero-enter" role="group" aria-label="Filter pengalaman">{['Semua', 'Pemasaran afiliasi', 'Kerja sama KOL', 'Pemasaran digital'].map(item => <button key={item} aria-pressed={filter === item} onClick={() => { setFilter(item); setExpanded(new Set()); }} className={filter === item ? 'filter active' : 'filter'}>{item}</button>)}</div>
-      <p className="sr-only" role="status">{list.length} pengalaman ditampilkan</p>
-      <div className="experience-list" data-reveal-group="up" data-reveal-kind="panel">{list.map((item) => <article className="experience-card" key={item.id} id={`entri-${item.id}`}>
-        <div className="experience-side"><span className="experience-period">{item.period}</span><h2>{item.company}</h2><p>{item.role}</p><span className="experience-location">{item.location}</span>{item.context && <p className="experience-context">{item.context}</p>}</div>
-        <div className="experience-main"><span className="category-label">{item.category}</span><h3>{item.title}</h3><p>{item.summary}</p><div className="experience-stats">{item.stats.map(stat => {
-            // "30+" animates as 30 and keeps the "+" beside the counter, so the
-            // element's text is only ever the number it declares.
-            const [, number, unit] = /^(\d+)(.*)$/.exec(stat.value) || [null, null, null];
-            return <div key={stat.label}><strong>{number ? <><span data-count={number}>{number}</span>{unit && <span className="stat-unit">{unit}</span>}</> : stat.value}</strong><span>{stat.label}</span></div>;
-          })}</div>
-          {item.split && <SplitBar split={item.split} />}
-          <button className="detail-button" aria-expanded={expanded.has(item.id)} aria-controls={`details-${item.id}`} onClick={() => toggleDetail(item.id)}>{expanded.has(item.id) ? 'Tutup detail' : 'Lihat detail'}{expanded.has(item.id) ? <Minus size={20} /> : <Plus size={20} />}</button>
-          <div className="experience-details" id={`details-${item.id}`} aria-hidden={!expanded.has(item.id)} inert={!expanded.has(item.id) ? true : undefined}><div><ul>{item.details.map(detail => <li key={detail}>{detail}</li>)}</ul></div></div>
-        </div>
-        <EvidenceGallery evidence={item.evidence} />
-      </article>)}</div>
-      <p className="source-note">Untuk riwayat lengkap, klik Download CV di bagian atas halaman.</p>
-    </section>
-    <section className="organizations wrap" data-reveal="up" data-reveal-kind="heading"><h2>Kegiatan selama kuliah.</h2><p className="section-description">Selama kuliah, saya mengelola keuangan organisasi, memimpin tim logistik, dan membantu pelaksanaan acara.</p><div className="organization-grid" data-reveal-group="up" data-reveal-kind="panel">{organizations.map(org => <article key={org.name}><span>{org.period}</span><h3>{org.name}</h3><strong>{org.role}</strong><p>{org.detail}</p></article>)}</div></section>
-    <ContactCallout heading={<>Ingin tahu detail<br />pekerjaan saya?</>} lead="Saya bisa menjelaskan tanggung jawab di tiap tempat magang, termasuk yang materinya belum bisa saya tampilkan di sini." action="Ajukan pertanyaan" />
-  </>;
-}
-
-// Page images rendered from the real PDF by `scripts/prepare-assets.mjs`, so a
-// recruiter can read the CV without downloading it. The download button stays;
-// the same facts also live on this site as real text, which is what a screen
-// reader or a text search actually needs.
-function CvPreview() {
-  return <section className="cv-preview wrap" id="cv" data-reveal="up" data-reveal-kind="panel">
-    <div className="cv-preview-intro">
-      <span className="section-kicker">CV</span>
-      <h2>CV saya, bisa dibaca<br />tanpa mengunduh.</h2>
-      <p>Ini {cvPreview.pages.length} halaman dari berkas PDF yang sama, bukan versi yang saya tulis ulang. Isinya juga tersedia sebagai teks di halaman Pengalaman dan Tentang.</p>
-      <a className="button" href={cvPreview.file} download>Download CV <DownloadSimple size={20} /></a>
-    </div>
-    <ol className="cv-pages">
-      {cvPreview.pages.map(page => <li key={page.page}>
-        <figure>
-          <img src={page.src} alt={page.alt} width={page.width} height={page.height} loading="lazy" decoding="async" />
-          <figcaption>Halaman {page.page} dari {cvPreview.pages.length}</figcaption>
-        </figure>
-      </li>)}
-    </ol>
-  </section>;
-}
-
-function About() {
-  return <>
-    <section className="about-hero wrap page-opening"><div><p className="eyebrow hero-enter">TENTANG SAYA</p><Title lines={['Perkenalkan,', 'saya Anung.']} /><p className="about-lead hero-enter">Lulusan Bisnis IPB.<br />Menekuni pemasaran afiliasi dan digital.</p><p className="hero-enter">Nama lengkap saya Anung Hanindhita Ramadhan. Saya tinggal di Bekasi dan lulus dari IPB University pada 2026. Selama magang di AnyMind Group dan PT Sutan Vet Medika, saya terlibat dalam pengelolaan mitra afiliasi, kerja sama KOL, dan pembuatan konten.</p><a className="text-link hero-enter" href={profile.cv} download>Download CV <DownloadSimple size={20} /></a></div><div className="hero-enter"><Portrait compact /></div></section>
-    <section className="about-statement wrap" data-reveal="right" data-reveal-kind="text"><h2>Tanggung jawab saya<br /><span>selama magang.</span></h2><p>Saya memastikan mitra menerima sampel produk, menindaklanjuti pembuatan konten sesuai arahan, serta memantau penyelesaiannya. Saya juga menyusun laporan penjualan dan kinerja konten untuk tim.</p></section>
-    <section className="education-section wrap" data-reveal-group="up" data-reveal-kind="panel"><div><span className="section-kicker">PENDIDIKAN</span><h2>Pendidikan bisnis<br />di IPB University.</h2></div><div className="education-card"><span>{education.period}</span><h3>{education.institution}</h3><p>{education.degree}</p><GpaRing gpa={education.gpa} max={education.gpaMax} /><p>Saya mengikuti dua bazar bisnis untuk menjual produk, mengumpulkan masukan pembeli, dan menilai peluang pasar.</p><span className="education-note">Profit lebih dari Rp100.000 · 30+ transaksi produk · Nilai A untuk inovasi produk, pelaksanaan bisnis, dan evaluasi kinerja pasar</span></div></section>
-    <section className="skills-section wrap" data-reveal="left" data-reveal-kind="heading"><h2>Keahlian dan<br />aplikasi yang saya gunakan.</h2><div className="skills-grid" data-reveal-group="up" data-reveal-kind="panel">{skills.map(group => <article key={group.title}><h3>{group.title}</h3><ul>{group.items.map(skill => <li key={skill}>{skill}</li>)}</ul></article>)}</div><div className="language-row" data-reveal-group="up" data-reveal-kind="text"><span>Bahasa Indonesia <strong>Bahasa ibu</strong></span><span>Bahasa Inggris <strong>Komunikasi profesional</strong></span><span>TOEFL ITP <strong>{english.score}</strong></span></div><ScoreScale score={english.score} scaleMin={english.scaleMin} scaleMax={english.scaleMax} level={english.level} /></section>
-    <CvPreview />
-    <ContactCallout heading={<>Mari berkenalan<br />lebih jauh.</>} lead="Saya terbuka untuk peluang magang lanjutan maupun posisi pemasaran tingkat awal." action="Kirim pesan" />
-  </>;
-}
-
-// The contact form posts to Web3Forms when `VITE_WEB3FORMS_KEY` is set at
-// build time. Without a key there is no backend at all, so the button falls
-// back to the mailto draft and says exactly that. A failed send falls back to
-// the same draft instead of swallowing the message.
-const mailtoDraft = (data) => {
-  const subject = `${data.get('topic')} — dari ${data.get('name')}`;
-  const body = `Halo Anung,\n\n${data.get('message')}\n\nSalam,\n${data.get('name')}\n${data.get('email')}`;
-  return `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-};
-
-function Contact() {
-  const hasBackend = site.formKey !== '';
-  const [copyState, setCopyState] = useState('idle');
-  // idle · sending · sent · failed · drafted (the no-backend handoff)
-  const [status, setStatus] = useState('idle');
-  const [draft, setDraft] = useState('');
-  const timer = useRef(null);
-  useEffect(() => () => clearTimeout(timer.current), []);
-  const copyEmail = async () => {
-    try { await navigator.clipboard.writeText(profile.email); setCopyState('copied'); }
-    catch { setCopyState('failed'); }
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setCopyState('idle'), 4000);
-  };
-  const send = async (event) => {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    // Honeypot: a human never sees this field, so anything in it is a bot.
-    // Stay silent rather than explain the trap.
-    if (String(data.get('website') ?? '') !== '') return;
-    const href = mailtoDraft(data);
-    setDraft(href);
-    if (!hasBackend) {
-      setStatus('drafted');
-      window.location.href = href;
-      return;
-    }
-    setStatus('sending');
-    try {
-      const response = await fetch(site.formEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          access_key: site.formKey,
-          subject: `${data.get('topic')} — dari ${data.get('name')}`,
-          from_name: data.get('name'),
-          name: data.get('name'),
-          email: data.get('email'),
-          topic: data.get('topic'),
-          message: data.get('message'),
-          botcheck: false,
-        }),
-      });
-      const result = await response.json().catch(() => ({}));
-      if (!response.ok || result.success !== true) throw new Error(result.message || `HTTP ${response.status}`);
-      setStatus('sent');
-      form.reset();
-    } catch {
-      setStatus('failed');
-    }
-  };
-  const statusText = status === 'sending' ? 'Mengirim pesan...'
-    : status === 'sent' ? `Pesan terkirim ke ${profile.email}. Saya membacanya dari sana.`
-    : status === 'failed' ? `Pesan belum terkirim. Pengiriman otomatis gagal, jadi silakan pakai draf email di bawah atau kirim langsung ke ${profile.email}.`
-    : status === 'drafted' ? `Draf email siap dibuka. Jika aplikasi email tidak terbuka, kirim pesan langsung ke ${profile.email}.`
-    : '';
-  return <>
-    <section className="page-heading contact-heading wrap"><p className="eyebrow hero-enter">KONTAK</p><Title lines={['Ada peluang', 'kerja sama?']} /><p className="page-description hero-enter">Saya terbuka untuk peluang kerja di bidang pemasaran dan kerja sama promosi. Silakan hubungi saya melalui email, WhatsApp, atau LinkedIn untuk membahas posisi atau proyek yang ditawarkan.</p></section>
-    <section className="contact-grid wrap"><div className="contact-info hero-enter"><Asterisk className="contact-star" weight="bold" aria-hidden="true" data-spin /><h2>Hubungi saya di sini.</h2><div className="email-line"><a href={`mailto:${profile.email}`}>{profile.email}</a><button className="icon-button" onClick={copyEmail} aria-label="Copy email">{copyState === 'copied' ? <Check /> : <Copy />}</button></div><p className="copy-status" role="status">{copyState === 'copied' ? 'Email berhasil disalin.' : copyState === 'failed' ? 'Email belum bisa disalin. Silakan salin alamat di atas secara manual.' : ' '}</p><a href={WHATSAPP_URL} className="contact-social" target="_blank" rel="noreferrer"><WhatsappLogo size={22} />WhatsApp <ArrowUpRight size={20} /></a><a href={profile.linkedin} className="contact-social" target="_blank" rel="noreferrer"><LinkedinLogo size={22} />LinkedIn <ArrowUpRight size={20} /></a><a href={`tel:${profile.phone}`} className="contact-social">+62 813 8811 6739 <ArrowUpRight size={20} /></a><p className="contact-location">Bekasi, Jawa Barat, Indonesia</p></div>
-      <form className="contact-form hero-enter" onSubmit={send}><div className="form-row"><label>Nama<input name="name" autoComplete="name" required maxLength={100} placeholder="Nama lengkap" /></label><label>Email<input name="email" type="email" autoComplete="email" required maxLength={200} placeholder="nama@email.com" /></label></div><label>Topik pesan<select name="topic" defaultValue="Peluang kerja"><option>Peluang kerja</option><option>Kerja sama promosi</option><option>Bertukar ide</option></select></label><label>Pesan<textarea name="message" required minLength={10} maxLength={3000} rows={4} placeholder="Halo Anung, saya ingin membahas..." /></label><div className="form-trap" aria-hidden="true"><label>Situs web<input name="website" type="text" tabIndex={-1} autoComplete="off" /></label></div><div className="form-footer"><p>{hasBackend ? <>Pesan dikirim ke email saya lewat layanan formulir Web3Forms.<br />Situs ini tidak menyimpan pesan Anda.</> : <>Tombol ini membuka draf di aplikasi email.<br />Untuk mengirim pesan, tekan tombol kirim di aplikasi email.</>}</p><button className="button" type="submit" disabled={status === 'sending'} aria-busy={status === 'sending'}>{hasBackend ? (status === 'sending' ? 'Mengirim...' : 'Kirim pesan') : 'Buka draf email'} <ArrowUpRight size={20} /></button></div><p className="form-status" data-status={status} role="status">{statusText}</p>{status === 'failed' && draft !== '' && <p className="form-fallback"><a className="text-link" href={draft}>Buka draf email <ArrowUpRight size={18} /></a></p>}</form></section>
-    <div className="contact-signoff wrap" data-reveal="up" data-reveal-kind="text"><span>Terima kasih telah mengunjungi portofolio saya.</span><span className="signature">Anung.</span></div>
-  </>;
-}
-
 function Footer() {
   return <footer className="site-footer wrap"><Link to="/" className="wordmark" aria-label="Anung, beranda">anung<span>.</span></Link><span>© {new Date().getFullYear()} Anung Ramadhan</span><div><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">WhatsApp <ArrowUpRight size={15} /></a><a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={15} /></a><a href={`mailto:${profile.email}`}>Email <ArrowUpRight size={15} /></a><button onClick={() => window.dispatchEvent(new Event('portfolio:top'))} aria-label="Kembali ke atas"><ArrowDown className="up-arrow" size={18} /></button></div></footer>;
 }
@@ -460,6 +120,7 @@ export default function App() {
   const userReduced = useReducedMotion();
   const motionStatus = useMotionStatus();
   const reduced = userReduced || motionStatus !== 'ready';
+  const { Page, failed: pageFailed } = usePage(route);
   const root = useRef(null);
   const curtain = useRef(null);
   const lenis = useRef(null);
@@ -483,7 +144,9 @@ export default function App() {
   }, []);
   const focusedRoute = useRef(route);
   useSmoothScroll(lenis, reduced);
-  usePageMotion(root, route, revealed, reduced, initialRoute.current !== '/' && route === initialRoute.current);
+  // The page has to be in the DOM before its reveals can be built, so a route
+  // whose chunk has not landed yet counts as not revealed.
+  usePageMotion(root, route, revealed && !!Page, reduced, initialRoute.current !== '/' && route === initialRoute.current);
   const revealPage = useCallback(() => setRevealed(true), []);
   const finishIntro = useCallback(() => {
     try { sessionStorage.setItem('anung-intro', 'seen'); } catch { /* Storage is optional. */ }
@@ -496,6 +159,16 @@ export default function App() {
   const parkCurtain = useCallback(() => { gsap?.set(curtain.current, { yPercent: 110, y: 0 }); }, []);
   useLayoutEffect(parkCurtain, [parkCurtain, motionStatus]);
   useEffect(() => { if (!initialIntro) finishIntro(); }, [initialIntro, finishIntro]);
+  // The other three routes are fetched once the browser is idle. The timeout is
+  // deliberately past the point where LCP is decided: a prefetch that competed
+  // with the first paint would trade one delay for another.
+  useEffect(() => {
+    if (!revealed) return;
+    const idle = window.requestIdleCallback;
+    if (!idle) { const id = setTimeout(prefetchPages, 2500); return () => clearTimeout(id); }
+    const id = idle(prefetchPages, { timeout: 4000 });
+    return () => window.cancelIdleCallback(id);
+  }, [revealed]);
   useEffect(() => {
     // Nothing may leave the opening frame hidden, whatever interrupts a curtain.
     if (booting || transitioning || revealed) return;
@@ -539,6 +212,9 @@ export default function App() {
         return;
       }
       stopTransition();
+      // Start the chunk before the curtain does, so the incoming page is already
+      // mounted by the time the curtain lifts off it.
+      loadPage(next).catch(() => { /* The route renders PageUnavailable instead. */ });
       const commit = () => {
         routeRef.current = next;
         applyAnchor();
@@ -604,7 +280,7 @@ export default function App() {
       <div className="scroll-progress" aria-hidden="true"><span /></div>
       <a className="skip-link" href="#main-content" onClick={event => { event.preventDefault(); root.current.querySelector('main')?.focus(); }}>Lewati ke konten</a>
       <Header route={route} theme={theme} setTheme={setTheme} reduced={reduced} />
-      <main id="main-content" tabIndex={-1} key={route}>{route === '/' ? <Home /> : route === '/pengalaman' ? <Experience /> : route === '/tentang' ? <About /> : route === '/kontak' ? <Contact /> : <section className="not-found wrap"><p>404</p><h1>Sepertinya salah jalan.</h1><Link to="/" className="button">Kembali ke beranda <ArrowRight /></Link></section>}</main>
+      <main id="main-content" tabIndex={-1} key={route}>{Page ? <Page /> : pageFailed ? <PageUnavailable /> : isRoute(route) ? null : <section className="not-found wrap"><p>404</p><h1>Sepertinya salah jalan.</h1><Link to="/" className="button">Kembali ke beranda <ArrowRight /></Link></section>}</main>
       <Footer />
     </div>
   </>;

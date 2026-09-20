@@ -23,9 +23,9 @@ belum seluruhnya `DONE`/`SKIP`.
 | VIS-1 | Rasa visual + animasi (gerbang test ditutup Claude Code) | Codex | 1 | 1 |
 | 4 | Konversi | Claude Code | 4 | 4 |
 | IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
-| 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
+| 5 | Performa, SEO, penutup | Claude Code | 6 | 6 |
 | 6 | Pass poles visual terakhir | Codex | 1 | 0 |
-| — | **Total dikerjakan** | | **33** | **25** |
+| — | **Total dikerjakan** | | **33** | **31** |
 | — | Sengaja di-SKIP | | 3 | — |
 
 Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
@@ -142,18 +142,26 @@ menambahkan berkasnya.
 
 ## Kirim 5 — Performa, SEO, penutup
 
+Semua angka di bawah diambil pada mesin dan sesi yang sama, 2026-09-20, dan
+selengkapnya ada di [`docs/evidence/kirim-5/`](docs/evidence/kirim-5/README.md).
+Pembanding "sebelum" bukan baseline lama dari catatan, melainkan build `main`
+c89885e yang dibangun ulang dan diaudit hari ini di worktree terpisah.
+
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P2-24 | Bundle 414 KB — code-split per route + lazy GSAP/Lenis | TODO | Butuh: gzip sebelum/sesudah. Phosphor TIDAK diganti (di luar scope). |
-| P2-26 | Satu ukuran gambar untuk semua layar | TODO | Butuh: AVIF+WebP multi-lebar dengan `srcset`, CLS tetap ≤ 0.01. |
-| P2-22 | LCP mobile 2.9s → di bawah 2.5s | TODO | Butuh: audit Lighthouse mobile baru, angka dicatat di sini. |
-| P2-28 | JSON-LD `Person` | TODO | Butuh: lolos Google Rich Results Test. |
-| P2-29 | `sitemap.xml` | TODO | |
-| P2-30 | `llms.txt` (agentic-browsing 0.67) | TODO | Butuh: skor agentic-browsing naik, dicatat di sini. |
+| P2-24 | Bundle 414 KB — code-split per route + lazy GSAP/Lenis | DONE | Tiga route jadi chunk sendiri (`Experience` 10.597/3.207, `About` 6.167/2.126, `Contact` 15.826/4.815 raw/gzip); Beranda tetap ikut shell karena halaman itulah yang menentukan LCP. Entry `assets/index-*.js` **306.206 → 279.718 B raw, 90.725 → 84.398 B gzip, 78.435 → 73.034 B brotli** (`gzip -c9`, `brotli -q 11`). `motion-runtime` (131.506 B / 48.739 B gzip) sudah dipisah sejak Kirim 1; yang baru di sini, chunk itu **tidak diminta sama sekali** saat `prefers-reduced-motion: reduce`, jadi JS untuk pembaca itu turun dari 139.464 B gzip jadi 84.398 B gzip. Dikunci test `reduced motion never downloads the animation chunk`, `route chunks blocked still leave Beranda complete and say so on the other routes`, dan `route chunks blocked on a cold deep link say so without a page error` di 4 project — dua yang terakhir memastikan chunk yang tidak pernah sampai menghasilkan halaman yang mengatakannya, bukan `<main>` kosong. Phosphor tidak diganti, sesuai scope. [Build sebelum](docs/evidence/kirim-5/build-sebelum.txt) / [sesudah](docs/evidence/kirim-5/build-sesudah.txt). |
+| P2-26 | Satu ukuran gambar untuk semua layar | DONE | 8 gambar × 3–4 lebar × 2 format = 60 berkas AVIF + WebP, ditulis `scripts/prepare-assets.mjs` bersama `src/image-manifest.json` — satu-satunya sumber setiap `srcset`, sehingga markup tidak bisa menyebut lebar yang tidak pernah dienkode. `sizes` per slot dibaca dari layout dan disimpan sekali di `src/image-sizes.js`; `vite.config.js` membaca entri potret yang sama supaya `<link rel=preload>` mengulang persis `srcset`/`sizes` milik `<picture>` dan potret tidak terunduh dua kali. Lebar intrinsik `width`/`height` tidak berubah, **CLS tetap 0** pada audit Lighthouse di bawah (syarat ≤ 0,01 terpenuhi). Dikunci `every responsive image offers AVIF and WebP widths that all resolve` (60 berkas dipanggil satu per satu, semua 200), `the portrait a narrow screen downloads is not the desktop file`, dan `no image is reused with a different crop, whichever width is served` — yang terakhir berkunci pada `src` kanonis supaya varian lebar tidak bisa menyembunyikan crop kedua. |
+| P2-22 | LCP mobile 2.9s → di bawah 2.5s | DONE | **LCP 3,1 s → 2,3 s**, performance **93 → 98**, di bawah target 2,5 s. FCP 1,5 s tetap, Speed Index 2,7 → 2,5 s, TBT 20 ms tetap, CLS 0 tetap. a11y/best-practices/SEO tetap 100/100/100 — tidak ada yang turun. Penyebab utamanya pipeline gambar: ponsel 412 px kini menerima AVIF 640 px (37 KB), bukan WebP 900 px (127 KB). [JSON sebelum](docs/evidence/kirim-5/lighthouse-mobile-sebelum.json) / [sesudah](docs/evidence/kirim-5/lighthouse-mobile-sesudah.json); salinan "sesudah" menggantikan `docs/lighthouse-mobile.json`. |
+| P2-28 | JSON-LD `Person` | DONE | Graf `Person` dibangun `src/seo.js` dari `src/data.js` dan disisipkan `vite.config.js` ke `<head>`: `name`, `jobTitle`, `url`, `image`, `description`, `email`, `telephone`, `sameAs` (LinkedIn), `address` (Bekasi, Jawa Barat, ID), `alumniOf` (IPB University), `knowsAbout` (12 keahlian), `knowsLanguage`. Rich Results Test pada potongan HTML berisi blok itu: **nol error, nol warning**; Google melaporkan "No items detected" karena `Person` memang bukan tipe yang menghasilkan rich result, bukan karena markupnya ditolak — rinciannya di Log verifikasi. [Screenshot](docs/evidence/kirim-5/rich-results-test.png). Dikunci `the document carries a Person graph built from the CV facts`, yang juga melarang `worksFor` muncul di graf. |
+| P2-29 | `sitemap.xml` | DONE | Dibuat `src/seo.js` dari objek `site` yang sama dengan canonical, disajikan dev server dan di-emit ke `dist/`. **Satu `<loc>`**, bukan empat: route hash adalah fragmen dari satu dokumen, jadi mendaftarkan `#/pengalaman` sebagai URL tersendiri adalah klaim yang tidak dihormati perayap mana pun. `public/robots.txt` statis dihapus dan digantikan berkas generated yang memuat `Sitemap: <origin>/sitemap.xml`, supaya origin-nya tidak bisa berbeda dari canonical. Dikunci `robots, sitemap and llms.txt are served and agree on one origin`. |
+| P2-30 | `llms.txt` (agentic-browsing 0.67) | DONE | **agentic-browsing 0,67 → 1,00**, audit `llms-txt` 0 → 1. Isinya dibangkitkan dari `src/data.js`, jadi setiap angka tunduk pada aturan kejujuran yang sama dan tidak ada angka kedua yang bisa menyimpang. Ada bagian "Cara membaca angka di halaman ini" yang menyatakan semuanya angka kegiatan — bukan hasil penjualan — dan bahwa 150 adalah 100 Shopee + 50 TikTok, bukan 150 orang unik; ada bagian "Materi yang belum bisa ditampilkan" yang melarang pembaca mesin menyebut placeholder sebagai contoh karya. Dikunci `robots, sitemap and llms.txt are served and agree on one origin`, termasuk keberadaan H1 dan tautan Markdown yang diminta llmstxt.org. |
 
 ## Kirim 6 — Pass poles visual · Codex
 
-Hanya dijalankan setelah Kirim 5 seluruhnya `DONE`.
+Hanya dijalankan setelah Kirim 5 seluruhnya `DONE`. Kirim 5 sekarang `DONE`,
+jadi fase ini sudah boleh dijalankan. Patokan yang tidak boleh turun sekarang:
+performance 98 · a11y 100 · best-practices 100 · SEO 100 · agentic-browsing 1,00 ·
+LCP 2,3 s · CLS 0 · TBT 20 ms · `npm test` 196 hasil.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
@@ -173,8 +181,10 @@ Ambil lagi kapan saja lewat "Prompt satuan" di `prompt.md`.
 
 Ini BUKAN blocker. Halaman dibangun penuh dengan cover placeholder; daftar ini
 menyebut berkas apa yang menggantikan placeholder mana kalau nanti dikirim.
-Menukarnya = taruh berkas di jalur yang sama dan hapus `placeholder: true`.
-Tidak ada JSX yang perlu ditulis ulang.
+Menukarnya = taruh berkas di `assets/source/placeholder/<slot-id>.png`,
+jalankan `node scripts/prepare-assets.mjs` supaya semua lebar dan formatnya
+dienkode ulang, lalu hapus `placeholder: true`. Tidak ada JSX yang perlu
+ditulis ulang.
 
 - [ ] 4+ konten Instagram Anima Companion (screenshot atau file asli)
 - [ ] 3 video promosi produk (file, atau thumbnail + tautan)
@@ -198,6 +208,15 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
 | 2026-09-20 | Gerbang VIS-1 diperbaiki di `tests/portfolio.spec.js`, bukan di aplikasi | Probe tiga engine menunjukkan gambar CV sehat di chromium/firefox/webkit: begitu muatannya mendarat, `naturalWidth` 1000 dan `decode()` sukses di semuanya. Yang keliru cara test mengukur — `decode()` dipakai sebagai penunggu muatan, padahal Firefox menolaknya selama permintaan masih di jalan. Mengubah aplikasi (misal membuang `loading="lazy"`) berarti mengubah perilaku yang benar demi menyenangkan test. |
 | 2026-09-20 | Penolakan `decode()` yang tadinya ditelan `.catch(() => {})` sekarang diperiksa assertion | Menunggu muatan saja sudah cukup membuat test hijau, tapi itu menyisakan `decode()` sebagai panggilan tanpa arti. Sekalian dijadikan bukti: gambar CV harus benar-benar bisa didekode, bukan sekadar kotak seukuran benar. Cakupan naik, tidak ada yang dilonggarkan; jumlah hasil tetap 164. |
+| 2026-09-20 | Beranda tetap ikut shell; hanya Pengalaman/Tentang/Kontak yang jadi chunk terpisah | Beranda adalah halaman pendaratan dan memuat potret yang menentukan LCP. Melazykan Beranda berarti menunda persis elemen yang sedang dikejar P2-22. Tiga route lain dipisah, dan itu yang memangkas entry 6.327 B gzip. |
+| 2026-09-20 | Route tidak dipasang di `React.Suspense`, melainkan di hook `usePage` sendiri | `usePageMotion` mengukur DOM halaman untuk membangun reveal. Kalau chunk mendarat setelah efek itu jalan, halaman muncul tanpa satu pun reveal terpasang. Hook sendiri memungkinkan identitas komponen ikut jadi syarat `revealed`, sehingga motion dibangun ulang tepat saat halamannya benar-benar ada. |
+| 2026-09-20 | Chunk route yang gagal diunduh menampilkan `PageUnavailable`, bukan halaman kosong, dan menyuruh muat ulang | Peramban menyimpan kegagalan fetch modul di module map selama sesi berlangsung, jadi mengimpor URL yang sama lagi tidak bisa pulih — tombol "coba lagi" akan berbohong. Yang jujur: katakan berkasnya tidak sampai, sediakan muat ulang, tautan ke beranda, dan alamat email. `<main>` kosong bukan jawaban yang boleh diterima. |
+| 2026-09-20 | `prefers-reduced-motion: reduce` tidak lagi hanya mematikan animasi, tapi mencegah `motion-runtime` diunduh | Chunk itu 48.739 B gzip yang tidak akan pernah dipakai pembaca tersebut. Statusnya `'skipped'`, diperlakukan sama dengan `'unavailable'` oleh semua pemanggil, dan hook tetap mengawasi media query supaya mematikan preferensi di tengah sesi tetap memuat chunk-nya. |
+| 2026-09-20 | Varian gambar responsif dibangkitkan skrip, dan `srcset` dibaca dari `src/image-manifest.json` | Kalau `srcset` ditulis tangan, satu lebar yang lupa dienkode jadi 404 senyap yang hanya muncul di viewport tertentu. Manifest ditulis oleh skrip yang juga menulis berkasnya, jadi keduanya tidak bisa berbeda. Jalur yang tidak ada di manifest dirender sebagai `<img>` biasa, bukan `srcset` yang mengarang. |
+| 2026-09-20 | Menukar placeholder kini menambah satu langkah: `node scripts/prepare-assets.mjs` | Kontrak di `prompt.md` berbunyi "tidak boleh perlu menulis JSX lagi" — itu tetap dipenuhi. Yang bertambah adalah menjalankan skrip yang sudah wajib dijalankan untuk setiap gambar lain di project ini. Alternatifnya, `srcset` menunjuk berkas lama sementara `src` menunjuk berkas baru; itu lebih buruk daripada satu perintah. Dicatat di `docs/asset-provenance.md` dan di komentar `src/data.js`. |
+| 2026-09-20 | `hasOccupation` (tiga magang) dibuang dari graf `Person` | Validator schema.org menandai `hiringOrganization` sebagai field yang tidak dikenal pada `Occupation` — 3 warning. Satu-satunya cara schema.org mengikat peran ke organisasi adalah `worksFor`, yang terbaca sebagai pekerjaan yang sedang dijalani sekarang. Anung bukan pegawai di sana sekarang. Jadi peran-perannya tinggal di halaman, di CV, dan di `llms.txt`, tempat tanggalnya ikut. Sisa graf persis yang diminta `prompt.md` bagian D. |
+| 2026-09-20 | `sitemap.xml` memuat satu `<loc>`, bukan empat | Keempat route adalah fragmen hash dari satu dokumen. Mendaftarkan `#/pengalaman` sebagai URL tersendiri adalah klaim yang tidak dihormati perayap mana pun, dan P2-27 (prerender) memang sengaja di-SKIP. |
+| 2026-09-20 | `llms.txt` ditulis dengan tautan Markdown, bukan URL telanjang | Run Lighthouse pertama masih memberi `llms-txt` skor 0 dengan pesan "File does not appear to contain any links." Format llmstxt.org meminta daftar berupa tautan Markdown. Sesudah diubah, audit lolos dan agentic-browsing naik ke 1,00. Diukur, bukan diasumsikan. |
 | 2026-09-20 | Kegagalan disebut bukan ulah VIS-1 hanya setelah dijalankan pada `main` 54f05e1 yang bersih | Catatan balik Codex melarang menyebut "bug lama" atau "flaky" tanpa pembanding. Dua log dengan `git diff --stat` di kepalanya menjadi pembanding itu: 3/3 gagal dengan VIS-1 terpasang, 3/3 gagal tanpa VIS-1. |
 | 2026-09-20 | `verify-polish.mjs` dijalankan ulang dan menimpa `polish-metrics.json` + `motion-*-raw.json` milik sesi Codex di `docs/evidence/vis-1/` | Skrip itu menulis ke foldernya sendiri dan tidak punya `EVIDENCE_DIR`. Berkasnya belum pernah di-commit, dan angka hasilnya identik dengan yang diklaim sesi Codex (6 pasangan, terendah 3,164:1), jadi yang tertimpa adalah hasil run yang sama pada sumber yang sama. Salinan log sesi ini ada di `docs/evidence/gerbang-vis-1/verify-polish.txt`. |
 | 2026-09-20 | Pekerjaan rupa VIS-1 di-commit ke `fase/vis-1` lewat merge `main`, bukan rebase atau force | Branch `fase/vis-1` sudah punya commit VIS-1 lama (`3bfef9f`) yang berdiri di atas Kirim 3, sementara sesi Codex terakhir menggarap ulang rupanya di atas Kirim 4. `prompt.md` melarang force dan rebase, jadi `main` di-merge masuk ke branch dan isi pohon kerja yang sudah diverifikasi dipasang sebagai hasil merge. Keputusan merge ke `main` tetap milik Milord. |
@@ -266,6 +285,16 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 | 2026-09-18 | perhitungan kontras semua token | terendah 5.81:1 (`--muted` di `--paper`) — lolos AA |
 | 2026-09-18 | ukur target sentuh di 390px | 3 elemen 22px tinggi — P3-32 dikonfirmasi |
 | 2026-09-18 | `gzip -c9 dist/assets/index-*.js` | 132.009 B |
+| 2026-09-20 | `npm run build` di worktree `main` c89885e dan di pohon kerja Kirim 5, lalu `gzip -c9` + `brotli -q 11` pada berkas yang sama | Entry: **306.206 → 279.718 B raw**, **90.725 → 84.398 B gzip**, **78.435 → 73.034 B brotli**. Tiga chunk route baru: Experience 10.597/3.207, About 6.167/2.126, Contact 15.826/4.815. `motion-runtime` 131.506/48.739 tidak berubah ukurannya, tapi berhenti diminta saat reduced motion. [sebelum](docs/evidence/kirim-5/build-sebelum.txt) / [sesudah](docs/evidence/kirim-5/build-sesudah.txt). |
+| 2026-09-20 | Lighthouse 13.4.1 mobile pada build statis (`vite preview`), Chromium Playwright lewat `CHROME_PATH`, pengaturan bawaan, dua build di mesin dan sesi yang sama | **Sebelum** (`main` c89885e dibangun ulang hari ini): performance 93 · a11y 100 · BP 100 · SEO 100 · agentic-browsing 0,67 · LCP 3,1s · FCP 1,5s · SI 2,7s · TBT 20ms · CLS 0 ([JSON](docs/evidence/kirim-5/lighthouse-mobile-sebelum.json)). **Sesudah**: performance **98** · a11y 100 · BP 100 · SEO 100 · agentic-browsing **1,00** · LCP **2,3s** · FCP 1,5s · SI 2,5s · TBT 20ms · CLS **0** ([JSON](docs/evidence/kirim-5/lighthouse-mobile-sesudah.json)). Tidak ada kategori yang turun dari gerbang 93/100/100/100. |
+| 2026-09-20 | Lighthouse run pertama sesudah `llms.txt` dipasang | agentic-browsing masih 0,67; audit `llms-txt` 0 dengan pesan `File does not appear to contain any links.` Berkasnya ditulis ulang memakai tautan Markdown sesuai llmstxt.org, lalu diaudit ulang: `llms-txt` 1, agentic-browsing 1,00. Run pertama itu tidak disimpan sebagai bukti karena sudah digantikan; yang dicatat di sini adalah sebabnya. |
+| 2026-09-20 | Google Rich Results Test, tab **Code**, potongan HTML berisi persis blok `<script type="application/ld+json">` dari `dist/index.html` | **Nol error, nol warning.** Hasilnya "No items detected — No rich results detected in this URL", dengan ikon info, bukan error: `Person` memang bukan tipe yang menghasilkan rich result di Google Search, sehingga tidak ada rich result yang bisa dideteksi. Markupnya sendiri diterima dan diurai. [Screenshot](docs/evidence/kirim-5/rich-results-test.png). Ini batas yang jujur: alat itu tidak bisa memberi cap "lolos" untuk tipe yang tidak didukungnya. |
+| 2026-09-20 | `POST https://validator.schema.org/validate` pada graf versi awal (masih memuat `hasOccupation`) | `totalNumErrors: 0`, `totalNumWarnings: 3`, semuanya `UNKNOWN_FIELD hiringOrganization Occupation`. `hasOccupation` dibuang karena itu (alasannya di Catatan keputusan). Percobaan validasi ulang pada graf final ditolak reCAPTCHA Google dengan HTTP 429 dari IP ini; Rich Results Test di baris atas — alat yang memang diminta fase ini — sudah menguji graf final dan mengembalikan nol error. |
+| 2026-09-20 | `curl` 60 berkas varian gambar lewat test `every responsive image offers AVIF and WebP widths that all resolve` di 4 project | Semua 200. Tidak ada `srcset` yang menunjuk berkas yang tidak dienkode. |
+| 2026-09-20 | `npm test` penuh, dua run berturut pada pohon kerja final tanpa satu pun suntingan di tengah | Exit 0, **196 passed** keduanya — 164 hasil Kirim 4 ditambah 8 test baru × 4 project, tidak ada yang dihapus. [run 2](docs/evidence/kirim-5/suite-penuh-2.txt), [run 3](docs/evidence/kirim-5/suite-penuh-3.txt). |
+| 2026-09-20 | `npx playwright test --project=webkit --repeat-each=3` | Exit 0. WebKit diulang tiga kali penuh karena satu run sebelumnya gagal di engine itu. [Log](docs/evidence/kirim-5/webkit-ulang-3.txt). |
+| 2026-09-20 | Kegagalan WebKit `TypeError: Importing a module script failed.` pada satu run | **Sebab: kesalahan prosedur saya sendiri** — `src/ui.jsx` dan `src/pages.js` disunting saat suite masih berjalan, sehingga HMR Vite membatalkan modul yang sedang diimpor route `/pengalaman` di tengah test. Bukan sifat code-split-nya: run pertama (192 passed) dan dua run bersih sesudahnya (196 passed masing-masing) plus WebKit ×3 semuanya hijau pada kode yang sama. Dicatat apa adanya, bukan dihapus. |
+| 2026-09-20 | Probe: test `route chunks blocked on a cold deep link` dijalankan pada `src/main.jsx` **tanpa** `.catch` | Lolos 2/2 di chromium dan webkit — jadi `loadPage()` tanpa penangan di `main.jsx` **tidak** terbukti jadi sumber error WebKit di atas: `usePage` sempat memasang penangan pada promise yang sama sebelum penolakannya mendarat. `.catch` tetap dipasang sebagai pengaman yang tidak bergantung pada urutan itu, dan tidak diklaim sebagai perbaikan kegagalan tersebut. [Log](docs/evidence/kirim-5/probe-main-tanpa-catch.txt). |
 
 | 2026-09-18 | `arch-playwright-provision/scripts/provision_playwright_arch.sh --check` + launch headless Node Playwright | Library hilang 0; Chromium 153.0.8010.12, Firefox 155.0, WebKit 26.6 berhasil launch; lihat [env-check](docs/env-check.md). |
 | 2026-09-18 | `npm test -- --project=chromium -g 'filter layout refresh'` sebelum implementasi | `1 failed`; `.organizations`: `Expected: "1"`, `Received: "0"`. [Output asli](docs/evidence/kirim-1/regression-before.txt), [trace](docs/evidence/kirim-1/regression-before-trace.zip). |
@@ -471,7 +500,137 @@ mendarat. Firefox tidak menunggu — selama permintaannya masih di jalan,
 
 VIS-1 sekarang **DONE**; Ringkasan 24 → 25 dari 33.
 
-Fase berikutnya: **IMG-2 — Codex**, tiketnya siap di
+Fase berikutnya saat catatan itu ditulis: **IMG-2 — Codex**, tiketnya siap di
 [`docs/image-jobs/IMG-2-og-image.md`](docs/image-jobs/IMG-2-og-image.md),
-branch `fase/img-2`. Sesudah itu **Kirim 5 — Claude Code**. Sesi tiket ini
-berhenti di sini.
+branch `fase/img-2`. Sesudah itu **Kirim 5 — Claude Code**. Sesi tiket itu
+berhenti di sana.
+
+---
+
+## Laporan penutup — kondisi project terhadap `plan.md`
+
+Ditulis di akhir Kirim 5, fase kode terakhir. Dua fase Codex masih terbuka:
+**IMG-2** (berkas OG, sudah dikerjakan di branch `fase/img-2`, menunggu
+keputusan merge Milord) dan **Kirim 6** (pass poles visual).
+
+### Setiap temuan `plan.md`
+
+| ID | Temuan | Status | Di mana |
+|---|---|---|---|
+| P0-1 | Filter pengalaman menyembunyikan satu section selamanya | DONE | Kirim 1 |
+| P0-2 | Tidak ada jaring pengaman kalau ScrollTrigger gagal | DONE | Kirim 1 |
+| P1-3 | Satu foto dipakai 3× dengan crop berbeda | DONE | Kirim 2 |
+| P1-4 | Foto AnyMind × Pantene tidak dipakai | DONE | Kirim 2 |
+| P1-5 | CV mengklaim konten yang tidak pernah ditampilkan | DONE | Kirim 2 (galeri bukti + placeholder jujur) |
+| P1-6 | Tidak ada case study; dua kartu menuju halaman sama | DONE (diturunkan) | Kirim 2 — deep-link ke anchor entri, bukan halaman case study terpisah |
+| P1-7 | Fakta CV yang hilang | DONE | Kirim 2 |
+| P1-8 | Angka masih teks statis | DONE | Kirim 3 (kerangka) + VIS-1 (rupa) |
+| P1-9 | Tidak ada timeline; periode tumpang tindih membingungkan | DONE | Kirim 3 + VIS-1 |
+| P1-10 | Form kontak tidak mengirim apa pun | DONE | Kirim 4 — menunggu kunci Web3Forms asli untuk uji sampai inbox |
+| P1-11 | Tidak ada tautan WhatsApp | DONE | Kirim 4 |
+| P1-12 | Link telanjang saat dibagikan | DONE (berkas menunggu IMG-2) | Kirim 4 — tag lengkap dan terkunci test; `public/images/og-cover.png` ada di branch `fase/img-2` |
+| P1-13 | CV hanya bisa di-download | DONE | Kirim 4 |
+| P2-14 | Ruang mati besar | DONE | Kirim 2 |
+| P2-15 | Mode gelap kehilangan aksen | DONE | Kirim 1 |
+| P2-16 | Crop potret memotong logo AnyMind | DONE | Kirim 1 |
+| P2-17 | Asterisk menumpuk di lengan subjek | DONE | Kirim 1 |
+| P2-18 | ContactCallout identik di 3 halaman | DONE | Kirim 2 |
+| P2-19 | Disclosure membuka tanpa animasi | DONE | Kirim 1 |
+| P2-20 | Accordion hanya satu terbuka | DONE | Kirim 1 |
+| P2-21 | Intro memblokir kunjungan pertama | DONE | Kirim 1 |
+| P2-22 | LCP mobile di atas target | DONE | Kirim 5 — 3,1 s → 2,3 s |
+| P2-23 | Kosakata reveal terlalu seragam | DONE | Kirim 3 (penanda) + VIS-1 (nilai) |
+| P2-24 | Satu bundle tanpa code splitting | DONE (dibatasi) | Kirim 5 — code-split per route + reduced motion tidak mengunduh chunk animasi. Phosphor sengaja tidak diganti SVG manual |
+| P2-25 | Subset font untuk aksara yang tidak dipakai | **SKIP** | 47 KB artefak build, dampak runtime nol: browser hanya mengunduh `unicode-range` yang cocok |
+| P2-26 | Satu ukuran gambar untuk semua layar | DONE | Kirim 5 — AVIF + WebP, 3–4 lebar per gambar, `srcset`/`sizes` |
+| P2-27 | Client-side render + hash route = satu dokumen terindeks | **SKIP** | Butuh keputusan hosting + rewrite. Google tetap merender JS; sakit utamanya (preview LinkedIn/WA) diobati `og:image` di Kirim 4 |
+| P2-28 | Tidak ada structured data | DONE | Kirim 5 |
+| P2-29 | Tidak ada `sitemap.xml` | DONE | Kirim 5 |
+| P2-30 | Tidak ada `llms.txt` | DONE | Kirim 5 — agentic-browsing 0,67 → 1,00 |
+| P2-31 | Situs Indonesia, CV Inggris, tanpa opsi bahasa | **SKIP** | Item termahal di daftar; sendirian bisa memakan tiga fase |
+| P3-32 | Tiga target sentuh di bawah 24 px | DONE | Kirim 1 |
+| P3-33 | `role="img"` pada pita marquee | DONE | Kirim 1 |
+
+30 DONE · 3 SKIP · 0 tertinggal tanpa alasan.
+
+### Metrik akhir vs baseline
+
+Kolom baseline adalah angka yang dicatat sebelum pekerjaan dimulai
+(`plan.md`, audit 2026-09-18). Kolom "sebelum, hari ini" adalah build `main`
+c89885e yang dibangun ulang dan diaudit di mesin dan sesi yang sama dengan
+kolom akhir — itu pembanding yang sah; baseline lama diukur di sesi lain.
+
+| Metrik | Baseline 2026-09-18 | Sebelum, hari ini | **Akhir** |
+|---|---|---|---|
+| Lighthouse performance | 93 | 93 | **98** |
+| Lighthouse accessibility | 100 | 100 | **100** |
+| Lighthouse best-practices | 100 | 100 | **100** |
+| Lighthouse SEO | 100 | 100 | **100** |
+| Lighthouse agentic-browsing | 0,67 | 0,67 | **1,00** |
+| LCP mobile | 2,9 s | 3,1 s | **2,3 s** |
+| FCP mobile | 1,7 s | 1,5 s | **1,5 s** |
+| Speed Index | 3,5 s | 2,7 s | **2,5 s** |
+| TBT | 110 ms | 20 ms | **20 ms** |
+| CLS | 0,008 | 0 | **0** |
+| Entry JS (gzip) | 132.009 B | 90.725 B | **84.398 B** |
+| JS diminta saat reduced motion (gzip) | 132.009 B | 139.464 B | **84.398 B** |
+| Hasil `npm test` | 9 skenario × 4 project | 164 | **196** |
+| Console error | 0 | 0 | **0** |
+
+Tidak satu pun angka gerbang turun. Entry JS baseline 132.009 B lebih kecil dari
+kolom "sebelum, hari ini" karena pada saat baseline diukur GSAP/Lenis masih di
+dalam satu berkas yang sama; sejak Kirim 1 keduanya jadi chunk sendiri, jadi dua
+angka itu tidak mengukur benda yang sama. Yang sebanding adalah kolom dua dan
+tiga.
+
+### Sengaja tidak dikerjakan — bisa diambil kapan saja
+
+Pakai "Prompt satuan" di `prompt.md`.
+
+| ID | Item | Kenapa dilepas | Perkiraan biaya kalau diambil |
+|---|---|---|---|
+| P2-31 | Bilingual ID/EN + `hreflang` | Item termahal di seluruh daftar | Setiap string di `src/data.js` dan empat halaman, plus toggle, plus test per bahasa |
+| P2-27 | Prerender / SSG per route | Butuh keputusan hosting dan rewrite; hash route jadi path route | Ganti routing, ganti `sitemap.xml` jadi empat `<loc>`, ganti canonical per halaman |
+| P1-6 | Halaman case study terpisah | Diturunkan jadi deep-link anchor: 90% manfaat, 10% biaya | Route baru per entri plus copy baru |
+| P2-25 | Buang subset font cyrillic/greek/vietnamese | 47 KB artefak build, nol dampak runtime | Konfigurasi `@fontsource` atau subset manual |
+| P2-24 | Ganti Phosphor dengan SVG inline | ~20 KB untuk 14 ikon tulis tangan; rasio buruk | 14 ikon manual + penyesuaian ukuran/stroke |
+
+### Slot yang masih memakai placeholder
+
+Tiga slot bukti di halaman Pengalaman, semuanya `placeholder: true` di
+`src/data.js` dan `data-placeholder="true"` di DOM, dengan caption yang
+menyatakan statusnya sebagai konten yang terlihat.
+
+| Slot | Berkas yang harus dikirim Anung | Taruh di | Lalu |
+|---|---|---|---|
+| `konten-sosial` | 4+ konten Instagram Anima Companion (gambar asli atau tangkapan layar) | `assets/source/placeholder/konten-sosial.png`, 1200 × 900 | `node scripts/prepare-assets.mjs`, hapus `placeholder: true`, tulis ulang `caption` + `alt`, tambah baris di `docs/asset-provenance.md` |
+| `video-produk` | 3 video promosi produk + video profil perusahaan (thumbnail cukup) | `assets/source/placeholder/video-produk.png`, 1200 × 900 | sama |
+| `webinar-b2b` | Rekaman atau tangkapan layar webinar B2B 15+ peserta | `assets/source/placeholder/webinar-b2b.png`, 1200 × 900 | sama |
+
+Satu slot lagi bukan placeholder dan tidak perlu diganti: foto tim
+`anymind-pantene-team.webp` adalah foto asli milik Anung.
+
+Tiga hal lain yang masih menunggu, di luar galeri bukti:
+
+- `public/images/og-cover.png` 1200 × 630 — sudah dibuat di branch `fase/img-2`,
+  menunggu keputusan merge Milord. Selama belum di-merge ke `main`, `og:image`
+  menunjuk jalur yang 404.
+- `VITE_SITE_URL` — domain final belum ada. Selama kosong, canonical, `og:url`,
+  `sitemap.xml` dan `llms.txt` memakai host placeholder
+  `https://anung-ramadhan.example` dan `npm run build` memperingatkannya setiap
+  kali. Validasi LinkedIn Post Inspector dan pratinjau WhatsApp nyata menunggu
+  domain itu, karena keduanya butuh URL publik yang hidup.
+- `VITE_WEB3FORMS_KEY` — tanpa kunci, form kontak jatuh ke draf `mailto:`, dan
+  copy-nya mengatakan persis itu. Uji kirim sampai inbox menunggu kunci asli.
+
+### Fase berikutnya
+
+**Kirim 6 — Codex**, pass poles visual, branch `fase/kirim-6`. Daftar kerja dan
+batasannya ada di `prompt.md` bagian "KIRIM #6". Angka yang tidak boleh turun
+ada di bagian Kirim 6 di atas.
+
+**IMG-2 — Codex** sudah dikerjakan di branch `fase/img-2` (commit `0adb7e5`) dan
+menunggu keputusan merge Milord; itu bukan pekerjaan agent. Sampai branch itu
+di-merge, `main` menyajikan `og:image` yang menunjuk berkas yang belum ada.
+
+Sesi Kirim 5 berhenti di sini.

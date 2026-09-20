@@ -1,6 +1,6 @@
 # Anung Ramadhan Portfolio
 
-Personal portfolio based on the supplied CV, portrait, and color palette. Indonesian copy; React + Vite, GSAP + ScrollTrigger, and Lenis.
+Personal portfolio based on the supplied CV, portrait, and color palette. Indonesian copy; React + Vite, GSAP + ScrollTrigger, and Lenis. Beranda ships with the shell; the other three routes are separate chunks, and the animation code is never downloaded at all under `prefers-reduced-motion: reduce`.
 
 ## Run
 
@@ -47,6 +47,8 @@ A Web3Forms access key is a public submission key by design — it travels in th
 
 `src/site.js` is the single source for the site URL, the share-card metadata, the form endpoint and the WhatsApp link. `vite.config.js` renders the head tags from it at build time through the `anung-site-meta` plugin, and `index.html` carries only a `<!--site-meta-->` marker, so no URL or description is written twice.
 
+The same plugin writes `robots.txt`, `sitemap.xml` and `llms.txt` from `src/seo.js` rather than keeping them in `public/`, for that same reason: the origin they print is the origin in the canonical tag, and the dev server serves the exact bytes the build emits. `<head>` also carries a `Person` JSON-LD graph built from `src/data.js`.
+
 ## Contact form
 
 With no key, the form opens the visitor's email application using `mailto:` and does not send or store anything — the copy says so. With a key, submitting POSTs the message to Web3Forms, which forwards it to Anung's inbox; nothing is stored by this site. A send that fails, for any reason including a dead network, says the message was not sent and offers the same `mailto:` draft, with what the visitor typed still in the form. Spam protection is an off-screen honeypot field, not a CAPTCHA: a submission with that field filled is silently dropped. No analytics and no server of our own are involved either way.
@@ -56,7 +58,12 @@ With no key, the form opens the visitor's email application using `mailto:` and 
 
 - `src/data.js`: verified profile details, work history, organizations, skills, CV page previews.
 - `src/site.js`: site URL, share-card metadata, contact endpoint, WhatsApp link.
-- `src/App.jsx`: page structure, editorial copy, routing, and contact form.
+- `src/seo.js`: the Person graph, `sitemap.xml`, `robots.txt` and `llms.txt`, all written from `src/data.js`.
+- `src/App.jsx`: the shell — routing, header, footer, intro, curtain, and the route registry it renders.
+- `src/pages/*.jsx`: one file per route (`Home`, `Experience`, `About`, `Contact`); the last three are loaded on demand.
+- `src/ui.jsx`: components more than one page uses, including `Picture`.
+- `src/image-sizes.js`: the `sizes` string for each image slot, read off the layout.
+- `src/image-manifest.json`: **generated** — every responsive `srcset`. Rewritten by `scripts/prepare-assets.mjs`; never edit by hand.
 - `src/motion.js`: animation lifecycle and Lenis integration.
 - `src/styles.css`: responsive layout and theme tokens.
 - `public/documents/anung-ramadhan-cv.pdf`: downloadable CV.
@@ -72,7 +79,7 @@ Regenerate optimized images after changing source assets:
 node scripts/prepare-assets.mjs
 ```
 
-That script also re-renders the CV page previews from the PDF and needs poppler's `pdftoppm` on `PATH`. It is the only step that shells out; `npm run build` never does.
+Every image ships as AVIF and WebP at several widths, and the markup asks for a width with `srcset`/`sizes` instead of handing a phone the desktop file. That script writes all of them plus `src/image-manifest.json`, which is the only source of every `srcset` in the markup — so a `srcset` can never name a file that was not encoded. It also re-renders the CV page previews from the PDF and needs poppler's `pdftoppm` on `PATH`. It is the only step that shells out; `npm run build` never does.
 
 ## Verification
 
@@ -84,7 +91,7 @@ npm test
 
 On Arch, do not run `playwright install-deps`: use the machine's `arch-playwright-provision` skill for the WebKit user-space libraries. Keep existing browser revisions needed by MCP tools. See `docs/env-check.md` for the local verification environment.
 
-The tests cover navigation/history, filters/disclosures, theme persistence, real PDF content, contact validation, the contact form's send/failure/honeypot paths, the WhatsApp handoff, the served share metadata, the inline CV preview, keyboard and reduced motion, mobile menu, responsive overflow, loaded images, and unknown routes.
+The tests cover navigation/history, filters/disclosures, theme persistence, real PDF content, contact validation, the contact form's send/failure/honeypot paths, the WhatsApp handoff, the served share metadata and Person graph, `robots.txt`/`sitemap.xml`/`llms.txt`, the inline CV preview, the responsive image sources and the width a narrow screen actually downloads, keyboard and reduced motion, that reduced motion never fetches the animation chunk, that a blocked route chunk still leaves a usable page on a warm navigation and on a cold deep link, mobile menu, responsive overflow, loaded images, and unknown routes.
 
 `npm test` starts two dev servers: 5173 with no Web3Forms key, for the `mailto:` fallback, and 5174 with a fake key, for the backend path with the request intercepted. Both keys are set explicitly in `playwright.config.js`, so a local `.env` cannot change what the suite tests. `docs/lighthouse-mobile.json` is a production-build lab audit, not a claim about field performance.
 
@@ -92,8 +99,8 @@ Verified on 2026-09-18: build passed; 9 scenarios passed across Chromium desktop
 
 The motion rework was additionally checked with a direct instrumented run against the production build in Chromium, Firefox, and WebKit: the page curtain travels 110% down to 0 and on to -110% with no stall; the intro lifts while the hero is still animating, so the settled hero is never painted and then re-animated; after scrolling each route end to end, no revealed element is left below full opacity; horizontal overflow is 0 at every route; and no page or console errors were raised. The skills strip was measured separately: it drifts at about 75 px/s at rest, speeds up while the page is scrolling, and returns to resting speed once scrolling stops.
 
-Final production mobile Lighthouse audit (`docs/lighthouse-mobile.json`): performance 93, accessibility 100, best practices 100, SEO 100; LCP 2.9 seconds, CLS 0.008, TBT 110 ms. LCP remains above the 2.5-second target under this simulated mobile run. It is 0.2 seconds slower than the previous audit because the hero copy is now held hidden until the intro lifts instead of being painted behind the opaque splash; for a visitor who has already seen the intro this session, measured LCP is about 0.4 seconds. Scores vary with machine load. Screenshots are in `docs/*-preview.png`.
+Final production mobile Lighthouse audit (`docs/lighthouse-mobile.json`): performance 98, accessibility 100, best practices 100, SEO 100, agentic browsing 100; LCP 2.3 seconds, CLS 0, TBT 20 ms. The run it is compared against was taken on the same machine in the same session from the previous commit (`docs/evidence/kirim-5/lighthouse-mobile-sebelum.json`): performance 93, LCP 3.1 seconds, CLS 0, TBT 20 ms, agentic browsing 67. LCP is now under the 2.5-second target; what moved it is the responsive image pipeline, which hands a 412 px phone a 640 px AVIF instead of a 900 px WebP. Scores vary with machine load. Screenshots are in `docs/*-preview.png`.
 
 ## Publishing
 
-`dist/` is the static deployment artifact. Hash routes (`/#/pengalaman`, `/#/tentang`, `/#/kontak`) work on static hosts without rewrite rules. Individual hash pages share the site's entry document; they are not independent server-rendered SEO pages. Set `VITE_SITE_URL` before building for a real domain; otherwise the canonical and Open Graph URLs point at the placeholder host. `og:image` expects `public/images/og-cover.png` (1200 × 630), which is not produced yet — see `docs/image-jobs/IMG-2-og-image.md`. No deployment has been performed.
+`dist/` is the static deployment artifact. Hash routes (`/#/pengalaman`, `/#/tentang`, `/#/kontak`) work on static hosts without rewrite rules. Individual hash pages share the site's entry document; they are not independent server-rendered SEO pages, which is why `sitemap.xml` lists one URL and not four. Set `VITE_SITE_URL` before building for a real domain; otherwise the canonical, Open Graph, sitemap and `llms.txt` URLs point at the placeholder host and the build prints a warning. `og:image` expects `public/images/og-cover.png` (1200 × 630), which is not produced yet — see `docs/image-jobs/IMG-2-og-image.md`. No deployment has been performed.

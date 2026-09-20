@@ -2,10 +2,27 @@ import { useEffect, useLayoutEffect, useState } from 'react';
 let gsap, ScrollTrigger, Lenis;
 let runtime;
 
+export function useReducedMotion() {
+  const [reduced, setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => {
+    const query = matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReduced(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  return reduced;
+}
+
 // Animation is optional: a rejected or stalled chunk must not stop React.
+// Under `prefers-reduced-motion: reduce` nothing in that chunk is allowed to
+// run, so it is never fetched either — 'skipped' is the same answer as
+// 'unavailable' to every caller. Turning the preference off later still loads
+// it, which is why this watches the query instead of reading it once.
 export function useMotionStatus() {
+  const reduced = useReducedMotion();
   const [status, setStatus] = useState('loading');
   useEffect(() => {
+    if (reduced) { setStatus('skipped'); return; }
     let active = true;
     const timeout = setTimeout(() => { active = false; setStatus('unavailable'); }, 1500);
     runtime ||= import('./motion-runtime');
@@ -20,7 +37,7 @@ export function useMotionStatus() {
       setStatus('unavailable');
     });
     return () => { active = false; clearTimeout(timeout); };
-  }, []);
+  }, [reduced]);
   return status;
 }
 
@@ -68,17 +85,6 @@ function revealFrom(name, scale) {
   if (vars.x) vars.x *= scale;
   if (vars.y) vars.y *= scale;
   return vars;
-}
-
-export function useReducedMotion() {
-  const [reduced, setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
-  useEffect(() => {
-    const query = matchMedia('(prefers-reduced-motion: reduce)');
-    const update = () => setReduced(query.matches);
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
-  return reduced;
 }
 
 export function useSmoothScroll(ref, reduced) {

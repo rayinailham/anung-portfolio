@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
 
 // Tests that deliberately abort a request get a browser network diagnostic on
 // the console; every other test still has to keep the console clean.
-const NETWORK_FAULT_TESTS = ['GSAP blocked', 'placeholder covers missing', 'contact send survives a dead network', 'contact form offers the email draft'];
+const NETWORK_FAULT_TESTS = ['GSAP blocked', 'placeholder covers missing', 'contact send survives a dead network', 'contact form offers the email draft', 'route chunks blocked'];
 
 test.afterEach(async ({ page }, testInfo) => {
   expect(page.runtimeErrors, 'uncaught runtime errors').toEqual([]);
@@ -827,4 +827,197 @@ test('a filled honeypot sends nothing and the trap stays out of the way', async 
   await page.waitForTimeout(700);
   expect(calls).toBe(0);
   await expect(page.locator('.form-status')).toHaveAttribute('data-status', 'idle');
+});
+
+// --- Kirim 5: performa, SEO, penutup ---
+
+test('every responsive image offers AVIF and WebP widths that all resolve', async ({ page, request }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const files = new Set();
+  for (const route of ['/', '/pengalaman', '/tentang']) {
+    await ready(page, route);
+    const pictures = await page.locator('picture').evaluateAll(nodes => nodes.map(node => ({
+      src: node.querySelector('img')?.getAttribute('src'),
+      sizes: node.querySelector('img')?.getAttribute('sizes'),
+      sources: [...node.querySelectorAll('source')].map(source => ({ type: source.type, srcset: source.srcset, sizes: source.sizes })),
+    })));
+    expect(pictures.length, `responsive images on ${route}`).toBeGreaterThan(0);
+    for (const picture of pictures) {
+      expect(picture.sizes, `sizes attribute on ${picture.src}`).toBeTruthy();
+      expect(picture.sources.map(source => source.type)).toEqual(['image/avif', 'image/webp']);
+      for (const source of picture.sources) {
+        // One sizes string for the whole element: a source that disagrees with
+        // the <img> makes the browser preload one file and display another.
+        expect(source.sizes, `sizes on ${source.type} of ${picture.src}`).toBe(picture.sizes);
+        const candidates = source.srcset.split(',').map(part => part.trim().split(/\s+/));
+        expect(candidates.length, `widths offered for ${picture.src}`).toBeGreaterThan(1);
+        for (const [path, descriptor] of candidates) {
+          expect(descriptor, `descriptor for ${path}`).toMatch(/^\d+w$/);
+          files.add(path);
+        }
+      }
+    }
+  }
+  expect(files.size).toBeGreaterThan(20);
+  // A srcset that names a file nobody encoded is a silent 404 per viewport.
+  const missing = [];
+  for (const path of files) {
+    const response = await request.get(path);
+    if (response.status() !== 200) missing.push(`${path} -> ${response.status()}`);
+  }
+  expect(missing).toEqual([]);
+});
+
+test('the portrait a narrow screen downloads is not the desktop file', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const measure = async (width) => {
+    await page.setViewportSize({ width, height: 900 });
+    await ready(page, '/');
+    const portrait = page.locator('.portrait-frame img');
+    await expect(portrait).toHaveJSProperty('complete', true);
+    return portrait.evaluate(node => ({
+      current: new URL(node.currentSrc, location.href).pathname,
+      natural: node.naturalWidth,
+      box: Math.round(node.getBoundingClientRect().width),
+      dpr: window.devicePixelRatio,
+    }));
+  };
+  const narrow = await measure(390);
+  const wide = await measure(1440);
+  for (const shot of [narrow, wide]) {
+    // Never smaller than the box it fills, and never larger than the widest
+    // width the pipeline actually encodes.
+    expect(shot.natural, `${shot.current} in a ${shot.box}px box`).toBeGreaterThanOrEqual(shot.box);
+    expect(shot.natural, shot.current).toBeLessThanOrEqual(900);
+  }
+  // At 1x and 2x the phone box is far below the desktop file. A 3x screen
+  // genuinely needs the widest source, so it is not held to this.
+  if (narrow.dpr <= 2) expect(narrow.natural).toBeLessThan(wide.natural);
+});
+
+test('no image is reused with a different crop, whichever width is served', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  const crops = new Map();
+  for (const route of ['/', '/pengalaman', '/tentang', '/kontak']) {
+    await ready(page, route);
+    const used = await page.locator('img').evaluateAll(images => images.map(image => {
+      const box = image.getBoundingClientRect();
+      if (!box.width || !box.height) return null;
+      const style = getComputedStyle(image);
+      // Keyed on the canonical src, not on the width the browser happened to
+      // pick, so responsive sources cannot hide a second crop of one picture.
+      return { src: image.getAttribute('src'), crop: `${(box.width / box.height).toFixed(2)} ${style.objectFit} ${style.objectPosition}` };
+    }).filter(Boolean));
+    for (const { src, crop } of used) {
+      if (!crops.has(src)) crops.set(src, new Set());
+      crops.get(src).add(crop);
+    }
+  }
+  expect(crops.size).toBeGreaterThan(2);
+  const reused = [...crops].filter(([, variants]) => variants.size > 1)
+    .map(([src, variants]) => `${src}: ${[...variants].join(' | ')}`);
+  expect(reused).toEqual([]);
+});
+
+test('reduced motion never downloads the animation chunk', async ({ page }) => {
+  const requested = [];
+  await page.route(/motion-runtime|gsap|lenis/, (route) => { requested.push(route.request().url()); return route.continue(); });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const route of ['/', '/pengalaman', '/tentang', '/kontak']) {
+    await ready(page, route);
+    await expect(page.locator('h1')).toHaveCount(1);
+  }
+  await page.waitForTimeout(800);
+  // The stylesheet is part of the shell; the 131 KB of animation code is not.
+  expect(requested.filter(url => !/\.css(\?|$)/.test(url))).toEqual([]);
+});
+
+test('route chunks blocked still leave Beranda complete and say so on the other routes', async ({ page }) => {
+  await page.route(/\/src\/pages\/(Experience|About|Contact)\.jsx/, route => route.abort());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await ready(page, '/');
+  // Beranda is part of the shell, so losing the other three chunks cannot touch it.
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Halo, saya');
+  await expect(page.locator('.portrait-frame img')).toBeVisible();
+  await expect(page.locator('.contact-callout')).toBeVisible();
+  // Widened first, because below 1100px the nav lives behind the menu toggle and
+  // this test is about the chunk, not about the menu.
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.getByRole('navigation').getByRole('link', { name: 'Pengalaman', exact: true }).click();
+  // A chunk that never arrives has to produce a page that says so, never a blank
+  // <main>. The browser keeps a failed module fetch for the whole session, so the
+  // only real way back is a reload and the copy says exactly that.
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('gagal dimuat');
+  await expect(page.getByRole('button', { name: 'Muat ulang halaman' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Kembali ke beranda' })).toBeVisible();
+  await expect(page.locator('main')).toContainText('anungramadhan17@gmail.com');
+  await expect(page.locator('.app')).not.toHaveAttribute('inert');
+});
+
+test('route chunks blocked on a cold deep link say so without a page error', async ({ page }) => {
+  await page.route(/\/src\/pages\/Experience\.jsx/, route => route.abort());
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  // The entry module asks for the deep link's chunk before React renders. That
+  // request failing must reach the page as this message, not as an unhandled
+  // rejection nobody is listening for — `afterEach` fails the test on either.
+  await ready(page, '/pengalaman');
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('gagal dimuat');
+  await expect(page.getByRole('button', { name: 'Muat ulang halaman' })).toBeVisible();
+  await expect(page.locator('h1')).toHaveCount(1);
+  await expect(page.locator('.app')).not.toHaveAttribute('inert');
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.getByRole('navigation').getByRole('link', { name: 'Tentang', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('saya Anung.');
+});
+
+test('the document carries a Person graph built from the CV facts', async ({ request }) => {
+  const html = await (await request.get('/')).text();
+  const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(match => JSON.parse(match[1]));
+  expect(blocks).toHaveLength(1);
+  const person = blocks[0];
+  expect(person['@type']).toBe('Person');
+  expect(person.name).toBe('Anung Hanindhita Ramadhan');
+  expect(person.email).toBe('mailto:anungramadhan17@gmail.com');
+  expect(person.alumniOf.name).toBe('IPB University');
+  expect(person.sameAs).toContain('https://www.linkedin.com/in/anung-hanindhita-ramadhan');
+  expect(person.address.addressLocality).toBe('Bekasi');
+  expect(person.knowsAbout.length).toBeGreaterThan(5);
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)[1];
+  expect(person.url).toBe(canonical);
+  // Nothing in the graph may read as a job held right now.
+  expect(JSON.stringify(person)).not.toContain('worksFor');
+});
+
+test('robots, sitemap and llms.txt are served and agree on one origin', async ({ request }) => {
+  const html = await (await request.get('/')).text();
+  const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)[1];
+  const origin = new URL(canonical).origin;
+
+  const robots = await request.get('/robots.txt');
+  expect(robots.status()).toBe(200);
+  expect(await robots.text()).toContain(`Sitemap: ${origin}/sitemap.xml`);
+
+  const sitemap = await request.get('/sitemap.xml');
+  expect(sitemap.status()).toBe(200);
+  const sitemapBody = await sitemap.text();
+  // Hash routes are fragments of this one document; a second <loc> would be a
+  // claim no crawler honours.
+  expect(sitemapBody.match(/<loc>/g)).toHaveLength(1);
+  expect(sitemapBody).toContain(`<loc>${canonical}</loc>`);
+  expect(sitemapBody).toMatch(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/);
+
+  const llms = await request.get('/llms.txt');
+  expect(llms.status()).toBe(200);
+  const llmsBody = await llms.text();
+  // llmstxt.org asks for an H1 and Markdown links; Lighthouse's `llms-txt` audit
+  // fails a file that has none, which is the whole reason this file exists.
+  expect(llmsBody.startsWith('# Anung Hanindhita Ramadhan')).toBe(true);
+  expect([...llmsBody.matchAll(/\[[^\]]+\]\((https?:\/\/|mailto:)[^)]+\)/g)].length).toBeGreaterThan(5);
+  expect(llmsBody).toContain(`(${origin}/#/pengalaman)`);
+  // The honesty rules have to travel with the numbers, or an assistant reading
+  // this file will restate outreach as sales.
+  expect(llmsBody).toContain('bukan hasil penjualan');
+  expect(llmsBody).toContain('100 Shopee + 50 TikTok, bukan 150 orang unik');
+  expect(llmsBody).toContain('ilustrasi abstrak sementara');
+  for (const figure of ['150', '200', '583', '3.74']) expect(llmsBody, `angka ${figure}`).toContain(figure);
 });

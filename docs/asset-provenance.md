@@ -1,8 +1,24 @@
 # Asset provenance
 
-The supplied `anung_profile.jpeg`, `with_anymind_team.jpg` and `Anung Hanindhita Ramadhan-CV.pdf` remain unchanged. Photographs are resized and encoded as WebP for delivery; their visible framing uses CSS. Colors come from the supplied `color_palette.jpg`.
+The supplied `anung_profile.jpeg`, `with_anymind_team.jpg` and `Anung Hanindhita Ramadhan-CV.pdf` remain unchanged. Photographs are resized and encoded as AVIF and WebP at several widths for delivery; their visible framing uses CSS. Colors come from the supplied `color_palette.jpg`.
 
 Every image the site ships is produced by `node scripts/prepare-assets.mjs`. Nothing under `public/images/` is hand-edited.
+
+## Responsive delivery
+
+Each image below exists at several widths in two formats. `prepare-assets.mjs` writes them and, in the same run, writes `src/image-manifest.json` — the only source of every `srcset` in the markup. The largest width *is* the canonical file, so no width is stored twice, and a path with no manifest entry renders as a plain `<img>` rather than advertising files nobody encoded.
+
+| Canonical path (what `src` keeps) | Widths | Formats |
+|---|---|---|
+| `public/images/anung-profile.webp` | 320 · 440 · 640 · 900 | AVIF + WebP |
+| `public/images/anymind-pantene-team.webp` | 400 · 640 · 900 · 1200 | AVIF + WebP |
+| `public/images/connections.webp` | 400 · 640 · 900 · 1200 | AVIF + WebP |
+| `public/images/placeholder/<slot-id>.webp` | 320 · 480 · 720 · 1200 | AVIF + WebP |
+| `public/images/cv-halaman-<n>.webp` | 400 · 660 · 1000 | AVIF + WebP |
+
+The `sizes` strings live in `src/image-sizes.js`, read off the layout in `src/styles.css`. `vite.config.js` reads the portrait entry too, so the `<link rel="preload">` in `<head>` repeats the `<picture>`'s own AVIF `srcset` and `sizes` exactly and the portrait is never fetched twice.
+
+Proven by `every responsive image offers AVIF and WebP widths that all resolve` and `the portrait a narrow screen downloads is not the desktop file` in `tests/portfolio.spec.js`.
 
 ## Real photographs supplied by Anung
 
@@ -13,7 +29,7 @@ Every image the site ships is produced by `node scripts/prepare-assets.mjs`. Not
 
 Neither photo is presented as work Anung produced on his own. The team photo's caption names the event in the picture and states separately which event he coordinated, because they are not the same event.
 
-No image is used twice with a different crop — enforced by `no image is reused with a different crop` in `tests/portfolio.spec.js` and recorded in `docs/evidence/kirim-2/metrics-after.json`.
+No image is used twice with a different crop — enforced by `no image is reused with a different crop` and by `no image is reused with a different crop, whichever width is served` in `tests/portfolio.spec.js`, the second keyed on the canonical `src` so responsive widths cannot hide a second crop. Recorded in `docs/evidence/kirim-2/metrics-after.json`.
 
 ## Decorative connections illustration
 
@@ -33,7 +49,7 @@ The evidence gallery on Pengalaman is data-driven from `src/data.js`. A slot who
 File contract, fixed before any image existed:
 
 - raw source: `assets/source/placeholder/<slot-id>.png` — 1200 × 900 PNG
-- website asset: `public/images/placeholder/<slot-id>.webp` — 1200 × 900 WebP, quality 82
+- website asset: `public/images/placeholder/<slot-id>.webp` — 1200 × 900 WebP, quality 82, plus the 320/480/720 WebP variants and the four AVIF widths listed above
 
 | slot-id | claim it stands in for | source of the claim |
 |---|---|---|
@@ -66,7 +82,7 @@ The Tentang page shows the CV inline so a recruiter does not have to download a 
 Pipeline, inside `scripts/prepare-assets.mjs`:
 
 1. `pdftoppm -png -r 150 "Anung Hanindhita Ramadhan-CV.pdf" <tmp>/halaman` — poppler renders every page at 150 dpi (A4 → 1241 × 1754 px).
-2. `sharp(...).resize({ width: 1000 }).webp({ quality: 82 })` — one WebP per page at 1000 × 1413.
+2. `sharp(...)` encodes each page at 400, 660 and 1000 px in both AVIF (quality 52) and WebP (quality 82). The 1000 px WebP is `cv-halaman-<n>.webp`, the path `src/data.js` names; the rest are its `srcset` companions.
 
 The intermediate PNGs are pure derivatives of a tracked PDF, so they are written to a temporary directory and deleted, not kept under `assets/source/`. poppler is needed only when regenerating; the site build never shells out.
 
@@ -81,9 +97,10 @@ The original PDF stays downloadable next to the preview, and every fact on those
 
 ## Swapping a placeholder for real material
 
-1. Put the real file at the same `src` path listed in `src/data.js`, at 1200 × 900.
-2. Delete `placeholder: true` from that slot in `src/data.js`.
-3. Rewrite that slot's `caption` and `alt` to describe the real material.
-4. Add a row to this file naming the source.
+1. Put the real file at `assets/source/placeholder/<slot-id>.png`, at 1200 × 900.
+2. Run `node scripts/prepare-assets.mjs`. It rewrites every width and format for that slot and refreshes `src/image-manifest.json`, so the `srcset` can never name a file that does not exist.
+3. Delete `placeholder: true` from that slot in `src/data.js`.
+4. Rewrite that slot's `caption` and `alt` to describe the real material.
+5. Add a row to this file naming the source.
 
-No JSX, CSS or test changes are required. The DOM shape, the intrinsic size attributes and the grid are identical either way.
+No JSX, CSS or test changes are required. The DOM shape, the intrinsic size attributes and the grid are identical either way. Step 2 is the same step every other image on the site already goes through; it is what keeps the manifest and the files in agreement.

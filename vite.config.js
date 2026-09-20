@@ -1,11 +1,17 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { buildSite } from './src/site.js';
+import { PORTRAIT_SRC, SIZES } from './src/image-sizes.js';
+import { llmsTxt, personJsonLd, robotsTxt, sitemapXml } from './src/seo.js';
 
 // `index.html` carries one marker instead of a dozen hand-written meta tags.
-// Title, description, Open Graph, Twitter and canonical all come from
-// `src/site.js`, so the site URL is written in exactly one place.
+// Title, description, Open Graph, Twitter, canonical, the Person graph and the
+// portrait preload all come from `src/site.js`, `src/seo.js` and the image
+// manifest, so the site URL is written in exactly one place.
 const MARKER = '<!--site-meta-->';
+
+const images = JSON.parse(readFileSync(new URL('./src/image-manifest.json', import.meta.url), 'utf8'));
 
 const escape = (value) => String(value)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -32,12 +38,30 @@ const headTags = (site) => [
     ['name', 'twitter:image:alt', site.ogImageAlt],
   ].map(([attribute, key, value]) => `<meta ${attribute}="${key}" content="${escape(value)}" />`),
   `<link rel="canonical" href="${escape(site.url)}" />`,
+  // The portrait decides LCP on the landing page. The preload repeats the
+  // <picture>'s own AVIF srcset and sizes exactly, so the browser preloads the
+  // same file it would have picked and nothing is fetched twice. A browser
+  // without AVIF ignores this because of `type` and loads WebP from the markup.
+  `<link rel="preload" as="image" type="image/avif" imagesrcset="${escape(images[PORTRAIT_SRC].avif)}" imagesizes="${escape(SIZES.portrait)}" fetchpriority="high" />`,
+  // Everything in this graph is read out of src/data.js by src/seo.js.
+  `<script type="application/ld+json">${JSON.stringify(personJsonLd(site)).replace(/</g, '\\u003c')}</script>`,
 ].join('\n    ');
+
+// robots.txt, sitemap.xml and llms.txt are written from the same site object as
+// the canonical tag, so the domain can never disagree with itself. They are
+// generated rather than kept in `public/` for exactly that reason, and the dev
+// server serves the same bytes the build emits.
+const documents = (site) => ({
+  'robots.txt': { type: 'text/plain', body: robotsTxt(site) },
+  'sitemap.xml': { type: 'application/xml', body: sitemapXml(site, new Date().toISOString().slice(0, 10)) },
+  'llms.txt': { type: 'text/plain', body: llmsTxt(site) },
+});
 
 export default defineConfig(({ mode }) => {
   const site = buildSite(loadEnv(mode, process.cwd(), 'VITE_'));
+  const docs = documents(site);
   if (site.urlIsPlaceholder) {
-    console.warn(`[site-meta] VITE_SITE_URL belum diisi. og:url dan canonical memakai host placeholder ${site.origin}. Isi VITE_SITE_URL sebelum deploy.`);
+    console.warn(`[site-meta] VITE_SITE_URL belum diisi. og:url, canonical, sitemap.xml dan llms.txt memakai host placeholder ${site.origin}. Isi VITE_SITE_URL sebelum deploy.`);
   }
   return {
     plugins: [
@@ -50,6 +74,21 @@ export default defineConfig(({ mode }) => {
             if (!html.includes(MARKER)) throw new Error(`index.html kehilangan penanda ${MARKER}; tag sosial tidak bisa dipasang.`);
             return html.replace(MARKER, headTags(site));
           },
+        },
+        configureServer(server) {
+          server.middlewares.use((request, response, next) => {
+            const name = (request.url ?? '').split('?')[0].replace(/^\//, '');
+            // `hasOwn`, not a truthiness check: a request for `/constructor`
+            // would otherwise find something on Object.prototype and get served
+            // a broken response instead of the app.
+            if (!Object.hasOwn(docs, name)) return next();
+            const doc = docs[name];
+            response.setHeader('Content-Type', `${doc.type}; charset=utf-8`);
+            response.end(doc.body);
+          });
+        },
+        generateBundle() {
+          for (const [fileName, doc] of Object.entries(docs)) this.emitFile({ type: 'asset', fileName, source: doc.body });
         },
       },
     ],

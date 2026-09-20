@@ -1,0 +1,158 @@
+{
+  "base": "http://127.0.0.1:4173",
+  "images": {
+    "beranda-1440": [
+      {
+        "src": "/images/anung-profile.webp",
+        "served": "/images/anung-profile-440.avif",
+        "natural": "419x560",
+        "box": "416x462",
+        "loaded": true
+      },
+      {
+        "src": "/images/anymind-pantene-team.webp",
+        "served": "/images/anymind-pantene-team-900.avif",
+        "natural": "691x518",
+        "box": "665x498",
+        "loaded": true
+      },
+      {
+        "src": "/images/connections.webp",
+        "served": "/images/connections-640.avif",
+        "natural": "633x422",
+        "box": "593x471",
+        "loaded": true
+      }
+    ],
+    "pengalaman-1440": [
+      {
+        "src": "/images/anymind-pantene-team.webp",
+        "served": "/images/anymind-pantene-team-900.avif",
+        "natural": "662x496",
+        "box": "647x485",
+        "loaded": true
+      },
+      {
+        "src": "/images/placeholder/konten-sosial.webp",
+        "served": "/images/placeholder/konten-sosial-480.avif",
+        "natural": "432x324",
+        "box": "423x317",
+        "loaded": true
+      },
+      {
+        "src": "/images/placeholder/video-produk.webp",
+        "served": "/images/placeholder/video-produk-480.avif",
+        "natural": "432x324",
+        "box": "423x317",
+        "loaded": true
+      },
+      {
+        "src": "/images/placeholder/webinar-b2b.webp",
+        "served": "/images/placeholder/webinar-b2b-480.avif",
+        "natural": "432x324",
+        "box": "423x317",
+        "loaded": true
+      }
+    ],
+    "tentang-1440": [
+      {
+        "src": "/images/anung-profile.webp",
+        "served": "/images/anung-profile-440.avif",
+        "natural": "419x560",
+        "box": "390x433",
+        "loaded": true
+      },
+      {
+        "src": "/images/cv-halaman-1.webp",
+        "served": "/images/cv-halaman-1-1000.avif",
+        "natural": "720x1017",
+        "box": "659x930",
+        "loaded": true
+      },
+      {
+        "src": "/images/cv-halaman-2.webp",
+        "served": "/images/cv-halaman-2-1000.avif",
+        "natural": "720x1017",
+        "box": "659x930",
+        "loaded": true
+      }
+    ],
+    "beranda-390": [
+      {
+        "src": "/images/anung-profile.webp",
+        "served": "/images/anung-profile-320.avif",
+        "natural": "312x416",
+        "box": "280x280",
+        "loaded": true
+      },
+      {
+        "src": "/images/anymind-pantene-team.webp",
+        "served": "/images/anymind-pantene-team-400.avif",
+        "natural": "349x262",
+        "box": "350x263",
+        "loaded": true
+      },
+      {
+        "src": "/images/connections.webp",
+        "served": "/images/connections-400.avif",
+        "natural": "349x233",
+        "box": "350x278",
+        "loaded": true
+      }
+    ],
+    "pengalaman-390": [
+      {
+        "src": "/images/anymind-pantene-team.webp",
+        "served": "/images/anymind-pantene-team-400.avif",
+        "natural": "349x262",
+        "box": "350x263",
+        "loaded": true
+      },
+      {
+        "src": "/images/placeholder/konten-sosial.webp",
+        "served": "/images/placeholder/konten-sosial-320.avif",
+        "natural": "168x125",
+        "box": "168x126",
+        "loaded": true
+      },
+      {
+        "src": "/images/placeholder/video-produk.webp",
+        "served": "/images/placeholder/video-produk-320.avif",
+        "natural": "168x125",
+        "box": "168x126",
+        "loaded": true
+      },
+      {
+        "src": "/images/placeholder/webinar-b2b.webp",
+        "served": "/images/placeholder/webinar-b2b-320.avif",
+        "natural": "168x125",
+        "box": "168x126",
+        "loaded": true
+      }
+    ],
+    "tentang-390": [
+      {
+        "src": "/images/anung-profile.webp",
+        "served": "/images/anung-profile-320.avif",
+        "natural": "312x416",
+        "box": "280x280",
+        "loaded": true
+      },
+      {
+        "src": "/images/cv-halaman-1.webp",
+        "served": "/images/cv-halaman-1-400.avif",
+        "natural": "349x494",
+        "box": "350x494",
+        "loaded": true
+      },
+      {
+        "src": "/images/cv-halaman-2.webp",
+        "served": "/images/cv-halaman-2-400.avif",
+        "natural": "349x494",
+        "box": "350x494",
+        "loaded": true
+      }
+    ]
+  },
+  "broken": []
+}

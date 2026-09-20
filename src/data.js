@@ -2,7 +2,8 @@
 // Do not present outreach targets as sales outcomes or coordination as sole ownership.
 // Evidence slots: `placeholder: true` means the real material is not published
 // yet and the cover is an abstract illustration. Swapping in a real asset means
-// dropping the file at the same `src` path and deleting `placeholder: true`.
+// dropping the file in `assets/source/`, rerunning `scripts/prepare-assets.mjs`
+// so every width and format is re-encoded, and deleting `placeholder: true`.
 // It never means editing JSX, and the honest caption stays until the flag goes.
 export const profile = {
   name: 'Anung Hanindhita Ramadhan',

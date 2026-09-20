@@ -1,0 +1,9 @@
+[WebServer] [site-meta] VITE_SITE_URL belum diisi. og:url, canonical, sitemap.xml dan llms.txt memakai host placeholder https://anung-ramadhan.example. Isi VITE_SITE_URL sebelum deploy.
+[WebServer] [site-meta] VITE_SITE_URL belum diisi. og:url, canonical, sitemap.xml dan llms.txt memakai host placeholder https://anung-ramadhan.example. Isi VITE_SITE_URL sebelum deploy.
+
+Running 2 tests using 2 workers
+
+  ✓  1 [webkit] › tests/portfolio.spec.js:957:1 › route chunks blocked on a cold deep link say so without a page error (1.5s)
+  ✓  2 [chromium] › tests/portfolio.spec.js:957:1 › route chunks blocked on a cold deep link say so without a page error (1.9s)
+
+  2 passed (3.2s)

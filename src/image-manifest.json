@@ -1,0 +1,80 @@
+{
+  "/images/anung-profile.webp": {
+    "widths": [
+      320,
+      440,
+      640,
+      900
+    ],
+    "avif": "/images/anung-profile-320.avif 320w, /images/anung-profile-440.avif 440w, /images/anung-profile-640.avif 640w, /images/anung-profile-900.avif 900w",
+    "webp": "/images/anung-profile-320.webp 320w, /images/anung-profile-440.webp 440w, /images/anung-profile-640.webp 640w, /images/anung-profile.webp 900w"
+  },
+  "/images/anymind-pantene-team.webp": {
+    "widths": [
+      400,
+      640,
+      900,
+      1200
+    ],
+    "avif": "/images/anymind-pantene-team-400.avif 400w, /images/anymind-pantene-team-640.avif 640w, /images/anymind-pantene-team-900.avif 900w, /images/anymind-pantene-team-1200.avif 1200w",
+    "webp": "/images/anymind-pantene-team-400.webp 400w, /images/anymind-pantene-team-640.webp 640w, /images/anymind-pantene-team-900.webp 900w, /images/anymind-pantene-team.webp 1200w"
+  },
+  "/images/connections.webp": {
+    "widths": [
+      400,
+      640,
+      900,
+      1200
+    ],
+    "avif": "/images/connections-400.avif 400w, /images/connections-640.avif 640w, /images/connections-900.avif 900w, /images/connections-1200.avif 1200w",
+    "webp": "/images/connections-400.webp 400w, /images/connections-640.webp 640w, /images/connections-900.webp 900w, /images/connections.webp 1200w"
+  },
+  "/images/placeholder/konten-sosial.webp": {
+    "widths": [
+      320,
+      480,
+      720,
+      1200
+    ],
+    "avif": "/images/placeholder/konten-sosial-320.avif 320w, /images/placeholder/konten-sosial-480.avif 480w, /images/placeholder/konten-sosial-720.avif 720w, /images/placeholder/konten-sosial-1200.avif 1200w",
+    "webp": "/images/placeholder/konten-sosial-320.webp 320w, /images/placeholder/konten-sosial-480.webp 480w, /images/placeholder/konten-sosial-720.webp 720w, /images/placeholder/konten-sosial.webp 1200w"
+  },
+  "/images/placeholder/video-produk.webp": {
+    "widths": [
+      320,
+      480,
+      720,
+      1200
+    ],
+    "avif": "/images/placeholder/video-produk-320.avif 320w, /images/placeholder/video-produk-480.avif 480w, /images/placeholder/video-produk-720.avif 720w, /images/placeholder/video-produk-1200.avif 1200w",
+    "webp": "/images/placeholder/video-produk-320.webp 320w, /images/placeholder/video-produk-480.webp 480w, /images/placeholder/video-produk-720.webp 720w, /images/placeholder/video-produk.webp 1200w"
+  },
+  "/images/placeholder/webinar-b2b.webp": {
+    "widths": [
+      320,
+      480,
+      720,
+      1200
+    ],
+    "avif": "/images/placeholder/webinar-b2b-320.avif 320w, /images/placeholder/webinar-b2b-480.avif 480w, /images/placeholder/webinar-b2b-720.avif 720w, /images/placeholder/webinar-b2b-1200.avif 1200w",
+    "webp": "/images/placeholder/webinar-b2b-320.webp 320w, /images/placeholder/webinar-b2b-480.webp 480w, /images/placeholder/webinar-b2b-720.webp 720w, /images/placeholder/webinar-b2b.webp 1200w"
+  },
+  "/images/cv-halaman-1.webp": {
+    "widths": [
+      400,
+      660,
+      1000
+    ],
+    "avif": "/images/cv-halaman-1-400.avif 400w, /images/cv-halaman-1-660.avif 660w, /images/cv-halaman-1-1000.avif 1000w",
+    "webp": "/images/cv-halaman-1-400.webp 400w, /images/cv-halaman-1-660.webp 660w, /images/cv-halaman-1.webp 1000w"
+  },
+  "/images/cv-halaman-2.webp": {
+    "widths": [
+      400,
+      660,
+      1000
+    ],
+    "avif": "/images/cv-halaman-2-400.avif 400w, /images/cv-halaman-2-660.avif 660w, /images/cv-halaman-2-1000.avif 1000w",
+    "webp": "/images/cv-halaman-2-400.webp 400w, /images/cv-halaman-2-660.webp 660w, /images/cv-halaman-2.webp 1000w"
+  }
+}
