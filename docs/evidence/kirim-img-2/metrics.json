@@ -1,0 +1,79 @@
+{
+  "image": {
+    "format": "png",
+    "width": 1200,
+    "height": 630,
+    "bytes": 350196,
+    "sha256": "defdd0afc414906a1719e59f5172e7496d418a2b14aefd96018f4685bb5c2f4e"
+  },
+  "sourcePhotoSha256": "dd336dd44002c6ccfd6b8b526376afe2f5ef5ab0f6221c45862bebb4d468f6ea",
+  "crop": {
+    "left": 740,
+    "top": 1995,
+    "width": 630,
+    "height": 994
+  },
+  "placement": {
+    "left": 820,
+    "top": 72,
+    "width": 308,
+    "height": 486
+  },
+  "portraitPixelExact": true,
+  "imageModelUsed": false,
+  "fontLoaded": true,
+  "textBounds": [
+    {
+      "text": "Anung Hanindhita",
+      "size": 64,
+      "weight": 750,
+      "color": "#6C151E",
+      "left": 73,
+      "top": 168,
+      "right": 629,
+      "bottom": 232
+    },
+    {
+      "text": "Ramadhan",
+      "size": 64,
+      "weight": 750,
+      "color": "#6C151E",
+      "left": 76,
+      "top": 247,
+      "right": 401,
+      "bottom": 295
+    },
+    {
+      "text": "Afiliasi & Pemasaran Digital",
+      "size": 30,
+      "weight": 550,
+      "color": "#6C151E",
+      "left": 72,
+      "top": 348,
+      "right": 456,
+      "bottom": 379
+    },
+    {
+      "text": "Lulusan Bisnis, IPB University",
+      "size": 24,
+      "weight": 500,
+      "color": "#0F3D3A",
+      "left": 73,
+      "top": 487,
+      "right": 404,
+      "bottom": 511
+    }
+  ],
+  "contrasts": [
+    {
+      "foreground": "#6C151E",
+      "background": "#F5DABF",
+      "ratio": 8.88126303642956
+    },
+    {
+      "foreground": "#0F3D3A",
+      "background": "#F5DABF",
+      "ratio": 8.956095104151965
+    }
+  ]
+}

@@ -17,10 +17,10 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 | Blok | Isi | Item | Done |
 |---|---|---|---|
 | A | Bug | 2 | 2 |
-| B | Hutang yang belum mendarat di `main` | 2 | 1 |
+| B | Hutang yang belum mendarat di `main` | 2 | 2 |
 | C | Rombak visualisasi timeline | 1 | 0 |
 | D | Poles visual menyeluruh | 1 | 0 |
-| — | **Total** | **6** | **3** |
+| — | **Total** | **6** | **4** |
 
 Urutan kerja: A → B → C → D. BLOK D hanya dimulai setelah A, B, C lolos.
 
@@ -96,7 +96,7 @@ Kirim 5. `git merge` akan menghapus `src/pages/`, `src/seo.js`, `src/site.js`,
 | ID | Item | Status | Bukti |
 |---|---|---|---|
 | DEBT-1 | Turunkan rupa VIS-1 (`6b10739`) ke `main` | DONE | [`docs/evidence/putaran-2/debt-1/`](docs/evidence/putaran-2/debt-1/): diff hanya `src/motion.js` + `src/styles.css` (63 tambah, 52 hapus); `tests/` tidak berubah; `npm test` 196/196 lolos dalam 3,8 menit. |
-| DEBT-2 | Pasang `public/images/og-cover.png` dari `0adb7e5` | TODO | Butuh: `dist/images/og-cover.png` ada dan 1200×630; `og:image` di `dist/index.html` menunjuk ke situ. Sisa jujur: validasi LinkedIn Post Inspector + pratinjau WhatsApp nyata menunggu domain hidup. |
+| DEBT-2 | Pasang `public/images/og-cover.png` dari `0adb7e5` | DONE | [`docs/evidence/putaran-2/debt-2/`](docs/evidence/putaran-2/debt-2/): sumber, publik, dan hasil build PNG 1200×630 dengan hash identik; metadata menunjuk ke `/images/og-cover.png`; HTTP 200; reproduksi bersih identik; audit 15 berkas, 0 temuan. Preview LinkedIn/WhatsApp nyata tetap menunggu domain hidup. |
 
 ### Koreksi terhadap papan lama — penting
 
@@ -204,6 +204,12 @@ dilepas.
   item ini tidak melahirkan rasio kontras baru. Provisioner Python dari skill
   Arch tidak menemukan CLI Python `playwright`; verifikasi dialihkan ke paket
   Node proyek dan launch nyata ketiga engine berhasil sebelum suite penuh.
+- **2026-09-20 — DEBT-2.** Checkout lama membawa versi
+  `docs/asset-provenance.md` sebelum gambar responsif Kirim 5. Bagian itu tidak
+  diambil; dokumentasi responsif dipertahankan dan hanya catatan IMG-2 yang
+  ditambahkan. Kartu memakai crop foto asli serta teks lokal, tanpa model
+  gambar. LinkedIn Post Inspector dan pratinjau WhatsApp nyata menunggu domain
+  hidup dan deploy.
 
 ## Log verifikasi
 
@@ -231,3 +237,9 @@ mana buktinya disimpan (`docs/evidence/putaran-2/`).
   `npm test`: **196 passed (3,8 menit)**, exit 0, pada Chromium desktop,
   Chromium mobile, Firefox, dan WebKit. Bukti:
   [`docs/evidence/putaran-2/debt-1/`](docs/evidence/putaran-2/debt-1/).
+- **DEBT-2 — 2026-09-20.** `npm run build`: exit 0, 4579 modul.
+  `dist/images/og-cover.png`: PNG 1200×630, hash sama dengan sumber dan aset
+  publik. `verify-delivery.mjs`: HTTP 200 `image/png`, metadata OG/Twitter
+  cocok, regenerasi bersih byte-identik. `audit.py`: 15 berkas, 0 temuan, 5
+  umpan negatif tertolak. Kontras bordo/krem 8,881:1 dan hijau/krem 8,956:1.
+  Bukti: [`docs/evidence/putaran-2/debt-2/`](docs/evidence/putaran-2/debt-2/).

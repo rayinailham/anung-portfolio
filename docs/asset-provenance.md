@@ -2,7 +2,7 @@
 
 The supplied `anung_profile.jpeg`, `with_anymind_team.jpg` and `Anung Hanindhita Ramadhan-CV.pdf` remain unchanged. Photographs are resized and encoded as AVIF and WebP at several widths for delivery; their visible framing uses CSS. Colors come from the supplied `color_palette.jpg`.
 
-Every image the site ships is produced by `node scripts/prepare-assets.mjs`. Nothing under `public/images/` is hand-edited.
+Photographs, CV previews, and responsive derivatives are produced by `node scripts/prepare-assets.mjs`; the OG share card uses its reproducible composition script documented below. Nothing under `public/images/` is hand-edited.
 
 ## Responsive delivery
 
@@ -91,9 +91,34 @@ The original PDF stays downloadable next to the preview, and every fact on those
 ## Share card (og:image)
 
 - Path declared by `src/site.js` and injected into `index.html` by `vite.config.js`: `/images/og-cover.png`, 1200 × 630, `image/png`.
-- File status: **not produced yet.** `docs/image-jobs/IMG-2-og-image.md` is the ticket.
+- File status: **produced for IMG-2**. Source: `assets/source/og-cover.png`; shipped copy: `public/images/og-cover.png`. Both files are byte-identical PNGs, 1200 × 630, 350196 bytes.
 - This is the only image in the project allowed to carry text, because the text is a person's name and role, not a work result.
 - Its face must be the supplied photograph, composited — never generated or altered. The ticket states this as a hard condition.
+
+### IMG-2 — composition and source record
+
+- Generator: Sharp for cropping, scaling and PNG composition; Chromium Canvas for local Manrope typography. **No image model used.**
+- Photo: original `anung_profile.jpeg`, SHA-256 `dd336dd44002c6ccfd6b8b526376afe2f5ef5ab0f6221c45862bebb4d468f6ea`. The original file is unchanged.
+- Exact composition brief (not a prompt sent to an image model):
+
+> Buat kartu share PNG 1200×630. Latar krem #F5DABF. Foto asli Anung di kanan, cukup crop dan skala, tanpa mengubah wajah atau warna foto. Crop mengecualikan seluruh logo AnyMind. Teks Manrope di kiri: “Anung Hanindhita Ramadhan”, “Afiliasi & Pemasaran Digital”, “Lulusan Bisnis, IPB University”. Nama bordo #6C151E, tebal dan besar, dibungkus dua baris. Peran bordo, keterangan lulusan hijau #0F3D3A. Jarak aman minimal 60 px. Aksen garis hijau pendek. Tanpa angka, logo, grafik, tombol, atau teks tambahan.
+
+Reproduce from the project root:
+
+```sh
+node docs/evidence/kirim-img-2/compose-card.mjs
+```
+
+1. Crop the 3120 × 4160 source at `left=740, top=1995, width=630, height=994`. This omits the wall logo without removing or retouching anything inside the crop.
+2. Resize to 308 × 486 and place at `(820, 72)` on the cream canvas. No face generation, beauty processing, colour correction or background replacement.
+3. Load the local `manrope-latin-wght-normal.woff2` as a variable font; draw the exact text using weights 750 / 550 / 500 and sizes 64 / 30 / 24 px. The name wraps after “Hanindhita”; its wording stays intact.
+4. Save both PNGs with Sharp compression level 9. Make the 320 px proof separately; it is not a shipped asset.
+5. Assert each text bounding box stays within the 60 px safe area. Compare the final portrait region byte-for-byte against the resized source crop; compare the two PNG copies and the built HTTP response.
+
+[Metrics](evidence/kirim-img-2/metrics.json): contrast bordo/cream 8.881:1, green/cream 8.956:1. [Delivery check](evidence/kirim-img-2/delivery.json) proves a clean asset regeneration is byte-identical using the installed dependencies. [Small preview](evidence/kirim-img-2/preview-320.png) checked visually: full name legible; no logo or invented evidence.
+
+This is an identity/share card, not a client-work sample. It is consumed by static OG metadata, not inserted into page layout. Live LinkedIn/WhatsApp previews remain pending an actual domain and deployment, as the ticket permits.
+
 
 ## Swapping a placeholder for real material
 

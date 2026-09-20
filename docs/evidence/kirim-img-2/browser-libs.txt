@@ -1,0 +1,5 @@
+[pw-arch] OK  webkit-2336/minibrowser-wpe: 0 library hilang
+[pw-arch] OK  webkit-2336/minibrowser-gtk: 0 library hilang
+[pw-arch] OK  webkit-2359/minibrowser-wpe: 0 library hilang
+[pw-arch] OK  webkit-2359/minibrowser-gtk: 0 library hilang
+[pw-arch] check: semua bundle lengkap

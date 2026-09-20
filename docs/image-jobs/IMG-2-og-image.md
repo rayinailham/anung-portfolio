@@ -1,6 +1,6 @@
 # IMG-2 — Gambar OG 1200×630
 
-Status: TODO
+Status: DONE
 Harness: Codex
 
 ## Kebutuhan
@@ -114,14 +114,14 @@ domain.
 
 ## Diterima kalau
 
-- [ ] berkas ada di `assets/source/og-cover.png` dan `public/images/og-cover.png`
-- [ ] `public/images/og-cover.png` berformat PNG, tepat 1200 × 630, di bawah 1 MB
-- [ ] wajah di kartu adalah foto asli Anung, tidak dihasilkan dan tidak diubah
-- [ ] teksnya persis dua (atau tiga) baris di atas, tanpa tambahan
-- [ ] nama masih terbaca saat kartu ditampilkan selebar ±320 px
-- [ ] kontras teks terhadap latarnya ≥ 4.5:1
-- [ ] tidak ada angka, logo merek, atau tiruan antarmuka
-- [ ] provenance dicatat di `docs/asset-provenance.md` lengkap dengan prompt dan
+- [x] berkas ada di `assets/source/og-cover.png` dan `public/images/og-cover.png`
+- [x] `public/images/og-cover.png` berformat PNG, tepat 1200 × 630, di bawah 1 MB
+- [x] wajah di kartu adalah foto asli Anung, tidak dihasilkan dan tidak diubah
+- [x] teksnya persis dua (atau tiga) baris di atas, tanpa tambahan
+- [x] nama masih terbaca saat kartu ditampilkan selebar ±320 px
+- [x] kontras teks terhadap latarnya ≥ 4.5:1
+- [x] tidak ada angka, logo merek, atau tiruan antarmuka
+- [x] provenance dicatat di `docs/asset-provenance.md` lengkap dengan prompt dan
       langkah komposisi yang benar-benar dipakai
 
 ## Yang TIDAK boleh disentuh sesi ini
@@ -129,3 +129,19 @@ domain.
 `src/`, `index.html`, `vite.config.js`, `tests/`, `scripts/`, `progress.md`, dan
 angka atau copy apa pun. Tag `og:` sudah benar dan sudah diuji; tiket ini hanya
 menambahkan berkas gambarnya.
+
+
+## Hasil sesi Codex — 2026-09-20
+
+Berkas: `assets/source/og-cover.png` dan `public/images/og-cover.png`.
+PNG 1200 × 630, 350196 byte. Dibuat lewat komposisi Sharp + teks Manrope
+lokal; tidak memakai model gambar. Crop foto asli menghindari logo dinding,
+tanpa mengubah wajah. Piksel potret akhir cocok persis dengan crop yang diskalakan.
+
+Bukti, skrip reproduksi, preview kecil, metrik kontras dan hasil pengiriman
+build: [`docs/evidence/kirim-img-2/README.md`](../evidence/kirim-img-2/README.md).
+Provenance memuat brief persis dan semua langkah. Preview LinkedIn/WhatsApp
+nyata menunggu domain + deploy; itu tetap di luar tiket.
+
+`progress.md` diperbarui karena instruksi langsung penutup sesi mewajibkannya,
+mengatasi larangan pada tiket lama. Tidak ada perubahan source aplikasi atau test.

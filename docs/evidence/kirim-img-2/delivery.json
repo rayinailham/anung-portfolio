@@ -1,0 +1,37 @@
+{
+  "engines": {
+    "chromium": "153.0.8010.12",
+    "firefox": "155.0",
+    "webkit": "26.6"
+  },
+  "delivery": {
+    "path": "/images/og-cover.png",
+    "status": 200,
+    "contentType": "image/png",
+    "bytes": 350196,
+    "sha256": "defdd0afc414906a1719e59f5172e7496d418a2b14aefd96018f4685bb5c2f4e",
+    "metadata": {
+      "og:site_name": "Anung Ramadhan",
+      "og:title": "Anung Ramadhan | Afiliasi &amp; Pemasaran Digital",
+      "og:description": "Pengalaman magang saya: mengelola mitra afiliasi, membantu kerja sama KOL, dan membuat konten. Lihat portofolio dan download CV saya di sini.",
+      "og:type": "website",
+      "og:locale": "id_ID",
+      "og:url": "https://anung-ramadhan.example/",
+      "og:image": "https://anung-ramadhan.example/images/og-cover.png",
+      "og:image:type": "image/png",
+      "og:image:width": "1200",
+      "og:image:height": "630",
+      "og:image:alt": "Kartu berbagi portofolio: potret Anung Hanindhita Ramadhan di samping namanya dan peran Afiliasi &amp; Pemasaran Digital.",
+      "twitter:card": "summary_large_image",
+      "twitter:title": "Anung Ramadhan | Afiliasi &amp; Pemasaran Digital",
+      "twitter:description": "Pengalaman magang saya: mengelola mitra afiliasi, membantu kerja sama KOL, dan membuat konten. Lihat portofolio dan download CV saya di sini.",
+      "twitter:image": "https://anung-ramadhan.example/images/og-cover.png",
+      "twitter:image:alt": "Kartu berbagi portofolio: potret Anung Hanindhita Ramadhan di samping namanya dan peran Afiliasi &amp; Pemasaran Digital."
+    }
+  },
+  "cleanReproduction": {
+    "exitCode": 0,
+    "imageByteIdentical": true,
+    "dependencies": "Installed node_modules reused; only original photograph and composition script copied."
+  }
+}
