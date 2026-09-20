@@ -752,6 +752,35 @@ test('every revealing element says what kind of content it is', async ({ page })
   expect(kinds.size).toBeGreaterThanOrEqual(4);
 });
 
+// The animation chunk lands a moment after the markup. Whatever the intro is
+// going to do to the word, the reader must not first read it finished and then
+// watch it be taken away.
+test('the intro word is never painted finished before it animates', async ({ page }) => {
+  // Warm the dev server's transform of the animation chunk, so the intro is not
+  // skipped over a cold compile and this measures the intro rather than a miss.
+  await page.request.get('/src/motion-runtime.js');
+  await page.addInitScript(() => {
+    window.__introY = [];
+    const sample = () => {
+      const letter = document.querySelector('.splash-word span');
+      if (letter) window.__introY.push(Math.round(new DOMMatrixReadOnly(getComputedStyle(letter).transform).f));
+      if (window.__introY.length < 400) requestAnimationFrame(sample);
+    };
+    requestAnimationFrame(sample);
+  });
+  await page.goto('/#/');
+  await expect(page.locator('.splash')).toHaveCount(0);
+  const travel = await page.evaluate(() => window.__introY);
+  expect(travel.length).toBeGreaterThan(4);
+  // The first frame anyone can see is the first frame of the entrance: the
+  // letter is below its own mask, not sitting at rest waiting to be yanked.
+  expect(travel[0]).toBeGreaterThan(20);
+  // And from there it only travels one way, up to its resting place.
+  const backwards = travel.filter((y, i) => i > 0 && y > travel[i - 1] + 2);
+  expect(backwards, 'the word is pulled back down after being shown').toEqual([]);
+  expect(travel[travel.length - 1]).toBeLessThan(3);
+});
+
 test('GSAP blocked still leaves every data visual on its final value', async ({ page }) => {
   let blocked = 0;
   await page.route(/\/node_modules\/.*gsap.*\.js/, route => { blocked++; return route.abort(); });

@@ -410,9 +410,14 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 /* The intro word is larger than anything a page ever shows, so it keeps its
    own size instead of adding a scale step nothing else would use. */
 .splash-word { font-size: clamp(110px, 22vw, 280px); font-weight: 550; letter-spacing: var(--tracking-display); line-height: var(--leading-snug); overflow: hidden; padding-right: .08em; }
-.splash-word span { display: inline-block; }
+/* The resting state of the word and the caption IS the intro's first frame.
+   The animation chunk arrives a moment after the markup, so a splash that sat
+   at its finished state until then painted "Halo." whole, yanked it back under
+   the mask, and only then played its entrance. Starting under the mask means
+   there is nothing to yank back. `fromTo` in App.jsx lands on the real values. */
+.splash-word span { display: inline-block; transform: translateY(115%); }
 .splash-star { width: 45px; height: 45px; }
-.splash-caption { font-size: var(--text-s); margin-top: var(--space-s); }
+.splash-caption { font-size: var(--text-s); margin-top: var(--space-s); opacity: 0; }
 .splash-bottom { position: absolute; bottom: var(--space-2xl); font-size: var(--text-xs); letter-spacing: var(--tracking-label); }
 .page-curtain { position: fixed; inset: 0; z-index: 30; background: #6c151e; color: #f5dabf; transform: translateY(110%); display: flex; align-items: center; justify-content: center; gap: var(--space-xl); pointer-events: none; }
 .page-curtain > span { font-size: var(--display); letter-spacing: var(--tracking-display); }
@@ -525,4 +530,8 @@ button:active, .button:active { transform: scale(.97); }
   .scroll-progress, .scroll-cue { display: none; }
   .pulse::after { animation: none; }
   .feature-photo, .feature-art { transform: none !important; }
+  /* Reduced motion never mounts the intro, but if it ever did its content has
+     to be readable, not parked at the first frame of an animation. */
+  .splash-word span { transform: none; }
+  .splash-caption { opacity: 1; }
 }

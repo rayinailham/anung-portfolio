@@ -54,9 +54,15 @@ function Splash({ reveal, done, reduced, motionStatus }) {
     let readingHold;
     let timeline;
     const ctx = gsap.context(() => {
+      // fromTo, not from: the stylesheet already parks the word under its mask
+      // and the caption at zero, so the first painted frame is the first frame
+      // of the intro. A `from` here would read those parked values as the
+      // destination and the word would never arrive. `y: 0` on both ends clears
+      // the px offset GSAP parses out of that CSS transform, which would
+      // otherwise stack under the percentage and hold the word off screen.
       timeline = gsap.timeline({ onComplete: done })
-        .from('.splash-word span', { yPercent: 115, duration: 0.38, stagger: 0.03, ease: 'expo.out' })
-        .from('.splash-caption', { opacity: 0, y: 10, duration: 0.18 }, '-=0.18')
+        .fromTo('.splash-word span', { yPercent: 115, y: 0 }, { yPercent: 0, y: 0, duration: 0.38, stagger: 0.03, ease: 'expo.out' })
+        .fromTo('.splash-caption', { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.18 }, '-=0.18')
         .to('.splash-star', { rotation: 180, duration: 0.5, ease: 'power2.inOut' }, 0)
         .call(() => {
           timeline.pause();
