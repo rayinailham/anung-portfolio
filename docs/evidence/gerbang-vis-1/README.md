@@ -69,6 +69,7 @@ baru ditambahkan di atasnya. Jumlah hasil tetap 164 — sama dengan Kirim 4.
 | `npx playwright test -g 'the CV can be read…' --repeat-each=5` (4 project) | **20 passed (23.8s)**, exit 0 — [log](sesudah-ulang-5.txt) |
 | `npm test` run 1 | **164 passed (3.2m)**, exit 0 — [log](suite-penuh-1.txt) |
 | `npm test` run 2, tanpa perubahan apa pun | **164 passed (3.3m)**, exit 0 — [log](suite-penuh-2.txt) |
+| `npm test` pada `main` 60f9c5f apa adanya (tanpa rupa VIS-1) | **164 passed (3.1m)**, exit 0 — [log](suite-penuh-main.txt) |
 | `npm run build` | exit 0 — [log](build.txt) |
 | `EVIDENCE_DIR=docs/evidence/gerbang-vis-1 node scripts/verify-kirim-3.mjs` | exit 0: arc IPK 0.935001, TOEFL 0.7439 = harapan, rasio split 2.0001, tumpang tindih 4 bulan, 40 pasangan kontras terendah 5.268:1 — [log](verify-kirim-3.txt), [metrik](metrics.json) |
 | `node docs/evidence/vis-1/verify-polish.mjs` | exit 0: 8 pemeriksaan ring–angka, sampel tween langsung, 6 pasangan kontras cat terendah 3.164:1 — [log](verify-polish.txt) |

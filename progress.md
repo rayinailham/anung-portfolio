@@ -312,6 +312,7 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 | 2026-09-20 | `npx playwright test --project=firefox -g 'the CV can be read' --repeat-each=3` sebelum perbaikan, dua keadaan pohon kerja | Exit 1 dua-duanya: **3/3 gagal** dengan VIS-1 terpasang, **3/3 gagal** pada `main` 54f05e1 yang bersih. Kegagalannya bukan ulah VIS-1. [Log](docs/evidence/gerbang-vis-1/sebelum-vis-1-terpasang.txt), [log](docs/evidence/gerbang-vis-1/sebelum-tanpa-vis-1.txt). |
 | 2026-09-20 | `node docs/evidence/gerbang-vis-1/probe-cv.mjs` | Exit 0. Respons gambar CV ditahan 600 ms supaya balapannya selalu terbuka: urutan lama gagal 4/9 (firefox 3/3, webkit 1/3), urutan baru 0/9 gagal. `EncodingError: Invalid image request.` hanya muncul selama permintaan masih di jalan. [Log](docs/evidence/gerbang-vis-1/probe-cv.txt). |
 | 2026-09-20 | `npm test` sesudah perbaikan, dua run berturut | Exit 0 dua-duanya, **164 passed (3.2m)** dan **164 passed (3.3m)**. [Log 1](docs/evidence/gerbang-vis-1/suite-penuh-1.txt), [log 2](docs/evidence/gerbang-vis-1/suite-penuh-2.txt). |
+| 2026-09-20 | `npm test` pada `main` 60f9c5f apa adanya, tanpa rupa VIS-1 | Exit 0, **164 passed (3.1m)**. `main` hijau sendiri; rupa VIS-1 menunggu keputusan merge Milord di `fase/vis-1`. [Log](docs/evidence/gerbang-vis-1/suite-penuh-main.txt). |
 
 ### Output regresi gagal → lolos
 
@@ -462,6 +463,7 @@ mendarat. Firefox tidak menunggu — selama permintaannya masih di jalan,
 | `npx playwright test -g 'the CV can be read…' --repeat-each=5` di 4 project | Exit 0, **20 passed (23.8s)**. [Log](docs/evidence/gerbang-vis-1/sesudah-ulang-5.txt). |
 | `npm test` run 1 | Exit 0, **164 passed (3.2m)** — jumlah hasil sama dengan Kirim 4, tidak ada yang dihapus. [Log](docs/evidence/gerbang-vis-1/suite-penuh-1.txt). |
 | `npm test` run 2, tanpa perubahan apa pun | Exit 0, **164 passed (3.3m)**. [Log](docs/evidence/gerbang-vis-1/suite-penuh-2.txt). |
+| `npm test` pada `main` 60f9c5f apa adanya | Exit 0, **164 passed (3.1m)** — dua run di atas diambil dengan rupa VIS-1 terpasang, run ini membuktikan `main` sendiri juga hijau. [Log](docs/evidence/gerbang-vis-1/suite-penuh-main.txt). |
 | `npm run build` | Exit 0; peringatan canonical placeholder tetap seperti default Kirim 4. [Log](docs/evidence/gerbang-vis-1/build.txt). |
 | `EVIDENCE_DIR=docs/evidence/gerbang-vis-1 node scripts/verify-kirim-3.mjs` | Exit 0 pada pohon kerja final: arc IPK 0,935001, TOEFL 0,7439 = harapan, rasio split 2,0001, tumpang tindih 4 bulan, 40 pasangan kontras terendah 5,268:1. Identik dengan sesi Codex. [Log](docs/evidence/gerbang-vis-1/verify-kirim-3.txt), [metrik](docs/evidence/gerbang-vis-1/metrics.json). |
 | `node docs/evidence/vis-1/verify-polish.mjs` | Exit 0: 8 pemeriksaan ring–angka, sampel tween langsung, 6 pasangan kontras cat terendah 3,164:1 — sama persis dengan angka sesi Codex. [Log](docs/evidence/gerbang-vis-1/verify-polish.txt). |
