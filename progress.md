@@ -22,10 +22,10 @@ belum seluruhnya `DONE`/`SKIP`.
 | 3 | Kerangka visualisasi data + timeline | Claude Code | 2 | 2 |
 | VIS-1 | Rasa visual + animasi (gerbang test ditutup Claude Code) | Codex | 1 | 1 |
 | 4 | Konversi | Claude Code | 4 | 4 |
-| IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
+| IMG-2 | Gambar OG 1200×630 | Codex | 1 | 1 |
 | 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
 | 6 | Pass poles visual terakhir | Codex | 1 | 0 |
-| — | **Total dikerjakan** | | **33** | **25** |
+| — | **Total dikerjakan** | | **33** | **26** |
 | — | Sengaja di-SKIP | | 3 | — |
 
 Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
@@ -138,7 +138,7 @@ menambahkan berkasnya.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| IMG-2 | `public/images/og-cover.png` 1200×630 | TODO | Butuh: berkas ada, validasi LinkedIn Post Inspector + preview WhatsApp nyata setelah berkas masuk. |
+| IMG-2 | `public/images/og-cover.png` 1200×630 | DONE | Dua PNG identik, 350196 byte; potret asli dicrop tanpa logo dan tanpa model gambar, nama terbaca di preview 320 px. [Metrik](docs/evidence/kirim-img-2/metrics.json): piksel potret cocok dengan crop sumber, Manrope lokal dimuat, teks di dalam margin 60 px, kontras terendah 8.881:1. [Pengiriman build](docs/evidence/kirim-img-2/delivery.json): HTTP 200 `image/png`, metadata sesuai, regenerasi bersih identik. Build lolos, [npm test 164 passed](docs/evidence/kirim-img-2/full-suite.txt). [Indeks bukti](docs/evidence/kirim-img-2/README.md). Preview LinkedIn/WhatsApp nyata menunggu domain + deploy sesuai batas tiket; bukan blocker aset. |
 
 ## Kirim 5 — Performa, SEO, penutup
 
@@ -195,6 +195,9 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 
 | Tanggal | Keputusan | Alasan |
 |---|---|---|
+| 2026-09-20 | IMG-2 memakai komposisi Sharp + Canvas Manrope, tanpa model gambar | Tiket secara eksplisit meminta foto asli dan memperbolehkan Sharp. Crop mengeluarkan seluruh logo dinding; tidak ada retouch wajah atau perubahan warna foto. Nama dibungkus dua baris agar tetap terbaca di 320 px. |
+| 2026-09-20 | IMG-2 memperbarui `progress.md` sesuai instruksi langsung sesi | Tiket lama melarang perubahan progres, tetapi penutup sesi yang diberikan Milord secara eksplisit mewajibkan status, bukti, ringkasan, keputusan dan log diperbarui. Source aplikasi, test dan pipeline tetap tidak disentuh. |
+| 2026-09-20 | IMG-2 ditutup dengan verifikasi aset lokal; preview platform menunggu domain + deploy | Tiket menyebut uji LinkedIn Post Inspector dan WhatsApp nyata di luar scope sebelum domain tersedia. Pengiriman dari build sudah diperiksa lokal, tanpa mengklaim preview platform berhasil. |
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
 | 2026-09-20 | Gerbang VIS-1 diperbaiki di `tests/portfolio.spec.js`, bukan di aplikasi | Probe tiga engine menunjukkan gambar CV sehat di chromium/firefox/webkit: begitu muatannya mendarat, `naturalWidth` 1000 dan `decode()` sukses di semuanya. Yang keliru cara test mengukur — `decode()` dipakai sebagai penunggu muatan, padahal Firefox menolaknya selama permintaan masih di jalan. Mengubah aplikasi (misal membuang `loading="lazy"`) berarti mengubah perilaku yang benar demi menyenangkan test. |
 | 2026-09-20 | Penolakan `decode()` yang tadinya ditelan `.catch(() => {})` sekarang diperiksa assertion | Menunggu muatan saja sudah cukup membuat test hijau, tapi itu menyisakan `decode()` sebagai panggilan tanpa arti. Sekalian dijadikan bukti: gambar CV harus benar-benar bisa didekode, bukan sekadar kotak seukuran benar. Cakupan naik, tidak ada yang dilonggarkan; jumlah hasil tetap 164. |
@@ -475,3 +478,21 @@ Fase berikutnya: **IMG-2 — Codex**, tiketnya siap di
 [`docs/image-jobs/IMG-2-og-image.md`](docs/image-jobs/IMG-2-og-image.md),
 branch `fase/img-2`. Sesudah itu **Kirim 5 — Claude Code**. Sesi tiket ini
 berhenti di sini.
+
+
+### Verifikasi IMG-2 — sesi Codex, 2026-09-20
+
+| Perintah / pemeriksaan | Hasil |
+|---|---|
+| `node docs/evidence/kirim-img-2/compose-card.mjs` | Exit 0; PNG 1200 × 630, 350196 byte, sumber dan aset identik. Nama/peran persis tiket. Kontras 8.881:1 dan 8.956:1; piksel potret cocok persis dengan crop foto asli. [Metrik](docs/evidence/kirim-img-2/metrics.json). |
+| Pemeriksaan visual ukuran penuh + 320 px | Nama terbaca, wajah utuh, tidak ada logo, angka, grafik, UI palsu, atau teks tambahan. [Preview kecil](docs/evidence/kirim-img-2/preview-320.png). |
+| Provisioning Arch `--check` + launch Chromium/Firefox/WebKit | Exit 0, pustaka WebKit lengkap. Tiga engine berhasil launch; versi di [delivery.json](docs/evidence/kirim-img-2/delivery.json). |
+| `npm run build` | Exit 0. Peringatan canonical placeholder masih berlaku karena domain belum diisi. [Log](docs/evidence/kirim-img-2/build.txt). |
+| `node docs/evidence/kirim-img-2/verify-delivery.mjs` | Exit 0. Aset build HTTP 200 `image/png`, hash sesuai sumber, OG/Twitter sesuai ukuran/format. Regenerasi dari foto asli dan skrip di folder sementara bersih byte-identik; dependensi terpasang dipakai ulang. [Log](docs/evidence/kirim-img-2/delivery.txt). |
+| `npm test` | Exit 0, **164 passed (3.3m)**, empat project, tidak mengubah test. [Log penuh](docs/evidence/kirim-img-2/full-suite.txt). |
+| `python docs/evidence/kirim-img-2/audit.py` | Exit 0, audit berkas IMG-2, 0 temuan; uji negatif kredensial/path/ukuran/dependensi/env dan angka berhasil ditolak. Seluruh tautan README bukti ada. [Log](docs/evidence/kirim-img-2/audit.txt). |
+| LinkedIn Post Inspector + WhatsApp nyata | Belum diuji: menunggu domain + deploy, sesuai pengecualian tiket. Tidak ada deployment pada sesi ini. |
+| Penutup Git IMG-2 | Satu commit pada `fase/img-2` setelah seluruh verifikasi lolos. Hash pada laporan sesi dan commit berjudul `feat(kirim-img-2): tambahkan kartu berbagi dengan potret asli`; tidak disisipkan ke commit itu sendiri untuk menghindari hash rekursif. |
+
+IMG-2 **DONE**; Ringkasan **26/33**. Fase berikutnya **Kirim 5 — Claude Code**.
+Tidak melanjutkan fase lain.
