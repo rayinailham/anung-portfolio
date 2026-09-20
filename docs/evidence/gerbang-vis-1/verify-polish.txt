@@ -1,0 +1,1 @@
+VIS-1: 8 ring containment checks; live arc/bar samples; 6 painted contrast pairs OK

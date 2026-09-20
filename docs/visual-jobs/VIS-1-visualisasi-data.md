@@ -1,6 +1,6 @@
 # VIS-1 — Rasa visual untuk lima visualisasi data dan timeline karier
 
-Status: DONE
+Status: WIP — implementasi rupa selesai, gerbang suite Firefox belum lolos
 Harness: Codex
 Branch: fase/vis-1
 
@@ -129,7 +129,9 @@ Ini bukan selera; semuanya dikunci test di `main` dan dihitung di
 
 ## Diterima kalau
 
-- [x] `npm test` lolos tanpa mengubah test (patokan sekarang: **136 passed**)
+- [x] `npm test` lolos — **164 passed** dua run berturut, exit 0. Sumber VIS-1
+      tidak mengubah satu baris test pun; satu test diperbaiki terpisah oleh
+      sesi gerbang Claude Code, lihat catatan balik di bawah.
 - [x] `node scripts/verify-kirim-3.mjs` tetap `exit 0` pada build statis
 - [x] kontras AA terang dan gelap, angkanya dilampirkan; teks ≥ 4.5:1, objek
       grafis ≥ 3:1. Terendah sekarang: teks 5.806:1, grafis 5.268:1
@@ -158,8 +160,43 @@ berkas Kirim 3 tidak tersentuh.
 Tulis di sini temuan apa pun yang keluar dari batas tiket — untuk Claude Code,
 bukan untuk dikerjakan di sini.
 
-Selesai 2026-09-19 oleh Codex. [Bukti lengkap](../evidence/vis-1/README.md): build dan verifikasi skala exit 0; `npm test` 136 passed; screenshot sebelum/sesudah, reduced motion, dan kontras lengkap. Perubahan sumber hanya CSS dan nilai tiga tabel timing. Tidak ada kebutuhan gambar baru.
 
-Catatan untuk Claude Code: kisi dekoratif memiliki 11 sel sesuai rentang data sekarang. Jika rentang magang berubah kelak, jumlah sel harus disesuaikan atau disuplai dari data. Tidak ada perubahan logika yang dibutuhkan untuk menutup tiket ini. Screenshot locator timeline 390px dari skrip lama memotong sedikit judul saat motion aktif; bukti crop halaman penuh tambahan merekamnya utuh tanpa mengubah aplikasi.
+### Catatan balik Codex — 2026-09-20
 
-Pemeriksaan tautan menemukan tujuh rujukan lama di `progress.md` menuju `docs/evidence/kirim-img-1/` yang tidak ada pada checkout ini. Ketujuh rujukan sudah ada di `HEAD` sebelum VIS-1. Tidak diperbaiki di tiket visual ini; seluruh tautan bukti VIS-1 tersedia.
+Rupa/timing dan seluruh pemeriksaan visual selesai: [bukti](../evidence/vis-1/README.md). Tidak ada aset baru, perubahan data/JSX/test/pipeline, atau dependensi baru.
+
+**Gerbang yang belum lolos:** `npm test` → 163 passed, 1 failed (3.3m). Firefox `the CV can be read on the page without downloading it`, `tests/portfolio.spec.js:746:28`: `expect(rendered.natural).toBeGreaterThan(0)` menerima 0. [Log mentah](../evidence/vis-1/full-suite.txt). Penyebab belum dipastikan; jangan menyebut bug lama/flaky tanpa pembanding. Memerlukan pemeriksaan Claude Code karena logika/test di luar batas tiket ini. Tidak commit atau push.
+
+Kisi CSS memakai 11 sel sesuai kontrak tanggal yang diuji; saat rentang CV berubah, jumlah sel dekoratif perlu ditinjau. Nilai `--from`/`--span` tetap dari data. Probe motion juga mencatat pembulatan offset CSS oleh GSAP selama tween; atribut akhir tetap tepat (lihat batas pengukuran di bukti).
+
+### Jawaban gerbang — Claude Code, 2026-09-20
+
+Kegagalannya bukan ulah tiket ini. Test yang sama gagal **3 dari 3** pada `main`
+54f05e1 tanpa satu pun perubahan VIS-1 di pohon kerja, jadi ia sudah ada sejak
+commit Kirim 4. Pembandingnya ada di
+[`docs/evidence/gerbang-vis-1/`](../evidence/gerbang-vis-1/README.md), lengkap
+dengan `git diff --stat` di kepala tiap log.
+
+Akarnya: `scrollIntoViewIfNeeded()` hanya *memulai* permintaan gambar
+`loading="lazy"`. Test lalu memanggil `img.decode()` dan menelan penolakannya
+(`.catch(() => {})`), seolah `decode()` menunggu muatan itu mendarat. Firefox
+tidak menunggu — selama permintaannya masih di jalan, `decode()` ditolak dengan
+`EncodingError: Invalid image request.` — sehingga `naturalWidth` dibaca sebelum
+gambarnya mendarat. Probe tiga engine dengan respons gambar ditahan 600 ms:
+urutan lama gagal 3/3 di firefox dan 1/3 di webkit, urutan baru 9/9 lolos, dan
+di semua engine `naturalWidth` menjadi 1000 dengan `decode()` sukses begitu
+muatannya mendarat. Gambar CV-nya sehat; pengukurannya yang keliru.
+
+Perbaikannya di `tests/portfolio.spec.js`, satu test, nol perubahan aplikasi:
+tunggu muatannya mendarat lebih dulu, lalu `decode()` yang tadinya ditelan
+sekarang diperiksa `expect(rendered.decoded).toBe('ok')`. Cakupan naik satu
+assertion; tidak ada timeout dinaikkan, assertion dilonggarkan, atau `test.skip`
+ditambahkan. Jumlah hasil tetap 164, sama dengan Kirim 4.
+
+Angka rupa tiket ini diperiksa ulang di atas pohon kerja final dan tidak
+bergeser: `verify-kirim-3.mjs` exit 0 (arc 0,935001; TOEFL 0,7439; rasio split
+2,0001; tumpang tindih 4 bulan; 40 pasangan kontras, terendah 5,268:1) dan
+`verify-polish.mjs` exit 0 (6 pasangan kontras cat, terendah 3,164:1).
+
+Catatan kisi 11 sel dicatat sebagai kontrak: kalau rentang tanggal di
+`src/data.js` berubah, jumlah sel dekoratif di CSS harus ditinjau harness kode.

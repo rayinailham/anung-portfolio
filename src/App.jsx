@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowRight, ArrowDown, Asterisk, DownloadSimple, Sun, Moon, List, X, LinkedinLogo, Copy, Check, Plus, Minus } from '@phosphor-icons/react';
-import { profile, experience, organizations, skills, education, english } from './data';
+import { ArrowUpRight, ArrowRight, ArrowDown, Asterisk, DownloadSimple, Sun, Moon, List, X, LinkedinLogo, WhatsappLogo, Copy, Check, Plus, Minus } from '@phosphor-icons/react';
+import { profile, experience, organizations, skills, education, english, cvPreview } from './data';
+import { site, WHATSAPP_URL } from './site';
 import { gsap, useMotionStatus, useReducedMotion, useSmoothScroll, usePageMotion } from './motion';
 
 const routes = { '/': 'Beranda', '/pengalaman': 'Pengalaman', '/tentang': 'Tentang', '/kontak': 'Kontak' };
@@ -332,19 +333,56 @@ function Experience() {
   </>;
 }
 
+// Page images rendered from the real PDF by `scripts/prepare-assets.mjs`, so a
+// recruiter can read the CV without downloading it. The download button stays;
+// the same facts also live on this site as real text, which is what a screen
+// reader or a text search actually needs.
+function CvPreview() {
+  return <section className="cv-preview wrap" id="cv" data-reveal="up" data-reveal-kind="panel">
+    <div className="cv-preview-intro">
+      <span className="section-kicker">CV</span>
+      <h2>CV saya, bisa dibaca<br />tanpa mengunduh.</h2>
+      <p>Ini {cvPreview.pages.length} halaman dari berkas PDF yang sama, bukan versi yang saya tulis ulang. Isinya juga tersedia sebagai teks di halaman Pengalaman dan Tentang.</p>
+      <a className="button" href={cvPreview.file} download>Download CV <DownloadSimple size={20} /></a>
+    </div>
+    <ol className="cv-pages">
+      {cvPreview.pages.map(page => <li key={page.page}>
+        <figure>
+          <img src={page.src} alt={page.alt} width={page.width} height={page.height} loading="lazy" decoding="async" />
+          <figcaption>Halaman {page.page} dari {cvPreview.pages.length}</figcaption>
+        </figure>
+      </li>)}
+    </ol>
+  </section>;
+}
+
 function About() {
   return <>
     <section className="about-hero wrap page-opening"><div><p className="eyebrow hero-enter">TENTANG SAYA</p><Title lines={['Perkenalkan,', 'saya Anung.']} /><p className="about-lead hero-enter">Lulusan Bisnis IPB.<br />Menekuni pemasaran afiliasi dan digital.</p><p className="hero-enter">Nama lengkap saya Anung Hanindhita Ramadhan. Saya tinggal di Bekasi dan lulus dari IPB University pada 2026. Selama magang di AnyMind Group dan PT Sutan Vet Medika, saya terlibat dalam pengelolaan mitra afiliasi, kerja sama KOL, dan pembuatan konten.</p><a className="text-link hero-enter" href={profile.cv} download>Download CV <DownloadSimple size={20} /></a></div><div className="hero-enter"><Portrait compact /></div></section>
     <section className="about-statement wrap" data-reveal="right" data-reveal-kind="text"><h2>Tanggung jawab saya<br /><span>selama magang.</span></h2><p>Saya memastikan mitra menerima sampel produk, menindaklanjuti pembuatan konten sesuai arahan, serta memantau penyelesaiannya. Saya juga menyusun laporan penjualan dan kinerja konten untuk tim.</p></section>
     <section className="education-section wrap" data-reveal-group="up" data-reveal-kind="panel"><div><span className="section-kicker">PENDIDIKAN</span><h2>Pendidikan bisnis<br />di IPB University.</h2></div><div className="education-card"><span>{education.period}</span><h3>{education.institution}</h3><p>{education.degree}</p><GpaRing gpa={education.gpa} max={education.gpaMax} /><p>Saya mengikuti dua bazar bisnis untuk menjual produk, mengumpulkan masukan pembeli, dan menilai peluang pasar.</p><span className="education-note">Profit lebih dari Rp100.000 · 30+ transaksi produk · Nilai A untuk inovasi produk, pelaksanaan bisnis, dan evaluasi kinerja pasar</span></div></section>
     <section className="skills-section wrap" data-reveal="left" data-reveal-kind="heading"><h2>Keahlian dan<br />aplikasi yang saya gunakan.</h2><div className="skills-grid" data-reveal-group="up" data-reveal-kind="panel">{skills.map(group => <article key={group.title}><h3>{group.title}</h3><ul>{group.items.map(skill => <li key={skill}>{skill}</li>)}</ul></article>)}</div><div className="language-row" data-reveal-group="up" data-reveal-kind="text"><span>Bahasa Indonesia <strong>Bahasa ibu</strong></span><span>Bahasa Inggris <strong>Komunikasi profesional</strong></span><span>TOEFL ITP <strong>{english.score}</strong></span></div><ScoreScale score={english.score} scaleMin={english.scaleMin} scaleMax={english.scaleMax} level={english.level} /></section>
+    <CvPreview />
     <ContactCallout heading={<>Mari berkenalan<br />lebih jauh.</>} lead="Saya terbuka untuk peluang magang lanjutan maupun posisi pemasaran tingkat awal." action="Kirim pesan" />
   </>;
 }
 
+// The contact form posts to Web3Forms when `VITE_WEB3FORMS_KEY` is set at
+// build time. Without a key there is no backend at all, so the button falls
+// back to the mailto draft and says exactly that. A failed send falls back to
+// the same draft instead of swallowing the message.
+const mailtoDraft = (data) => {
+  const subject = `${data.get('topic')} — dari ${data.get('name')}`;
+  const body = `Halo Anung,\n\n${data.get('message')}\n\nSalam,\n${data.get('name')}\n${data.get('email')}`;
+  return `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+};
+
 function Contact() {
+  const hasBackend = site.formKey !== '';
   const [copyState, setCopyState] = useState('idle');
-  const [sent, setSent] = useState(false);
+  // idle · sending · sent · failed · drafted (the no-backend handoff)
+  const [status, setStatus] = useState('idle');
+  const [draft, setDraft] = useState('');
   const timer = useRef(null);
   useEffect(() => () => clearTimeout(timer.current), []);
   const copyEmail = async () => {
@@ -353,24 +391,59 @@ function Contact() {
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setCopyState('idle'), 4000);
   };
-  const send = (event) => {
+  const send = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const subject = `${data.get('topic')} — dari ${data.get('name')}`;
-    const body = `Halo Anung,\n\n${data.get('message')}\n\nSalam,\n${data.get('name')}\n${data.get('email')}`;
-    window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    // Honeypot: a human never sees this field, so anything in it is a bot.
+    // Stay silent rather than explain the trap.
+    if (String(data.get('website') ?? '') !== '') return;
+    const href = mailtoDraft(data);
+    setDraft(href);
+    if (!hasBackend) {
+      setStatus('drafted');
+      window.location.href = href;
+      return;
+    }
+    setStatus('sending');
+    try {
+      const response = await fetch(site.formEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: site.formKey,
+          subject: `${data.get('topic')} — dari ${data.get('name')}`,
+          from_name: data.get('name'),
+          name: data.get('name'),
+          email: data.get('email'),
+          topic: data.get('topic'),
+          message: data.get('message'),
+          botcheck: false,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.success !== true) throw new Error(result.message || `HTTP ${response.status}`);
+      setStatus('sent');
+      form.reset();
+    } catch {
+      setStatus('failed');
+    }
   };
+  const statusText = status === 'sending' ? 'Mengirim pesan...'
+    : status === 'sent' ? `Pesan terkirim ke ${profile.email}. Saya membacanya dari sana.`
+    : status === 'failed' ? `Pesan belum terkirim. Pengiriman otomatis gagal, jadi silakan pakai draf email di bawah atau kirim langsung ke ${profile.email}.`
+    : status === 'drafted' ? `Draf email siap dibuka. Jika aplikasi email tidak terbuka, kirim pesan langsung ke ${profile.email}.`
+    : '';
   return <>
-    <section className="page-heading contact-heading wrap"><p className="eyebrow hero-enter">KONTAK</p><Title lines={['Ada peluang', 'kerja sama?']} /><p className="page-description hero-enter">Saya terbuka untuk peluang kerja di bidang pemasaran dan kerja sama promosi. Silakan hubungi saya melalui email atau LinkedIn untuk membahas posisi atau proyek yang ditawarkan.</p></section>
-    <section className="contact-grid wrap"><div className="contact-info hero-enter"><Asterisk className="contact-star" weight="bold" aria-hidden="true" data-spin /><h2>Hubungi saya di sini.</h2><div className="email-line"><a href={`mailto:${profile.email}`}>{profile.email}</a><button className="icon-button" onClick={copyEmail} aria-label="Copy email">{copyState === 'copied' ? <Check /> : <Copy />}</button></div><p className="copy-status" role="status">{copyState === 'copied' ? 'Email berhasil disalin.' : copyState === 'failed' ? 'Email belum bisa disalin. Silakan salin alamat di atas secara manual.' : '\u00a0'}</p><a href={profile.linkedin} className="contact-social" target="_blank" rel="noreferrer"><LinkedinLogo size={22} />LinkedIn <ArrowUpRight size={20} /></a><a href={`tel:${profile.phone}`} className="contact-social">+62 813 8811 6739 <ArrowUpRight size={20} /></a><p className="contact-location">Bekasi, Jawa Barat, Indonesia</p></div>
-      <form className="contact-form hero-enter" onSubmit={send}><div className="form-row"><label>Nama<input name="name" autoComplete="name" required maxLength={100} placeholder="Nama lengkap" /></label><label>Email<input name="email" type="email" autoComplete="email" required maxLength={200} placeholder="nama@email.com" /></label></div><label>Topik pesan<select name="topic" defaultValue="Peluang kerja"><option>Peluang kerja</option><option>Kerja sama promosi</option><option>Bertukar ide</option></select></label><label>Pesan<textarea name="message" required minLength={10} maxLength={3000} rows={4} placeholder="Halo Anung, saya ingin membahas..." /></label><div className="form-footer"><p>Tombol ini membuka draf di aplikasi email.<br />Untuk mengirim pesan, tekan tombol kirim di aplikasi email.</p><button className="button" type="submit">Buka draf email <ArrowUpRight size={20} /></button></div><p className="form-status" role="status">{sent ? `Draf email siap dibuka. Jika aplikasi email tidak terbuka, kirim pesan langsung ke ${profile.email}.` : ''}</p></form></section>
+    <section className="page-heading contact-heading wrap"><p className="eyebrow hero-enter">KONTAK</p><Title lines={['Ada peluang', 'kerja sama?']} /><p className="page-description hero-enter">Saya terbuka untuk peluang kerja di bidang pemasaran dan kerja sama promosi. Silakan hubungi saya melalui email, WhatsApp, atau LinkedIn untuk membahas posisi atau proyek yang ditawarkan.</p></section>
+    <section className="contact-grid wrap"><div className="contact-info hero-enter"><Asterisk className="contact-star" weight="bold" aria-hidden="true" data-spin /><h2>Hubungi saya di sini.</h2><div className="email-line"><a href={`mailto:${profile.email}`}>{profile.email}</a><button className="icon-button" onClick={copyEmail} aria-label="Copy email">{copyState === 'copied' ? <Check /> : <Copy />}</button></div><p className="copy-status" role="status">{copyState === 'copied' ? 'Email berhasil disalin.' : copyState === 'failed' ? 'Email belum bisa disalin. Silakan salin alamat di atas secara manual.' : ' '}</p><a href={WHATSAPP_URL} className="contact-social" target="_blank" rel="noreferrer"><WhatsappLogo size={22} />WhatsApp <ArrowUpRight size={20} /></a><a href={profile.linkedin} className="contact-social" target="_blank" rel="noreferrer"><LinkedinLogo size={22} />LinkedIn <ArrowUpRight size={20} /></a><a href={`tel:${profile.phone}`} className="contact-social">+62 813 8811 6739 <ArrowUpRight size={20} /></a><p className="contact-location">Bekasi, Jawa Barat, Indonesia</p></div>
+      <form className="contact-form hero-enter" onSubmit={send}><div className="form-row"><label>Nama<input name="name" autoComplete="name" required maxLength={100} placeholder="Nama lengkap" /></label><label>Email<input name="email" type="email" autoComplete="email" required maxLength={200} placeholder="nama@email.com" /></label></div><label>Topik pesan<select name="topic" defaultValue="Peluang kerja"><option>Peluang kerja</option><option>Kerja sama promosi</option><option>Bertukar ide</option></select></label><label>Pesan<textarea name="message" required minLength={10} maxLength={3000} rows={4} placeholder="Halo Anung, saya ingin membahas..." /></label><div className="form-trap" aria-hidden="true"><label>Situs web<input name="website" type="text" tabIndex={-1} autoComplete="off" /></label></div><div className="form-footer"><p>{hasBackend ? <>Pesan dikirim ke email saya lewat layanan formulir Web3Forms.<br />Situs ini tidak menyimpan pesan Anda.</> : <>Tombol ini membuka draf di aplikasi email.<br />Untuk mengirim pesan, tekan tombol kirim di aplikasi email.</>}</p><button className="button" type="submit" disabled={status === 'sending'} aria-busy={status === 'sending'}>{hasBackend ? (status === 'sending' ? 'Mengirim...' : 'Kirim pesan') : 'Buka draf email'} <ArrowUpRight size={20} /></button></div><p className="form-status" data-status={status} role="status">{statusText}</p>{status === 'failed' && draft !== '' && <p className="form-fallback"><a className="text-link" href={draft}>Buka draf email <ArrowUpRight size={18} /></a></p>}</form></section>
     <div className="contact-signoff wrap" data-reveal="up" data-reveal-kind="text"><span>Terima kasih telah mengunjungi portofolio saya.</span><span className="signature">Anung.</span></div>
   </>;
 }
 
 function Footer() {
-  return <footer className="site-footer wrap"><Link to="/" className="wordmark" aria-label="Anung, beranda">anung<span>.</span></Link><span>© {new Date().getFullYear()} Anung Ramadhan</span><div><a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={15} /></a><a href={`mailto:${profile.email}`}>Email <ArrowUpRight size={15} /></a><button onClick={() => window.dispatchEvent(new Event('portfolio:top'))} aria-label="Kembali ke atas"><ArrowDown className="up-arrow" size={18} /></button></div></footer>;
+  return <footer className="site-footer wrap"><Link to="/" className="wordmark" aria-label="Anung, beranda">anung<span>.</span></Link><span>© {new Date().getFullYear()} Anung Ramadhan</span><div><a href={WHATSAPP_URL} target="_blank" rel="noreferrer">WhatsApp <ArrowUpRight size={15} /></a><a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn <ArrowUpRight size={15} /></a><a href={`mailto:${profile.email}`}>Email <ArrowUpRight size={15} /></a><button onClick={() => window.dispatchEvent(new Event('portfolio:top'))} aria-label="Kembali ke atas"><ArrowDown className="up-arrow" size={18} /></button></div></footer>;
 }
 
 export default function App() {

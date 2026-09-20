@@ -1,0 +1,20 @@
+{"engine":"chromium","round":1,"urutan":"lama","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"chromium","round":1,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"chromium","round":2,"urutan":"lama","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"chromium","round":2,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"chromium","round":3,"urutan":"lama","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"chromium","round":3,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"firefox","round":1,"urutan":"lama","decoded":"EncodingError: Invalid image request.","natural":0,"lolos":false}
+{"engine":"firefox","round":1,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"firefox","round":2,"urutan":"lama","decoded":"EncodingError: Invalid image request.","natural":0,"lolos":false}
+{"engine":"firefox","round":2,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"firefox","round":3,"urutan":"lama","decoded":"EncodingError: Invalid image request.","natural":0,"lolos":false}
+{"engine":"firefox","round":3,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"webkit","round":1,"urutan":"lama","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"webkit","round":1,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"webkit","round":2,"urutan":"lama","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"webkit","round":2,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+{"engine":"webkit","round":3,"urutan":"lama","decoded":"EncodingError: Aborted by source change.","natural":0,"lolos":false}
+{"engine":"webkit","round":3,"urutan":"baru","decoded":"ok","natural":1000,"lolos":true}
+delay=600ms rounds=3 · urutan lama gagal 4/9 · urutan baru gagal 0/9
+engine yang menolak decode saat permintaan masih di jalan: firefox, webkit

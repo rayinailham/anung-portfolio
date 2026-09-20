@@ -1,0 +1,114 @@
+# Sebelum perbaikan — test versi HEAD 54f05e1, sumber DENGAN perubahan VIS-1 terpasang
+# git rev-parse HEAD: 54f05e1b67f9df95d1cee26777b2017e7f32219b
+# berkas yang berbeda dari HEAD saat run ini:
+#    src/motion.js  | 28 +++++++++----------
+#    src/styles.css | 87 +++++++++++++++++++++++++++++++++-------------------------
+#    2 files changed, 63 insertions(+), 52 deletions(-)
+# perintah: npx playwright test --project=firefox -g 'the CV can be read' --repeat-each=3 --workers=1
+
+[WebServer] [site-meta] VITE_SITE_URL belum diisi. og:url dan canonical memakai host placeholder https://anung-ramadhan.example. Isi VITE_SITE_URL sebelum deploy.
+
+
+Running 3 tests using 1 worker
+
+[1/3] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+  1) [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      744 |   });
+      745 |   // width + height on every new image is what keeps CLS where it is.
+    > 746 |   expect(rendered.natural).toBeGreaterThan(0);
+          |                            ^
+      747 |   expect(rendered.width).toBe('1000');
+      748 |   expect(rendered.height).toBe('1413');
+      749 |   expect(rendered.alt).toContain('Halaman 1');
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:746:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[2/3] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+  2) [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      744 |   });
+      745 |   // width + height on every new image is what keeps CLS where it is.
+    > 746 |   expect(rendered.natural).toBeGreaterThan(0);
+          |                            ^
+      747 |   expect(rendered.width).toBe('1000');
+      748 |   expect(rendered.height).toBe('1413');
+      749 |   expect(rendered.alt).toContain('Halaman 1');
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:746:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat1/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[3/3] [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it
+  3) [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+      744 |   });
+      745 |   // width + height on every new image is what keeps CLS where it is.
+    > 746 |   expect(rendered.natural).toBeGreaterThan(0);
+          |                            ^
+      747 |   expect(rendered.width).toBe('1000');
+      748 |   expect(rendered.height).toBe('1413');
+      749 |   expect(rendered.alt).toContain('Halaman 1');
+        at /home/rayin/Projects/freelance/porto anung/tests/portfolio.spec.js:746:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat2/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat2/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-the-CV-can-be-re-f085d-page-without-downloading-it-firefox-repeat2/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  3 failed
+    [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it 
+    [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it 
+    [firefox] › tests/portfolio.spec.js:735:1 › the CV can be read on the page without downloading it 
+exit=1

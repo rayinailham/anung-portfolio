@@ -1,86 +1,60 @@
-# VIS-1 — Poles visual dan ritme reveal
+# VIS-1 — Rupa visualisasi dan ritme reveal
 
-Tanggal: 2026-09-19. Build statis pada port 4175. Sumber aplikasi yang berubah:
-`src/styles.css` dan nilai tiga tabel timing di `src/motion.js`.
+Fase Codex, implementasi 2026-09-19; penutup 2026-09-20. **WIP: gerbang suite penuh gagal.** Implementasi hanya `src/styles.css` dan nilai `REVEAL_TIMING`, `REVEAL_GROUP_TIMING`, `VIZ_TIMING` di `src/motion.js`.
 
-- Ring IPK mengelilingi angka dan label; stroke tetap berujung datar agar
-  panjang arc tidak tampak melebihi nilai sebenarnya.
-- Timeline desktop memakai kolom label dan kisi 11 bulan yang sejajar. Pada
-  mobile, label berada di atas track; kisi tetap mengikuti sumbu yang sama.
-- TOEFL memakai hierarki angka/label dan penanda akhir bar. Split platform
-  lebih tebal; caption kejujuran tetap terlihat. Counter memakai garis pemisah,
-  angka tabular, dan tanda tambah yang lebih kecil di luar angka.
-- Teks masuk lebih cepat daripada panel/media; arc menggambar dengan ritme
-  berbeda dari bar. Tidak ada perubahan mekanisme animasi atau counter.
+| Sebelum | Sesudah | Alasan |
+|---|---|---|
+| Ring 96 px terpisah jauh dari angka | Ring 212 px, angka di pusat; 196 px di mobile | Satu objek yang langsung terbaca |
+| Label dan bar timeline bertumpuk tanpa kisi | Label satu kolom; bar sejajar pada kisi 11 bulan; mobile kembali bertumpuk | Tumpang tindih terlihat melalui posisi |
+| Bar TOEFL dan split seperti kotak kerangka | Track ramping, hierarki angka/label, legenda dan caption lebih lega | Menyatu dengan tipografi editorial |
+| Semua reveal satu timing | Teks cepat; heading tegas; media lebih lambat; stagger per jenis | Ritme masuk berbeda sesuai konten |
+| Lebar digit counter berubah saat menghitung | Angka tabular dan tanda + terpisah lebih kecil | Counter lebih stabil dan mudah dipindai |
+
+## Bukti visual
+
+Seluruh pasangan sebelum ada di [before/](before/), diambil dari build sesi ini sebelum patch, dengan skrip yang sama. Semua WebP kualitas 80.
+
+| Visual | 1440 terang | 1440 gelap | 390 terang | 390 gelap |
+|---|---|---|---|---|
+| Ring IPK | [lihat](ring-ipk-1440-light.webp) | [lihat](ring-ipk-1440-dark.webp) | [lihat](ring-ipk-390-light.webp) | [lihat](ring-ipk-390-dark.webp) |
+| TOEFL | [lihat](bar-toefl-1440-light.webp) | [lihat](bar-toefl-1440-dark.webp) | [lihat](bar-toefl-390-light.webp) | [lihat](bar-toefl-390-dark.webp) |
+| Split | [lihat](split-afiliasi-1440-light.webp) | [lihat](split-afiliasi-1440-dark.webp) | [lihat](split-afiliasi-390-light.webp) | [lihat](split-afiliasi-390-dark.webp) |
+| Timeline | [lihat](timeline-karier-1440-light.webp) | [lihat](timeline-karier-1440-dark.webp) | [utuh](timeline-karier-390-light-uncropped.webp) | [utuh](timeline-karier-390-dark-uncropped.webp) |
+| Counter | [lihat](counter-pengalaman-1440-light.webp) | [lihat](counter-pengalaman-1440-dark.webp) | [lihat](counter-pengalaman-390-light.webp) | [lihat](counter-pengalaman-390-dark.webp) |
+
+Screenshot standar mobile timeline tetap disimpan untuk perbandingan skrip Kirim 3; header sticky memotong bagian atas ketika section lebih tinggi dari viewport. Dua versi `uncropped` memakai viewport 390×1200 dan reduced motion, dengan ruang 100 px di atas section.
+
+Reduced motion: [ring](ring-ipk-reduced-motion.webp), [TOEFL](bar-toefl-reduced-motion.webp), [split](split-afiliasi-reduced-motion.webp), [timeline](timeline-karier-reduced-motion.webp), [counter](counter-pengalaman-reduced-motion.webp). Halaman penuh: [Tentang](tentang-1440-light-reduced-motion.webp), [Pengalaman](pengalaman-1440-light-reduced-motion.webp).
 
 ## Verifikasi
 
-| Pemeriksaan | Bukti |
-|---|---|
-| `npm test`: exit 0, **136 passed (3.0m)** | [Log lengkap](full-suite.txt) |
-| `npm run build`: exit 0 | [Build](build.txt) |
-| Verifikasi Kirim 3: exit 0, 40 pasangan kontras lolos | [Log](verify.txt), [JSON](metrics.json) |
-| Minimum kontras teks 5.806:1; grafis pada permukaan halaman 5.268:1 | `metrics.json → contrast` |
-| Pasangan baru: isian TOEFL terhadap track transparan yang sudah dikomposit | Terang **6.223:1**, gelap **3.627:1**, ambang grafis 3:1; [JSON](presentation.json) |
-| Arc 0.935001; TOEFL 0.7439; split sekitar 2:1 (pembulatan subpiksel); overlap 4 bulan | `metrics.json → scales`, di 1440/390/320px |
-| Reduced motion: enam counter final, enam bar tanpa transform, arc tanpa override inline | `metrics.json → reducedMotion`; [pemeriksaan tambahan](presentation.txt) |
-| Empat route tanpa overflow pada 1440/390/320px; angka tetap di dalam ring pada 320px, dua tema | `metrics.json → layout`, `presentation.json → narrowLayout` |
-| Chromium, Firefox, WebKit berhasil launch | [Versi engine](env-check.txt) |
+- [Build](build.txt): exit 0. Peringatan domain placeholder berasal dari default Kirim 4.
+- [Skrip Kirim 3](verify.txt): exit 0. [Metrik](metrics.json): arc 0,935001; TOEFL 0,7439; rasio split sekitar 2:1 akibat pembulatan subpiksel; selisih cakupan track 0 px; overlap 4 bulan. Empat route tidak meluber pada 320/390/1440 px.
+- 40 pasangan kontras standar lolos: minimum teks 5,806:1, grafis terhadap permukaan 5,268:1. Tambahan 6 pasangan grafis terhadap warna campuran kisi/track juga lolos, minimum 3,164:1. [Rincian tambahan](polish-metrics.json).
+- [Reduced motion](reduced-motion.txt): 6 counter final, 6 bar `transform: none`, TOEFL final, arc tanpa inline override.
+- [Probe rupa dan motion](verify-polish.txt): ring dan angka muat pada 320/390/1100/1440 di dua tema; tween arc dan bar benar-benar melewati nilai antara. Durasi/easing aktif dan sampel setiap frame ada di [polish-metrics.json](polish-metrics.json).
+- [Berkas terlindungi](protected-files.txt): SHA-256 JSX, data, test, seluruh scripts, package dan lockfile identik dengan sebelum patch.
+- [Suite penuh](full-suite.txt): **163 passed, 1 failed (3.3m)**. Firefox preview CV gagal pada `portfolio.spec.js:746`: `expect(rendered.natural).toBeGreaterThan(0)`, menerima `0`. Penyebab belum dipastikan. Tidak commit/push; fase tetap WIP, perlu pemeriksaan Claude Code.
+- [Lingkungan browser](env-check.md): ketiga engine berhasil launch, tanpa pemasangan sistem.
 
-Tidak ada token warna teks yang berubah. Kisi dan garis pemisah adalah dekorasi;
-tanggal, label, dan bar menyampaikan informasi tanpa bergantung pada kisi.
-Warna pasangan baru TOEFL diukur terhadap latar track nyata, bukan hanya
-terhadap warna halaman. Kontras minimum teks tetap sama dengan Kirim 3.
+## Batas pengukuran dan catatan balik
 
-## Screenshot
+Probe pertama memakai batas pecahan arc yang terlalu ketat untuk nilai antara CSS: [kegagalan](probe-arc-first.txt). GSAP membulatkan offset CSS sementara ke satuan SVG; sampel offset 21 menghasilkan pecahan 0,935726, lalu cleanup mengembalikan atribut 21,237 (pecahan 0,935001). Probe tambahan memakai toleransi setengah satuan SVG hanya selama tween; nilai akhir tetap diperiksa. Logika aplikasi dan test yang ada tidak diubah. Kurva tidak memakai bounce/back/elastic.
 
-Nama berkas identik antara [sebelum](before/) dan sesudah. Skrip Kirim 3
-menghasilkan 27 gambar per kondisi: lima visual × dua lebar × dua tema,
-lima reduced motion, dan dua halaman penuh. Tambahan VIS-1: empat gambar
-320px serta dua crop timeline mobile dari halaman penuh. Total 60 WebP.
+Kisi 11 bulan dekoratif mengikuti rentang data saat ini. Jika tanggal CV berubah, harness kode perlu meninjau jumlah sel kisi; posisi bar tetap digerakkan `--from`/`--span` dari data.
 
-| Visual | Sebelum 1440 terang | Sesudah 1440 terang | Sesudah 390 gelap |
-|---|---|---|---|
-| IPK | [sebelum](before/ring-ipk-1440-light.webp) | [sesudah](ring-ipk-1440-light.webp) | [mobile](ring-ipk-390-dark.webp) |
-| TOEFL | [sebelum](before/bar-toefl-1440-light.webp) | [sesudah](bar-toefl-1440-light.webp) | [mobile](bar-toefl-390-dark.webp) |
-| Split | [sebelum](before/split-afiliasi-1440-light.webp) | [sesudah](split-afiliasi-1440-light.webp) | [mobile](split-afiliasi-390-dark.webp) |
-| Timeline | [sebelum](before/timeline-karier-1440-light.webp) | [sesudah](timeline-karier-1440-light.webp) | [mobile](timeline-karier-390-dark-fullpage-crop.webp) |
-| Counter | [sebelum](before/counter-pengalaman-1440-light.webp) | [sesudah](counter-pengalaman-1440-light.webp) | [mobile](counter-pengalaman-390-dark.webp) |
+Tidak ada angka CV, label, caption, aset publik, dependency atau token tema yang berubah. Tidak membuat tiket gambar baru. Lighthouse dan audit CLS bukan cakupan tiket VIS-1; tidak mengklaim hasil pengukuran baru untuk keduanya.
 
-Reduced motion: [IPK](ring-ipk-reduced-motion.webp),
-[TOEFL](bar-toefl-reduced-motion.webp), [split](split-afiliasi-reduced-motion.webp),
-[timeline](timeline-karier-reduced-motion.webp), [counter](counter-pengalaman-reduced-motion.webp).
-
-Inspeksi visual meliputi ring terang/gelap, timeline desktop/mobile,
-bar TOEFL, split, dan tanda tambah counter. Screenshot locator timeline
-390px dari skrip lama memotong sedikit bagian atas judul saat motion aktif.
-Versi `fullpage-crop` diambil dari satu frame halaman penuh pada viewport yang
-sama, tanpa mengganti CSS aplikasi; judul terlihat utuh. [Koordinat crop](mobile-capture.json).
-Keluaran mentah skrip lama tetap disimpan.
-
-## Pengulangan
-
-Jalankan `npm run build`, lalu `npx vite preview --host 127.0.0.1 --port 4175 --strictPort`.
-Dengan server berjalan:
+## Ulangi bukti
 
 ```sh
-PORTFOLIO_URL=http://127.0.0.1:4175 EVIDENCE_DIR=docs/evidence/vis-1 node scripts/verify-kirim-3.mjs
-PORTFOLIO_URL=http://127.0.0.1:4175 EVIDENCE_DIR=docs/evidence/vis-1 node scripts/shoot-kirim-3.mjs
-PORTFOLIO_URL=http://127.0.0.1:4175 node docs/evidence/vis-1/verify-presentation.mjs
-PORTFOLIO_URL=http://127.0.0.1:4175 node docs/evidence/vis-1/capture-mobile-timeline.mjs
+npm run build
+npx vite preview --host 127.0.0.1 --port 4173 --strictPort
+EVIDENCE_DIR=docs/evidence/vis-1 node scripts/verify-kirim-3.mjs
+EVIDENCE_DIR=docs/evidence/vis-1 node scripts/shoot-kirim-3.mjs
+node docs/evidence/vis-1/verify-polish.mjs
+node docs/evidence/vis-1/shoot-mobile.mjs
 npm test
 ```
 
-Bukti sebelum diambil dari build sebelum patch, memakai skrip yang sama dan
-`EVIDENCE_DIR=docs/evidence/vis-1/before`. Jangan menimpa folder itu dengan build baru.
-
-## Batas
-
-Tidak ada perubahan data, copy, JSX, test, skrip project, dependensi, atau aset
-publik. Tidak ada tiket gambar baru dan tidak ada perubahan provenance aset.
-Lighthouse/CLS tidak diukur ulang pada tiket VIS-1; angka fase sebelumnya
-tidak diklaim sebagai hasil baru. Kisi dekoratif mengikuti rentang 11 bulan
-saat ini; bila rentang data berubah kelak, jumlah sel perlu mengikuti data.
-
-Git fase memakai akun personal dan branch `fase/vis-1`. Branch tidak digabungkan
-ke `main`. Fase berikutnya: Kirim 4 — Claude Code.
+Jalankan preview di terminal tersendiri. Folder `before/` adalah snapshot; jangan ditimpa pada verifikasi berikutnya.

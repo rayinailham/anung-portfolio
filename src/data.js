@@ -123,3 +123,22 @@ export const english = {
   score: 583, scaleMin: 310, scaleMax: 677,
   level: 'Professional Working Proficiency',
 };
+
+// Inline preview of the CV. Each entry is a rendering of one page of the real
+// `Anung Hanindhita Ramadhan-CV.pdf`, produced by `scripts/prepare-assets.mjs`
+// with poppler + sharp. Nothing is redrawn, retyped or edited: the PDF stays
+// the original and the download button stays next to the preview. If the PDF
+// changes page count, rerun that script and update this list to match.
+export const cvPreview = {
+  file: profile.cv,
+  pages: [
+    {
+      page: 1, src: '/images/cv-halaman-1.webp', width: 1000, height: 1413,
+      alt: 'Halaman 1 CV Anung Hanindhita Ramadhan: nama, kontak, ringkasan profil, pendidikan Institut Pertanian Bogor 2022-2026 dengan Bachelor of Business 3.74/4.00, lalu tiga pengalaman kerja — AnyMind Group, PT Sutan Vet Medika peran koordinasi, dan PT Sutan Vet Medika pemasaran digital.',
+    },
+    {
+      page: 2, src: '/images/cv-halaman-2.webp', width: 1000, height: 1413,
+      alt: 'Halaman 2 CV Anung Hanindhita Ramadhan: pengalaman organisasi BEM SB IPB, IDEANATION, ADDVENTURES 8.0, dan ABEST Internship Program, lalu daftar keterampilan lunak, keterampilan teknis, dan bahasa.',
+    },
+  ],
+};

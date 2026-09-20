@@ -1,0 +1,1428 @@
+{
+  "tables": [
+    {
+      "kind": "viz",
+      "duration": 0.62,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": "heading",
+      "duration": 0.82,
+      "ease": "power4.out",
+      "stagger": null
+    },
+    {
+      "kind": "panel",
+      "duration": 0.76,
+      "ease": "power3.out",
+      "stagger": null
+    },
+    {
+      "kind": "panel",
+      "duration": 0.72,
+      "ease": "power3.out",
+      "stagger": 0.06
+    },
+    {
+      "kind": "panel",
+      "duration": 0.72,
+      "ease": "power3.out",
+      "stagger": 0.06
+    },
+    {
+      "kind": null,
+      "duration": 0.5,
+      "ease": "none",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 0.88,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 0.88,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 0.88,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 0.88,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 0.88,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 0.88,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 1.2,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 1.2,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 1.2,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 1.2,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 1.2,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 1.2,
+      "ease": "power2.out",
+      "stagger": null
+    },
+    {
+      "kind": null,
+      "duration": 0.5,
+      "ease": "none",
+      "stagger": null
+    }
+  ],
+  "samples": [
+    {
+      "ms": 17,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.0634,
+        0.0634,
+        0.0634,
+        0.0634
+      ]
+    },
+    {
+      "ms": 32,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.1115,
+        0.1115,
+        0.1115,
+        0.1115
+      ]
+    },
+    {
+      "ms": 48,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.161,
+        0.161,
+        0.161,
+        0.161
+      ]
+    },
+    {
+      "ms": 65,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.2085,
+        0.2085,
+        0.2085,
+        0.2085
+      ]
+    },
+    {
+      "ms": 82,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.2571,
+        0.2571,
+        0.2571,
+        0.2571
+      ]
+    },
+    {
+      "ms": 98,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.3036,
+        0.3036,
+        0.3036,
+        0.3036
+      ]
+    },
+    {
+      "ms": 115,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.3456,
+        0.3456,
+        0.3456,
+        0.3456
+      ]
+    },
+    {
+      "ms": 132,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.3883,
+        0.3883,
+        0.3883,
+        0.3883
+      ]
+    },
+    {
+      "ms": 148,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.4292,
+        0.4292,
+        0.4292,
+        0.4292
+      ]
+    },
+    {
+      "ms": 165,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.4659,
+        0.4659,
+        0.4659,
+        0.4659
+      ]
+    },
+    {
+      "ms": 181,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.5031,
+        0.5031,
+        0.5031,
+        0.5031
+      ]
+    },
+    {
+      "ms": 198,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.5386,
+        0.5386,
+        0.5386,
+        0.5386
+      ]
+    },
+    {
+      "ms": 215,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.5704,
+        0.5704,
+        0.5704,
+        0.5704
+      ]
+    },
+    {
+      "ms": 231,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.6026,
+        0.6026,
+        0.6026,
+        0.6026
+      ]
+    },
+    {
+      "ms": 248,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.6331,
+        0.6331,
+        0.6331,
+        0.6331
+      ]
+    },
+    {
+      "ms": 265,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.6603,
+        0.6603,
+        0.6603,
+        0.6603
+      ]
+    },
+    {
+      "ms": 281,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.6878,
+        0.6878,
+        0.6878,
+        0.6878
+      ]
+    },
+    {
+      "ms": 298,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.7137,
+        0.7137,
+        0.7137,
+        0.7137
+      ]
+    },
+    {
+      "ms": 315,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.7367,
+        0.7367,
+        0.7367,
+        0.7367
+      ]
+    },
+    {
+      "ms": 331,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.7598,
+        0.7598,
+        0.7598,
+        0.7598
+      ]
+    },
+    {
+      "ms": 348,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.7815,
+        0.7815,
+        0.7815,
+        0.7815
+      ]
+    },
+    {
+      "ms": 365,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.8007,
+        0.8007,
+        0.8007,
+        0.8007
+      ]
+    },
+    {
+      "ms": 382,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.8199,
+        0.8199,
+        0.8199,
+        0.8199
+      ]
+    },
+    {
+      "ms": 398,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.8377,
+        0.8377,
+        0.8377,
+        0.8377
+      ]
+    },
+    {
+      "ms": 415,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.8534,
+        0.8534,
+        0.8534,
+        0.8534
+      ]
+    },
+    {
+      "ms": 432,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.8689,
+        0.8689,
+        0.8689,
+        0.8689
+      ]
+    },
+    {
+      "ms": 448,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.8833,
+        0.8833,
+        0.8833,
+        0.8833
+      ]
+    },
+    {
+      "ms": 465,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.8959,
+        0.8959,
+        0.8959,
+        0.8959
+      ]
+    },
+    {
+      "ms": 481,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9082,
+        0.9082,
+        0.9082,
+        0.9082
+      ]
+    },
+    {
+      "ms": 498,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9195,
+        0.9195,
+        0.9195,
+        0.9195
+      ]
+    },
+    {
+      "ms": 515,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9292,
+        0.9292,
+        0.9292,
+        0.9292
+      ]
+    },
+    {
+      "ms": 532,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9387,
+        0.9387,
+        0.9387,
+        0.9387
+      ]
+    },
+    {
+      "ms": 548,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9473,
+        0.9473,
+        0.9473,
+        0.9473
+      ]
+    },
+    {
+      "ms": 565,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.955,
+        0.955,
+        0.955,
+        0.955
+      ]
+    },
+    {
+      "ms": 581,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9616,
+        0.9616,
+        0.9616,
+        0.9616
+      ]
+    },
+    {
+      "ms": 598,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9678,
+        0.9678,
+        0.9678,
+        0.9678
+      ]
+    },
+    {
+      "ms": 615,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.973,
+        0.973,
+        0.973,
+        0.973
+      ]
+    },
+    {
+      "ms": 631,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9779,
+        0.9779,
+        0.9779,
+        0.9779
+      ]
+    },
+    {
+      "ms": 648,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9821,
+        0.9821,
+        0.9821,
+        0.9821
+      ]
+    },
+    {
+      "ms": 665,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9856,
+        0.9856,
+        0.9856,
+        0.9856
+      ]
+    },
+    {
+      "ms": 681,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9888,
+        0.9888,
+        0.9888,
+        0.9888
+      ]
+    },
+    {
+      "ms": 698,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9914,
+        0.9914,
+        0.9914,
+        0.9914
+      ]
+    },
+    {
+      "ms": 715,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9935,
+        0.9935,
+        0.9935,
+        0.9935
+      ]
+    },
+    {
+      "ms": 731,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9953,
+        0.9953,
+        0.9953,
+        0.9953
+      ]
+    },
+    {
+      "ms": 748,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9968,
+        0.9968,
+        0.9968,
+        0.9968
+      ]
+    },
+    {
+      "ms": 765,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9978,
+        0.9978,
+        0.9978,
+        0.9978
+      ]
+    },
+    {
+      "ms": 782,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9987,
+        0.9987,
+        0.9987,
+        0.9987
+      ]
+    },
+    {
+      "ms": 798,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9992,
+        0.9992,
+        0.9992,
+        0.9992
+      ]
+    },
+    {
+      "ms": 815,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9996,
+        0.9996,
+        0.9996,
+        0.9996
+      ]
+    },
+    {
+      "ms": 831,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        0.9998,
+        0.9998,
+        0.9998,
+        0.9998
+      ]
+    },
+    {
+      "ms": 848,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 865,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 882,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 898,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 915,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 931,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 948,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 965,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 981,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 998,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1015,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1031,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1048,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1065,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1081,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1098,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1115,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1131,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1148,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1165,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1181,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1198,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1215,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1231,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1248,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1265,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1281,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1298,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1315,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1331,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1348,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1365,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1381,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1398,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1415,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1431,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1448,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1465,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1481,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1498,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1515,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1531,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1548,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1565,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1581,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1598,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1615,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1631,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1648,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1665,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1681,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1698,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1715,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1731,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1748,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1765,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1781,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1798,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "ms": 1815,
+      "arc": null,
+      "arcOffset": null,
+      "arcLength": null,
+      "bars": [
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+src/App.jsx: OK
+src/data.js: OK
+tests/portfolio.spec.js: OK
+scripts/make-placeholder-covers.mjs: OK
+scripts/prepare-assets.mjs: OK
+scripts/shoot-kirim-2.mjs: OK
+scripts/shoot-kirim-3.mjs: OK
+scripts/shoot-kirim-4.mjs: OK
+scripts/verify-kirim-1.mjs: OK
+scripts/verify-kirim-2.mjs: OK
+scripts/verify-kirim-3.mjs: OK
+scripts/verify-kirim-4.mjs: OK
+package.json: OK
+package-lock.json: OK

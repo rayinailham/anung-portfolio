@@ -1,0 +1,289 @@
+{
+  "baseURL": "http://127.0.0.1:4173",
+  "generatedAt": "2026-09-19T16:05:59.682Z",
+  "socialMarkup": {
+    "documentTitle": "Anung Ramadhan | Afiliasi & Pemasaran Digital",
+    "canonical": "https://anung-ramadhan.example/",
+    "canonicalCount": 1,
+    "ogUrl": "https://anung-ramadhan.example/",
+    "ogUrlCount": 1,
+    "ogTitle": "Anung Ramadhan | Afiliasi & Pemasaran Digital",
+    "ogDescription": "Pengalaman magang saya: mengelola mitra afiliasi, membantu kerja sama KOL, dan membuat konten. Lihat portofolio dan download CV saya di sini.",
+    "ogType": "website",
+    "ogLocale": "id_ID",
+    "ogSiteName": "Anung Ramadhan",
+    "ogImage": "https://anung-ramadhan.example/images/og-cover.png",
+    "ogImageType": "image/png",
+    "ogImageWidth": "1200",
+    "ogImageHeight": "630",
+    "ogImageAlt": "Kartu berbagi portofolio: potret Anung Hanindhita Ramadhan di samping namanya dan peran Afiliasi & Pemasaran Digital.",
+    "twitterCard": "summary_large_image",
+    "twitterTitle": "Anung Ramadhan | Afiliasi & Pemasaran Digital",
+    "twitterDescription": "Pengalaman magang saya: mengelola mitra afiliasi, membantu kerja sama KOL, dan membuat konten. Lihat portofolio dan download CV saya di sini.",
+    "twitterImage": "https://anung-ramadhan.example/images/og-cover.png",
+    "description": "Saya Anung, lulusan Bisnis IPB dengan pengalaman magang di AnyMind Group dan PT Sutan Vet Medika. Lihat pengalaman saya di bidang pemasaran afiliasi dan digital.",
+    "ogUrlEqualsCanonical": true,
+    "imageSharesCanonicalOrigin": true,
+    "titlesAgree": true,
+    "ogImageFilePresent": false,
+    "ogImageTicket": "docs/image-jobs/IMG-2-og-image.md"
+  },
+  "buildSecrets": {
+    "bundlesScanned": 2,
+    "envFilesOnDisk": [],
+    "inlinedFormKey": null,
+    "inlinedFormKeyIsEmpty": true,
+    "leaks": [],
+    "formEndpointPresent": true
+  },
+  "whatsapp": {
+    "href": "https://wa.me/6281388116739?text=Halo%20Anung%2C%20saya%20melihat%20portofolio%20Anda%20dan%20ingin%20berdiskusi%20soal%20peluang%20kerja.",
+    "number": "6281388116739",
+    "greeting": "Halo Anung, saya melihat portofolio Anda dan ingin berdiskusi soal peluang kerja.",
+    "channelsInContactInfo": 3,
+    "inFooter": 1
+  },
+  "formFallback": {
+    "buttonLabel": "Buka draf email",
+    "footerNote": "Tombol ini membuka draf di aplikasi email.\nUntuk mengirim pesan, tekan tombol kirim di aplikasi email.",
+    "statusAttribute": "drafted",
+    "statusText": "Draf email siap dibuka. Jika aplikasi email tidak terbuka, kirim pesan langsung ke anungramadhan17@gmail.com.",
+    "honeypotTabIndex": "-1",
+    "honeypotHiddenFromAssistiveTech": "true"
+  },
+  "cvPreview": [
+    {
+      "src": "/images/cv-halaman-1.webp",
+      "declaredWidth": "1000",
+      "declaredHeight": "1413",
+      "naturalWidth": 1000,
+      "naturalHeight": 1413,
+      "loading": "lazy",
+      "altLength": 281
+    },
+    {
+      "src": "/images/cv-halaman-2.webp",
+      "declaredWidth": "1000",
+      "declaredHeight": "1413",
+      "naturalWidth": 1000,
+      "naturalHeight": 1413,
+      "loading": "lazy",
+      "altLength": 197
+    }
+  ],
+  "cvDownloadStillPresent": 1,
+  "backend": {
+    "url": "http://127.0.0.1:5174",
+    "sending": {
+      "status": "sending",
+      "statusText": "Mengirim pesan...",
+      "buttonLabel": "Mengirim...",
+      "buttonDisabled": true,
+      "ariaBusy": "true",
+      "requestSent": true,
+      "accessKeySent": "uji-kunci-bukan-kunci-asli"
+    },
+    "sent": {
+      "status": "sent",
+      "statusText": "Pesan terkirim ke anungramadhan17@gmail.com. Saya membacanya dari sana.",
+      "messageFieldAfter": "",
+      "fallbackShown": 0,
+      "payloadFields": [
+        "access_key",
+        "botcheck",
+        "email",
+        "from_name",
+        "message",
+        "name",
+        "subject",
+        "topic"
+      ],
+      "subjectSent": "Peluang kerja — dari Rani Pertiwi",
+      "emailSent": "rani@example.com"
+    },
+    "serverError": {
+      "status": "failed",
+      "statusText": "Pesan belum terkirim. Pengiriman otomatis gagal, jadi silakan pakai draf email di bawah atau kirim langsung ke anungramadhan17@gmail.com.",
+      "fallbackHref": "mailto:anungramadhan17@gmail.com?subject=Peluang%20kerja%20%E2%80%94%20dari%20Rani%20Pertiwi&body=Halo%20Anung%2C%0A%0AHalo%20Anung%2C%20kami%20mencari%20kandidat%20affiliate%20marketing.%0A%0ASalam%2C%0ARani%20Pertiwi%0Arani%40example.com",
+      "messageFieldAfter": "Halo Anung, kami mencari kandidat affiliate marketing."
+    },
+    "networkDown": {
+      "status": "failed",
+      "statusText": "Pesan belum terkirim. Pengiriman otomatis gagal, jadi silakan pakai draf email di bawah atau kirim langsung ke anungramadhan17@gmail.com.",
+      "fallbackHref": "mailto:anungramadhan17@gmail.com?subject=Peluang%20kerja%20%E2%80%94%20dari%20Rani%20Pertiwi&body=Halo%20Anung%2C%0A%0AHalo%20Anung%2C%20kami%20mencari%20kandidat%20affiliate%20marketing.%0A%0ASalam%2C%0ARani%20Pertiwi%0Arani%40example.com",
+      "fallbackCarriesMessage": true,
+      "buttonUsableAgain": true,
+      "messageFieldAfter": "Halo Anung, kami mencari kandidat affiliate marketing."
+    }
+  },
+  "layoutShiftTentang": 0,
+  "contrast": [
+    {
+      "id": "cv-preview-lead",
+      "theme": "light",
+      "foreground": "rgb(117, 70, 60)",
+      "background": "rgb(245, 218, 191)",
+      "ratio": 5.806,
+      "threshold": 4.5
+    },
+    {
+      "id": "cv-page-caption",
+      "theme": "light",
+      "foreground": "rgb(117, 70, 60)",
+      "background": "rgb(245, 218, 191)",
+      "ratio": 5.806,
+      "threshold": 4.5
+    },
+    {
+      "id": "cv-preview-kicker",
+      "theme": "light",
+      "foreground": "rgb(108, 21, 30)",
+      "background": "rgb(245, 218, 191)",
+      "ratio": 8.881,
+      "threshold": 4.5
+    },
+    {
+      "id": "contact-whatsapp",
+      "theme": "light",
+      "foreground": "rgb(108, 21, 30)",
+      "background": "rgb(245, 218, 191)",
+      "ratio": 8.881,
+      "threshold": 4.5
+    },
+    {
+      "id": "form-status",
+      "theme": "light",
+      "foreground": "rgb(108, 21, 30)",
+      "background": "rgb(245, 218, 191)",
+      "ratio": 8.881,
+      "threshold": 4.5
+    },
+    {
+      "id": "form-footer-note",
+      "theme": "light",
+      "foreground": "rgb(117, 70, 60)",
+      "background": "rgb(245, 218, 191)",
+      "ratio": 5.806,
+      "threshold": 4.5
+    },
+    {
+      "id": "cv-preview-lead",
+      "theme": "dark",
+      "foreground": "rgb(207, 185, 165)",
+      "background": "rgb(16, 46, 43)",
+      "ratio": 7.692,
+      "threshold": 4.5
+    },
+    {
+      "id": "cv-page-caption",
+      "theme": "dark",
+      "foreground": "rgb(207, 185, 165)",
+      "background": "rgb(16, 46, 43)",
+      "ratio": 7.692,
+      "threshold": 4.5
+    },
+    {
+      "id": "cv-preview-kicker",
+      "theme": "dark",
+      "foreground": "rgb(245, 218, 191)",
+      "background": "rgb(16, 46, 43)",
+      "ratio": 10.819,
+      "threshold": 4.5
+    },
+    {
+      "id": "contact-whatsapp",
+      "theme": "dark",
+      "foreground": "rgb(245, 218, 191)",
+      "background": "rgb(16, 46, 43)",
+      "ratio": 10.819,
+      "threshold": 4.5
+    },
+    {
+      "id": "form-status",
+      "theme": "dark",
+      "foreground": "rgb(245, 218, 191)",
+      "background": "rgb(16, 46, 43)",
+      "ratio": 10.819,
+      "threshold": 4.5
+    },
+    {
+      "id": "form-footer-note",
+      "theme": "dark",
+      "foreground": "rgb(207, 185, 165)",
+      "background": "rgb(16, 46, 43)",
+      "ratio": 7.692,
+      "threshold": 4.5
+    }
+  ],
+  "contrastFloor": {
+    "id": "cv-preview-lead",
+    "theme": "light",
+    "foreground": "rgb(117, 70, 60)",
+    "background": "rgb(245, 218, 191)",
+    "ratio": 5.806,
+    "threshold": 4.5
+  },
+  "contrastFailures": [],
+  "layout": [
+    {
+      "width": 320,
+      "route": "/",
+      "fits": true
+    },
+    {
+      "width": 320,
+      "route": "/pengalaman",
+      "fits": true
+    },
+    {
+      "width": 320,
+      "route": "/tentang",
+      "fits": true
+    },
+    {
+      "width": 320,
+      "route": "/kontak",
+      "fits": true
+    },
+    {
+      "width": 390,
+      "route": "/",
+      "fits": true
+    },
+    {
+      "width": 390,
+      "route": "/pengalaman",
+      "fits": true
+    },
+    {
+      "width": 390,
+      "route": "/tentang",
+      "fits": true
+    },
+    {
+      "width": 390,
+      "route": "/kontak",
+      "fits": true
+    },
+    {
+      "width": 1440,
+      "route": "/",
+      "fits": true
+    },
+    {
+      "width": 1440,
+      "route": "/pengalaman",
+      "fits": true
+    },
+    {
+      "width": 1440,
+      "route": "/tentang",
+      "fits": true
+    },
+    {
+      "width": 1440,
+      "route": "/kontak",
+      "fits": true
+    }
+  ]
+}

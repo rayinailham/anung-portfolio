@@ -20,12 +20,12 @@ belum seluruhnya `DONE`/`SKIP`.
 | 2 | Bukti kerja + ruang mati | Claude Code | 7 | 7 |
 | IMG-1 | Cover placeholder galeri bukti | Codex | 1 | 1 |
 | 3 | Kerangka visualisasi data + timeline | Claude Code | 2 | 2 |
-| VIS-1 | Rasa visual + animasi untuk kerangka Kirim 3 | Codex | 1 | 1 |
-| 4 | Konversi | Claude Code | 4 | 0 |
+| VIS-1 | Rasa visual + animasi (gerbang test ditutup Claude Code) | Codex | 1 | 1 |
+| 4 | Konversi | Claude Code | 4 | 4 |
 | IMG-2 | Gambar OG 1200×630 | Codex | 1 | 0 |
 | 5 | Performa, SEO, penutup | Claude Code | 6 | 0 |
 | 6 | Pass poles visual terakhir | Codex | 1 | 0 |
-| — | **Total dikerjakan** | | **33** | **21** |
+| — | **Total dikerjakan** | | **33** | **25** |
 | — | Sengaja di-SKIP | | 3 | — |
 
 Di-SKIP supaya scope-nya masuk akal (alasan lengkap di `prompt.md`):
@@ -105,25 +105,36 @@ reduced-motion, test. Boleh selesai dalam keadaan polos — rasanya digarap VIS-
 
 ## VIS-1 — Rasa visual + animasi · Codex
 
-VIS-1 selesai diverifikasi pada sesi Codex 2026-09-19. Tiket:
+Implementasi rupa dan bukti dikerjakan sesi Codex; gerbang `npm test` yang
+tertinggal ditutup sesi tiket Claude Code 2026-09-20
+([`docs/evidence/gerbang-vis-1/`](docs/evidence/gerbang-vis-1/README.md)).
+Catatan balik ada di
 [`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md).
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P2-23 | Kosakata reveal terlalu seragam, plus pass rasa atas seluruh keluaran Kirim 3 | DONE | Ring menyatu dengan angka; timeline berkisi bulanan; hierarki TOEFL/split/counter; timing berbeda per jenis konten. [Bukti sebelum/sesudah + reduced motion](docs/evidence/vis-1/README.md). `npm test`: **136 passed (3.0m)**, test tidak diubah; [log](docs/evidence/vis-1/full-suite.txt). [Verifikasi skala + 40 pasangan kontras](docs/evidence/vis-1/metrics.json), minimum teks **5.806:1**. Pasangan baru isian TOEFL terhadap track: **6.223:1** terang / **3.627:1** gelap, lolos grafis ≥ 3:1 ([JSON](docs/evidence/vis-1/presentation.json)). 320/390/1440 tanpa overflow, reduced motion final. Branch `fase/vis-1`. |
+| P2-23 | Kosakata reveal terlalu seragam, plus pass rasa atas seluruh keluaran Kirim 3 | DONE | Ring–angka menyatu, kisi timeline 11 bulan, bar/counter dan timing per jenis selesai. Build + skrip Kirim 3 + probe rupa/motion lolos; 56 screenshot sebelum/sesudah, 40 pasangan kontras standar dan 6 pasangan terhadap lapisan kisi/track lolos. [Bukti rupa](docs/evidence/vis-1/README.md). **Gerbang:** kegagalan `npm test` yang ditinggalkan sesi Codex — Firefox, preview CV, `naturalWidth` 0 — dilacak sampai akarnya dan diperbaiki di sesi tiket Claude Code: `img.decode()` ditolak Firefox (`EncodingError: Invalid image request.`) selama permintaan gambar lazy-nya masih di jalan, penolakan itu ditelan `.catch(() => {})`, lalu `naturalWidth` dibaca sebelum muatannya mendarat. Bukan ulah VIS-1: kegagalan yang sama muncul 3/3 pada `main` 54f05e1 tanpa satu pun perubahan VIS-1. Perbaikan ada di test, bukan aplikasi, dan menambah assertion alih-alih melonggarkan. Sesudahnya `npm test` **164 passed** dua run berturut, `verify-kirim-3.mjs` dan `verify-polish.mjs` mengembalikan angka VIS-1 yang sama persis. [Bukti gerbang](docs/evidence/gerbang-vis-1/README.md). |
 
 ## Kirim 4 — Konversi
 
+Backend form dan domain sama-sama belum punya kredensial. Kolom "Default" di
+`prompt.md` dipakai apa adanya: UI lengkap di kedua jalur, test menutup keduanya.
+Semua angka di bawah berasal dari
+[`docs/evidence/kirim-4/`](docs/evidence/kirim-4/README.md).
+
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| P1-10 | Backend form kontak nyata (mailto jadi fallback) | TODO | Butuh: submit tes sampai ke inbox. Screenshot email masuk. |
-| P1-11 | Tautan WhatsApp `wa.me/6281388116739` | TODO | Butuh: klik dari mobile membuka WA dengan pesan terisi. |
-| P1-12 | `og:image` + `og:url` + `twitter:card` + canonical | TODO | Butuh: validasi LinkedIn Post Inspector & preview WhatsApp nyata. |
-| P1-13 | Preview CV inline | TODO | Butuh: halaman pertama CV terlihat tanpa download. |
+| P1-10 | Backend form kontak nyata (mailto jadi fallback) | DONE | Web3Forms lewat `VITE_WEB3FORMS_KEY`, dibaca dari `src/site.js`. Lima keadaan terukur di [metrics.json](docs/evidence/kirim-4/metrics.json) → `formFallback`, `backend`: tanpa kunci `drafted` (tombol "Buka draf email", copy lama utuh); `sending` (tombol terkunci, `aria-busy="true"`, `access_key` terkirim); `sent` ("Pesan terkirim ke anungramadhan17@gmail.com. Saya membacanya dari sana.", kolom pesan kosong, tanpa klaim waktu balasan); server 500 → `failed` + tautan `mailto:`; jaringan diputus (`route.abort`) → `failed`, `fallbackCarriesMessage: true`, tombol bisa dipakai lagi, isi form tidak hilang. Honeypot `input[name="website"]` `tabindex="-1"` di pembungkus `aria-hidden="true"`; test membuktikan 0 permintaan terkirim saat terisi. 5 test baru × 4 project. `buildSecrets.leaks: []`. **Sisa:** uji sampai inbox menunggu kunci Web3Forms asli. |
+| P1-11 | Tautan WhatsApp `wa.me/6281388116739` | DONE | `https://wa.me/6281388116739?text=Halo%20Anung%2C%20saya%20melihat%20portofolio%20Anda%20dan%20ingin%20berdiskusi%20soal%20peluang%20kerja.` Nomor diturunkan dari `profile.phone`, jadi tetap ditulis sekali saja. [metrics.json](docs/evidence/kirim-4/metrics.json) → `whatsapp`: `channelsInContactInfo: 3` (WhatsApp paling atas, sejajar LinkedIn dan telepon), `inFooter: 1`. Test `WhatsApp stands beside email and LinkedIn with a prefilled Indonesian message` × 4 project. [Screenshot](docs/evidence/kirim-4/kontak-saluran-1440-light.webp) 1440/390 × terang/gelap. |
+| P1-12 | `og:image` + `og:url` + `twitter:card` + canonical | DONE | Dirender dari `src/site.js` oleh plugin `anung-site-meta` di `vite.config.js`; `index.html` cuma memuat `<!--site-meta-->`. Diperiksa pada dokumen yang **dilayani**, bukan DOM, karena perayap tidak menjalankan JS: `canonicalCount: 1`, `ogUrlCount: 1`, `ogUrlEqualsCanonical: true`, `imageSharesCanonicalOrigin: true`, `titlesAgree: true`, `og:image:type image/png` 1200×630 dengan `og:image:alt`, `twitter:card summary_large_image`. **Sisa:** berkas `public/images/og-cover.png` menunggu IMG-2 (`ogImageFilePresent: false`), dan canonical masih `https://anung-ramadhan.example/` karena `VITE_SITE_URL` kosong — `npm run build` memperingatkan setiap kali. Validasi LinkedIn Post Inspector + pratinjau WhatsApp nyata menunggu keduanya; keduanya butuh URL publik yang hidup. |
+| P1-13 | Preview CV inline | DONE | Dua halaman CV dirender dari PDF asli (poppler `pdftoppm` 150 dpi → sharp 1000 px, WebP q82) oleh `scripts/prepare-assets.mjs`, tampil di Tentang di samping tombol download yang tetap ada. [metrics.json](docs/evidence/kirim-4/metrics.json) → `cvPreview`: `naturalWidth/Height` 1000×1413 sama persis dengan atribut `width`/`height`, `loading="lazy"`, alt 281 dan 197 karakter. `layoutShiftTentang: 0` diukur dengan `PerformanceObserver('layout-shift')` sambil menggulir seluruh halaman — CLS 0,008 tidak naik. `cvDownloadStillPresent: 1`. Provenance di [asset-provenance.md](docs/asset-provenance.md). [Screenshot](docs/evidence/kirim-4/cv-preview-1440-light.webp). |
 
 ## IMG-2 — Gambar OG 1200×630 · Codex
 
-Tiket: `docs/image-jobs/IMG-2-og-image.md` (ditulis oleh sesi Kirim 4).
+Kirim 4 sudah `DONE`, jadi fase ini siap dijalankan. Tiket sudah ditulis:
+[`docs/image-jobs/IMG-2-og-image.md`](docs/image-jobs/IMG-2-og-image.md).
+Tag `og:` sudah menunjuk ke jalurnya dan sudah dikunci test; tiket ini hanya
+menambahkan berkasnya.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
@@ -185,10 +196,27 @@ Dicatat saat pengerjaan berlangsung — apa yang diputuskan, kenapa, dan apa yan
 | Tanggal | Keputusan | Alasan |
 |---|---|---|
 | 2026-09-18 | Audit awal, 33 temuan | Baseline |
-| 2026-09-19 | VIS-1: ring dipusatkan lewat CSS, timeline diberi kisi dekoratif 11 bulan, teks tidak ditaruh di atas kisi | JSX dan data tetap utuh; posisi/lebar bar tetap memakai `--from`/`--span`. Kisi mengikuti rentang Sep 2025–Jul 2026 yang ada; bila rentang data berubah, jumlah sel perlu disesuaikan. |
-| 2026-09-19 | VIS-1: hanya nilai tiga tabel timing yang berubah; durasi counter tetap | Tabel adalah batas izin tiket. Reveal teks dipercepat, media/arc lebih tenang, tanpa mengubah lifecycle, fallback, atau reduced motion. |
-| 2026-09-19 | VIS-1: bukti di `docs/evidence/vis-1/`, progres dan status tiket ditutup oleh Codex | Jalur mengikuti tiket; update progres mengikuti instruksi penutup sesi pengguna. Tidak ada gambar publik baru, jadi provenance dan tiket gambar tidak berubah. |
-| 2026-09-19 | VIS-1: crop halaman penuh tambahan untuk timeline 390px | Screenshot locator skrip lama memotong bagian atas judul saat motion aktif pada section yang lebih tinggi dari viewport. Crop frame halaman penuh merekam judul utuh tanpa mengubah aplikasi; keluaran mentah tetap disimpan. |
+| 2026-09-20 | Gerbang VIS-1 diperbaiki di `tests/portfolio.spec.js`, bukan di aplikasi | Probe tiga engine menunjukkan gambar CV sehat di chromium/firefox/webkit: begitu muatannya mendarat, `naturalWidth` 1000 dan `decode()` sukses di semuanya. Yang keliru cara test mengukur — `decode()` dipakai sebagai penunggu muatan, padahal Firefox menolaknya selama permintaan masih di jalan. Mengubah aplikasi (misal membuang `loading="lazy"`) berarti mengubah perilaku yang benar demi menyenangkan test. |
+| 2026-09-20 | Penolakan `decode()` yang tadinya ditelan `.catch(() => {})` sekarang diperiksa assertion | Menunggu muatan saja sudah cukup membuat test hijau, tapi itu menyisakan `decode()` sebagai panggilan tanpa arti. Sekalian dijadikan bukti: gambar CV harus benar-benar bisa didekode, bukan sekadar kotak seukuran benar. Cakupan naik, tidak ada yang dilonggarkan; jumlah hasil tetap 164. |
+| 2026-09-20 | Kegagalan disebut bukan ulah VIS-1 hanya setelah dijalankan pada `main` 54f05e1 yang bersih | Catatan balik Codex melarang menyebut "bug lama" atau "flaky" tanpa pembanding. Dua log dengan `git diff --stat` di kepalanya menjadi pembanding itu: 3/3 gagal dengan VIS-1 terpasang, 3/3 gagal tanpa VIS-1. |
+| 2026-09-20 | `verify-polish.mjs` dijalankan ulang dan menimpa `polish-metrics.json` + `motion-*-raw.json` milik sesi Codex di `docs/evidence/vis-1/` | Skrip itu menulis ke foldernya sendiri dan tidak punya `EVIDENCE_DIR`. Berkasnya belum pernah di-commit, dan angka hasilnya identik dengan yang diklaim sesi Codex (6 pasangan, terendah 3,164:1), jadi yang tertimpa adalah hasil run yang sama pada sumber yang sama. Salinan log sesi ini ada di `docs/evidence/gerbang-vis-1/verify-polish.txt`. |
+| 2026-09-20 | Pekerjaan rupa VIS-1 di-commit ke `fase/vis-1` lewat merge `main`, bukan rebase atau force | Branch `fase/vis-1` sudah punya commit VIS-1 lama (`3bfef9f`) yang berdiri di atas Kirim 3, sementara sesi Codex terakhir menggarap ulang rupanya di atas Kirim 4. `prompt.md` melarang force dan rebase, jadi `main` di-merge masuk ke branch dan isi pohon kerja yang sudah diverifikasi dipasang sebagai hasil merge. Keputusan merge ke `main` tetap milik Milord. |
+| 2026-09-20 | VIS-1 tetap WIP dan tidak commit/push setelah suite 163 passed / 1 failed | Preview CV gagal di Firefox (`naturalWidth` 0). Instruksi `prompt.md` melarang Codex memperbaiki bug/test dan melarang commit pada suite gagal. Tidak mengklaim ini bug lama atau flaky tanpa pembanding. Semua item rupa dan bukti lain selesai; tindak lanjut gerbang milik Claude Code. |
+| 2026-09-19 | VIS-1 dipilih sebagai fase belum tuntas paling awal menurut urutan Papan Fase | Kirim 4 sudah DONE; tiket VIS-1 tetap mendahului IMG-2 dan Kirim 5. Tidak melompati tiket atau mengerjakan fase lain. |
+| 2026-09-19 | VIS-1 memakai CSS dan hanya nilai tiga tabel timing; `progress.md` diperbarui sesuai instruksi sesi langsung | Ring–angka disatukan melalui grid, tanpa mengubah JSX; semua angka, teks, logika, test, pipeline dan dependensi tetap. Kisi 11 sel dekoratif mengikuti kontrak timeline saat ini; kalau rentang tanggal berubah nanti, kisi perlu ditinjau oleh harness kode. |
+| 2026-09-19 | Bukti utama VIS-1 mengikuti lokasi tiket `docs/evidence/vis-1/`; indeks fase di `docs/evidence/kirim-vis-1/` | Menjaga tautan tiket dan pola penutup sesi sekaligus, tanpa menggandakan gambar. Tidak membutuhkan aset baru atau tiket gambar baru. |
+| 2026-09-19 | Kirim 4 memakai kolom Default apa adanya: Web3Forms via `VITE_WEB3FORMS_KEY`, `VITE_SITE_URL` untuk domain, keduanya kosong | Tidak ada kredensial dan tidak ada domain. Berhenti bertanya berarti fase tidak jalan. UI lengkap di kedua jalur, copy jujur di kedua jalur, dan test menutup keduanya, jadi mengisi env var nanti tidak menuntut perubahan kode sebaris pun. |
+| 2026-09-19 | `src/site.js` jadi satu-satunya sumber URL + metadata share; `vite.config.js` merendernya ke `index.html` lewat plugin `anung-site-meta` | `prompt.md` menuntut canonical dan `og:url` dari satu sumber. Menaruh tag di `index.html` berarti URL ditulis 4 kali (canonical, `og:url`, `og:image`, `twitter:image`) dan judul 3 kali. Perayap LinkedIn/WhatsApp tidak menjalankan JS, jadi menulis tag dari React tidak menyelesaikan apa pun — harus saat build. Plugin melempar error kalau penanda `<!--site-meta-->` hilang, jadi kegagalannya berisik, bukan diam. |
+| 2026-09-19 | Host fallback `https://anung-ramadhan.example`, bukan domain tebakan | `.example` adalah TLD cadangan RFC 2606 — mustahil disalahartikan sebagai alamat nyata, dan kalau tidak sengaja ter-deploy, canonical yang salah menunjuk ke tempat yang jelas tidak ada alih-alih ke situs orang lain. `npm run build` menulis peringatan setiap kali dipakai. |
+| 2026-09-19 | `npm test` menjalankan dua dev server: 5173 tanpa kunci, 5174 dengan kunci palsu | Backend form ditentukan saat build, jadi satu server tidak bisa menguji kedua jalur. Alternatifnya menaruh hook test di kode produksi (global yang bisa ditimpa) — itu menambah permukaan yang hanya ada demi test. Kedua kunci di-set eksplisit di `playwright.config.js` supaya `.env` lokal siapa pun tidak bisa mengubah apa yang diuji. Cakupan test lama tidak dikurangi: jalur `mailto:` tetap diuji test yang sama persis. |
+| 2026-09-19 | Jalur tanpa backend mempertahankan copy dan label tombol lama kata per kata | Test Kirim 1 `contact form validates inputs and prepares an honest email handoff` mengunci "Buka draf email" dan "Untuk mengirim pesan, tekan tombol kirim di aplikasi email." Mengubahnya berarti melonggarkan test yang sudah ada. Label baru ("Kirim pesan") hanya muncul ketika backend memang ada, jadi tombolnya tidak pernah menjanjikan sesuatu yang tidak bisa dilakukannya. |
+| 2026-09-19 | Proteksi spam honeypot off-screen, bukan `display: none`, bukan CAPTCHA | `prompt.md` melarang CAPTCHA. `display: none` mudah dikenali bot yang membaca DOM. Field 1×1 ber-`clip-path` dengan `tabindex="-1"` di pembungkus `aria-hidden="true"` tidak pernah dijangkau manusia, keyboard, atau pembaca layar, dan tidak menambah pasangan kontras baru. Submit yang terisi dibatalkan diam-diam — menjelaskan jebakannya berarti membocorkannya. |
+| 2026-09-19 | Preview CV merender **dua** halaman, bukan satu | `prompt.md` meminta "halaman pertama", tapi CV-nya dua halaman dan halaman kedua memuat seluruh pengalaman organisasi dan keterampilan. Menampilkan satu halaman dari dua justru memaksa unduhan yang mau dihindari. Biayanya 293 KB WebP `loading="lazy"`, bukan di jalur LCP. |
+| 2026-09-19 | Halaman CV dirender dengan poppler `pdftoppm` di `prepare-assets.mjs`, PNG antaranya tidak dilacak | sharp tidak membaca PDF. `pdftoppm` hanya dibutuhkan saat aset diregenerasi, tidak pernah saat `npm run build`, jadi tidak ada langkah build yang ikut bergantung padanya. PNG 150 dpi cuma turunan dari PDF yang sudah dilacak di root — menyimpannya di `assets/source/` berarti menambah ~840 KB ke repo tanpa menambah informasi. |
+| 2026-09-19 | Gambar halaman CV = gambar teks, dan itu diterima dengan tiga pengaman | WCAG 1.4.5 menghindari gambar teks. Di sini gambarnya adalah potret sebuah dokumen, bukan cara menyampaikan teks: PDF aslinya tetap bisa diunduh di sebelahnya, seluruh isinya sudah ada sebagai teks nyata di Pengalaman dan Tentang, dan `alt` tiap halaman menyebutkan isinya. Copy di halaman menyatakan ketiganya. |
+| 2026-09-19 | `.cv-preview-intro` dibuat `position: sticky` di atas 767px | Bukan rasa: bloknya setinggi dua halaman A4, dan header situs tidak ikut menempel. Tanpa sticky, tombol Download CV hilang dari layar begitu pembaca menggulir ke halaman kedua. Di bawah 767px kolomnya tunggal dan sticky dimatikan. Ruang kosong yang tersisa di kolom kiri 1440px sengaja dibiarkan untuk pass rasa Kirim 6. |
+| 2026-09-19 | `.site-footer > div` diberi `flex-wrap` di bawah 768px | Footer bertambah satu tautan (WhatsApp). Tanpa wrap, tiga tautan plus tombol tidak muat di 320px dan `document.scrollWidth <= innerWidth` gagal. |
+| 2026-09-19 | Pemindai kebocoran mencari pola UUID dan nilai dari berkas `.env*`, bukan nama variabel | `buildSite(import.meta.env)` membuat Vite menyisipkan seluruh objek env, jadi string `VITE_WEB3FORMS_KEY` selalu ada di bundel sebagai nama properti. Versi pertama pemindai menandainya sebagai kebocoran — alarm palsu yang, kalau dibiarkan, membuat alarm sungguhan ikut diabaikan. Kunci akses Web3Forms berbentuk UUID, jadi itulah yang dicari. |
 | 2026-09-19 | Split 100/50 dipasang di kartu **Marketing Intern (Coordination Role)**, bukan di Beranda | `prompt.md` menulis "150 di Beranda adalah penjumlahan 100 + 50". Itu keliru, dan README sudah menyatakan yang benar: 150 yang merupakan penjumlahan adalah "100 mitra afiliasi Shopee dan 50 mitra afiliasi TikTok" pada peran koordinasi Sutan Vet. Angka 150 di Beranda adalah baris CV tersendiri, "Contacted and invited 150 new affiliates daily to join Unicharm's affiliate community" — bukan penjumlahan. Memasang bar penjumlahan di Beranda justru akan membuat angka CV yang benar terbaca sebagai gabungan. |
 | 2026-09-19 | Sumbu bar TOEFL 310–677, bukan 0–677 | 310 adalah skor total terendah yang mungkin pada TOEFL ITP, jadi itulah lantai skalanya; memaksa 0 bukan kejujuran melainkan skala yang tidak ada. Kedua ujung dicetak sebagai teks dan `startsAtScaleFloorPx: 0` dikunci test, sehingga bar tidak pernah dimulai di tempat yang menyanjung. Label "Professional Working Proficiency" dikutip persis dari baris Bahasa di CV dan ditulis di halaman sebagai kutipan CV, bukan sebagai pemetaan skor. |
 | 2026-09-19 | Dua entri Sutan Vet ditulis "perusahaan yang sama, 2 periode magang, peran A lalu peran B", bukan "promosi" | `prompt.md` menyebut "promosi peran". CV tidak menyatakan promosi; yang tertulis hanya dua periode dengan dua judul peran. Kalimatnya menunjukkan perkembangan yang sama tanpa mengklaim status kepegawaian yang tidak ada di sumber. |
@@ -234,13 +262,6 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 
 | Tanggal | Perintah | Hasil |
 |---|---|---|
-| 2026-09-19 | VIS-1: `arch-playwright-provision --check` + launch Node Playwright | Nol library WebKit hilang. Chromium 153.0.8010.12, Firefox 155.0, WebKit 26.6 launch sukses; [bukti](docs/evidence/vis-1/env-check.txt). |
-| 2026-09-19 | VIS-1: `npm run build` | Exit 0, 217ms; [log](docs/evidence/vis-1/build.txt). |
-| 2026-09-19 | VIS-1: `EVIDENCE_DIR=docs/evidence/vis-1 node scripts/verify-kirim-3.mjs` dengan `PORTFOLIO_URL=http://127.0.0.1:4175` | Exit 0. Arc 0.935001, TOEFL 0.7439, split 2.0001 di desktop (pembulatan subpiksel), overlap 4 bulan. 40 pasangan kontras lolos, teks minimum 5.806:1. [Log](docs/evidence/vis-1/verify.txt). |
-| 2026-09-19 | VIS-1: `node docs/evidence/vis-1/verify-presentation.mjs` | Exit 0. Kontras track TOEFL baru 6.223:1 / 3.627:1; enam bar reduced motion tanpa transform; tiga split menutup track; ring 320px memuat angka di kedua tema, error aplikasi 0. [Log](docs/evidence/vis-1/presentation.txt). |
-| 2026-09-19 | VIS-1: `scripts/shoot-kirim-3.mjs` sebelum/sesudah + `capture-mobile-timeline.mjs` | Exit 0; 60 WebP termasuk empat gambar 320px dan dua crop timeline 390px. [Indeks bukti](docs/evidence/vis-1/README.md). |
-| 2026-09-19 | VIS-1: `npm test` | Exit 0, **136 passed (3.0m)** pada chromium/mobile/firefox/webkit, tanpa mengubah test. [Log penuh](docs/evidence/vis-1/full-suite.txt). |
-
 | 2026-09-18 | `Playwright MCP: #/pengalaman → filter → scroll → getComputedStyle` | `opacity: "0"` pada `top: 166px` — P0-1 dikonfirmasi |
 | 2026-09-18 | perhitungan kontras semua token | terendah 5.81:1 (`--muted` di `--paper`) — lolos AA |
 | 2026-09-18 | ukur target sentuh di 390px | 3 elemen 22px tinggi — P3-32 dikonfirmasi |
@@ -281,6 +302,16 @@ Setiap sesi kerja menambahkan satu baris. Perintah dan hasil aslinya, bukan ring
 | 2026-09-19 | `node scripts/verify-kirim-3.mjs` pada build statis | Exit 0. 40 pemeriksaan kontras lolos, terendah **5.268:1** (arc IPK sebagai objek grafis, ambang 3:1); terendah untuk teks **5.806:1**, sama dengan lantai yang sudah tercatat. Skala: TOEFL `0.7439` = harapan, split `ratio 2`, tumpang tindih `4` bulan, arc `0.935001`. Keempat route tidak meluber di 320/390/1440. [JSON](docs/evidence/kirim-3/metrics.json), [output](docs/evidence/kirim-3/verify.txt). |
 | 2026-09-19 | Kontras diukur ulang setelah tema diseed lewat `localStorage`, bukan lewat atribut | Run pertama melaporkan 15 pasangan gagal di tema gelap. Penyebabnya bukan warna: menyetel `documentElement.dataset.theme` langsung berlomba dengan efek tema React, sehingga warna depan terbaca dari satu tema dan latar dari tema lain (`gpa-number`: front `#6c151e` terang di atas `#163a36` gelap). Setelah diseed lewat pintu yang sama dengan penjaga tema di `index.html`, 40/40 lolos. |
 | 2026-09-19 | Ukuran bundle, metode sama pada kedua sisi (`gzip -c9`, css + index + motion-runtime) | `HEAD` cd44c68 di `git worktree`: **454.489 B mentah / 144.594 B gzip**. Sesudah Kirim 3: **464.921 B mentah / 147.233 B gzip** — **+10.432 B mentah, +2.639 B gzip (+1,8%)**. Tanpa dependensi baru; seluruh kenaikan adalah markup, CSS, dan logika timeline. [Rincian](docs/evidence/kirim-3/bundle.txt). |
+| 2026-09-19 | `node scripts/prepare-assets.mjs` sesudah ditambah render CV | Exit 0. `pdftoppm -png -r 150` → 2 PNG A4 1241×1754 di direktori sementara, lalu sharp → `public/images/cv-halaman-1.webp` dan `-2.webp`, keduanya **1000×1413**, 158 KB + 135 KB. Enam berkas gambar lama dihasilkan ulang byte-identik (`git status` tidak menandainya berubah). |
+| 2026-09-19 | `npm run build` | Exit 0, `✓ built in 214ms`. Peringatan `[site-meta] VITE_SITE_URL belum diisi...` muncul seperti yang dimaksudkan. Bundle `index-*.js` **297.22 kB → 306.22 kB** mentah, **89.15 kB → 92.16 kB** gzip; CSS **36.18 kB → 37.11 kB**. [Log](docs/evidence/kirim-4/build.txt). |
+| 2026-09-19 | `node scripts/verify-kirim-4.mjs` pada `vite preview` 4173 + dev berkunci 5174 | Exit 0, semua pemeriksaan lolos. `canonicalCount: 1`, `ogUrlCount: 1`, `titlesAgree: true`; `whatsapp.channelsInContactInfo: 3`, `inFooter: 1`; form tanpa kunci → `drafted`, dengan kunci → `sending`/`sent`/`failed` (500 dan `route.abort`) dengan `mailto:` fallback yang membawa isi pesan; `cvPreview` 2 halaman 1000×1413 `lazy`; `layoutShiftTentang: 0`; 12 pemeriksaan kontras lolos, terendah **5.806:1**; 12 kombinasi lebar×route tanpa overflow; `buildSecrets.leaks: []`. [Output](docs/evidence/kirim-4/verify.txt), [JSON](docs/evidence/kirim-4/metrics.json). |
+| 2026-09-19 | `npm test` | Exit 0, **164 passed (3.3m)** — 41 skenario × chromium/mobile/firefox/webkit. 34 skenario lama tetap ada tanpa satu pun dihapus; 7 skenario baru ditambahkan. Dua assertion lama disesuaikan karena fase ini memang menambah elemen yang dihitungnya: jumlah target sentuh footer 3 → 4 (WhatsApp), dan pemeriksaan metadata dipindah dari DOM ke dokumen yang dilayani. [Log](docs/evidence/kirim-4/full-suite.txt). |
+| 2026-09-19 | `node scripts/shoot-kirim-4.mjs` | Exit 0. 12 screenshot bagian (3 × {1440,390} × {terang,gelap}) + 4 keadaan form. Permintaan ke `api.web3forms.com` dijawab Playwright secara lokal — tidak ada permintaan yang keluar dari mesin dan tidak ada pesan yang benar-benar terkirim. PNG dikonversi WebP q80 sebelum di-commit. |
+| 2026-09-19 | Uji kirim sampai inbox | **Belum dijalankan.** Butuh kunci Web3Forms asli yang belum ada. Jalur `mailto:` dan seluruh keadaan backend sudah dibuktikan dengan permintaan yang dicegat; yang menunggu hanya konfirmasi bahwa email benar-benar mendarat. |
+| 2026-09-19 | Validasi LinkedIn Post Inspector + pratinjau WhatsApp nyata | **Belum dijalankan.** Butuh `VITE_SITE_URL` berisi domain nyata, situs ter-deploy, dan `public/images/og-cover.png` dari IMG-2. Markup-nya sendiri sudah dibuktikan pada dokumen yang dilayani. |
+| 2026-09-20 | `npx playwright test --project=firefox -g 'the CV can be read' --repeat-each=3` sebelum perbaikan, dua keadaan pohon kerja | Exit 1 dua-duanya: **3/3 gagal** dengan VIS-1 terpasang, **3/3 gagal** pada `main` 54f05e1 yang bersih. Kegagalannya bukan ulah VIS-1. [Log](docs/evidence/gerbang-vis-1/sebelum-vis-1-terpasang.txt), [log](docs/evidence/gerbang-vis-1/sebelum-tanpa-vis-1.txt). |
+| 2026-09-20 | `node docs/evidence/gerbang-vis-1/probe-cv.mjs` | Exit 0. Respons gambar CV ditahan 600 ms supaya balapannya selalu terbuka: urutan lama gagal 4/9 (firefox 3/3, webkit 1/3), urutan baru 0/9 gagal. `EncodingError: Invalid image request.` hanya muncul selama permintaan masih di jalan. [Log](docs/evidence/gerbang-vis-1/probe-cv.txt). |
+| 2026-09-20 | `npm test` sesudah perbaikan, dua run berturut | Exit 0 dua-duanya, **164 passed (3.2m)** dan **164 passed (3.3m)**. [Log 1](docs/evidence/gerbang-vis-1/suite-penuh-1.txt), [log 2](docs/evidence/gerbang-vis-1/suite-penuh-2.txt). |
 
 ### Output regresi gagal → lolos
 
@@ -394,8 +425,51 @@ Fase berikutnya: **VIS-1 — Codex**, tiketnya siap di
 [`docs/visual-jobs/VIS-1-visualisasi-data.md`](docs/visual-jobs/VIS-1-visualisasi-data.md),
 branch `fase/vis-1`. Sesudah itu **Kirim 4 — Claude Code**.
 
-### Penutup VIS-1 — 2026-09-19
 
-VIS-1 **DONE**; Ringkasan **21/33**. Perubahan aplikasi hanya `src/styles.css` dan nilai tiga tabel timing `src/motion.js`. Bukti, batas pengukuran, dan cara mengulang ada di [docs/evidence/vis-1/README.md](docs/evidence/vis-1/README.md). Tidak ada kebutuhan gambar baru. Lighthouse/CLS tidak diaudit ulang pada tiket ini.
+### Verifikasi VIS-1 — sesi Codex 2026-09-19, penutup 2026-09-20
 
-Satu commit fase ditujukan ke `fase/vis-1`, remote personal `origin`; hash dan hasil push dilaporkan dalam penutup sesi. Tidak merge ke `main`. Fase berikutnya: **Kirim 4 — Claude Code**. Sesi ini berhenti setelah push.
+| Perintah / pemeriksaan | Hasil |
+|---|---|
+| `arch-playwright-provision --check` + launch tiga engine | Nol library hilang. Chromium 153.0.8010.12, Firefox 155.0, WebKit 26.6 berhasil launch. [Lingkungan](docs/evidence/vis-1/env-check.md). |
+| `npm run build` | Exit 0. Peringatan canonical placeholder sesuai default Kirim 4. [Log](docs/evidence/vis-1/build.txt). |
+| `EVIDENCE_DIR=docs/evidence/vis-1 node scripts/verify-kirim-3.mjs` | Exit 0: arc 0,935001, TOEFL 0,7439, split ≈2:1 (pembulatan subpiksel), cakupan track tepat (delta 0 px), overlap 4 bulan; empat route tanpa overflow pada 320/390/1440. Kontras standar 40/40: teks minimum 5,806:1, grafis terhadap permukaan 5,268:1. [Log](docs/evidence/vis-1/verify.txt), [metrik](docs/evidence/vis-1/metrics.json). |
+| `node docs/evidence/vis-1/verify-polish.mjs` | Exit 0: 8 pemeriksaan ring–angka (4 lebar × 2 tema), sampel tween arc/bar langsung dari browser, 6 pasangan tambahan grafis terhadap campuran kisi/track, minimum 3,164:1 ≥ 3:1. [Log](docs/evidence/vis-1/verify-polish.txt), [metrik](docs/evidence/vis-1/polish-metrics.json). |
+| Probe arc awal | Gagal pada batas pecahan nilai antara yang terlalu ketat: GSAP membulatkan offset CSS sementara menjadi 21 unit, fraksi 0,935726. Nilai akhir kembali ke atribut 21,237, fraksi 0,935001. Probe tambahan mengizinkan setengah unit SVG selama tween, dengan pemeriksaan nilai akhir tetap. Tidak mengubah test aplikasi atau logika GSAP. [Log probe](docs/evidence/vis-1/probe-arc-first.txt). |
+| Reduced motion | 6 counter final, 6 `[data-bar]` tanpa transform, TOEFL tanpa transform, arc tanpa inline override. [Bukti](docs/evidence/vis-1/reduced-motion.txt). |
+| `scripts/shoot-kirim-3.mjs` sebelum/sesudah + `shoot-mobile.mjs` | Exit 0; 56 WebP sebelum/sesudah. Lima visual × dua tema × desktop/mobile, reduced motion dan halaman penuh. Tambahan timeline mobile utuh karena header sticky menutupi atas tangkapan standar saat section lebih tinggi dari viewport. [Indeks](docs/evidence/vis-1/README.md). |
+| SHA-256 sebelum/sesudah | 14 berkas terlindungi identik pada sesi implementasi: JSX, data, tests, scripts, package + lockfile. [Hasil](docs/evidence/vis-1/protected-files.txt). Snapshot pembanding sementara di `/tmp` tidak lagi tersedia saat sesi dilanjutkan; hasil lama dipertahankan, tidak diklaim diperiksa ulang. |
+| `npm test` | **163 passed, 1 failed (3.3m)**. Firefox: `the CV can be read on the page without downloading it`, `tests/portfolio.spec.js:746:28`, `expect(rendered.natural).toBeGreaterThan(0)` menerima 0. Penyebab belum dipastikan; tidak mengubah source/test di luar tiket atau mengulang sampai hijau. [Log lengkap](docs/evidence/vis-1/full-suite.txt). |
+| Penutup Git | Tidak ada commit, push, atau hash commit VIS-1: gerbang suite belum lolos. |
+
+VIS-1 tetap **WIP**; total tetap **24/33**. Tindak lanjut: Claude Code memeriksa gerbang Firefox preview CV. Sesudah gerbang lolos dan VIS-1 ditutup, fase berikutnya **IMG-2 — Codex**, lalu **Kirim 5 — Claude Code**. Sesi ini tidak melanjutkan fase lain.
+
+### Gerbang VIS-1 — sesi tiket Claude Code, 2026-09-20
+
+Kegagalan `[firefox] the CV can be read on the page without downloading it`
+(`tests/portfolio.spec.js:746`) dilacak sampai akarnya. `scrollIntoViewIfNeeded()`
+hanya memulai permintaan gambar `loading="lazy"`; test lalu memanggil
+`img.decode()` dan menelan penolakannya, mengira `decode()` menunggu muatan itu
+mendarat. Firefox tidak menunggu — selama permintaannya masih di jalan,
+`decode()` ditolak dengan `EncodingError: Invalid image request.` — jadi
+`naturalWidth` dibaca pada gambar yang belum mendarat dan bernilai 0.
+
+| Perintah / pemeriksaan | Hasil |
+|---|---|
+| Sebelum perbaikan, sumber dengan VIS-1 terpasang, `--repeat-each=3` | Exit 1: **3 dari 3 gagal**. [Log berkepala `git diff --stat`](docs/evidence/gerbang-vis-1/sebelum-vis-1-terpasang.txt). |
+| Sebelum perbaikan, pohon kerja persis `main` 54f05e1, nol perubahan VIS-1 | Exit 1: **3 dari 3 gagal**. Kegagalannya sudah ada di commit Kirim 4 — bukan ulah VIS-1, dan ini pembanding yang diminta catatan balik Codex. [Log](docs/evidence/gerbang-vis-1/sebelum-tanpa-vis-1.txt). |
+| `node docs/evidence/gerbang-vis-1/probe-cv.mjs` (respons gambar ditahan 600 ms, 3 engine × 3 ronde × 2 urutan) | Exit 0. Urutan lama: firefox **0/3** lolos (`EncodingError: Invalid image request.`), webkit 2/3 (`Aborted by source change.`), chromium 3/3. Urutan baru: **9/9** lolos. Di semua engine, setelah muatannya mendarat `naturalWidth` 1000 dan `decode()` sukses — gambarnya sehat, pengukurannya yang salah. [Log](docs/evidence/gerbang-vis-1/probe-cv.txt). |
+| Perbaikan | `tests/portfolio.spec.js`, satu test: tunggu `naturalWidth > 0` (batas 10 detik) sebelum mengukur, lalu `decode()` yang tadinya ditelan diperiksa `expect(rendered.decoded).toBe('ok')`. Aplikasi tidak disentuh. Tidak ada timeout dinaikkan, assertion dilonggarkan, `test.skip` ditambahkan, atau cakupan dikurangi — satu assertion justru ditambah. |
+| `npx playwright test -g 'the CV can be read…' --repeat-each=5` di 4 project | Exit 0, **20 passed (23.8s)**. [Log](docs/evidence/gerbang-vis-1/sesudah-ulang-5.txt). |
+| `npm test` run 1 | Exit 0, **164 passed (3.2m)** — jumlah hasil sama dengan Kirim 4, tidak ada yang dihapus. [Log](docs/evidence/gerbang-vis-1/suite-penuh-1.txt). |
+| `npm test` run 2, tanpa perubahan apa pun | Exit 0, **164 passed (3.3m)**. [Log](docs/evidence/gerbang-vis-1/suite-penuh-2.txt). |
+| `npm run build` | Exit 0; peringatan canonical placeholder tetap seperti default Kirim 4. [Log](docs/evidence/gerbang-vis-1/build.txt). |
+| `EVIDENCE_DIR=docs/evidence/gerbang-vis-1 node scripts/verify-kirim-3.mjs` | Exit 0 pada pohon kerja final: arc IPK 0,935001, TOEFL 0,7439 = harapan, rasio split 2,0001, tumpang tindih 4 bulan, 40 pasangan kontras terendah 5,268:1. Identik dengan sesi Codex. [Log](docs/evidence/gerbang-vis-1/verify-kirim-3.txt), [metrik](docs/evidence/gerbang-vis-1/metrics.json). |
+| `node docs/evidence/vis-1/verify-polish.mjs` | Exit 0: 8 pemeriksaan ring–angka, sampel tween langsung, 6 pasangan kontras cat terendah 3,164:1 — sama persis dengan angka sesi Codex. [Log](docs/evidence/gerbang-vis-1/verify-polish.txt). |
+| Lighthouse / LCP / CLS | Tidak diaudit ulang; itu P2-22/P2-26 di Kirim 5. Baseline lama tidak disentuh dan tidak diklaim. |
+
+VIS-1 sekarang **DONE**; Ringkasan 24 → 25 dari 33.
+
+Fase berikutnya: **IMG-2 — Codex**, tiketnya siap di
+[`docs/image-jobs/IMG-2-og-image.md`](docs/image-jobs/IMG-2-og-image.md),
+branch `fase/img-2`. Sesudah itu **Kirim 5 — Claude Code**. Sesi tiket ini
+berhenti di sini.

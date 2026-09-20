@@ -1,0 +1,5 @@
+6 counter: shown === declared
+6 [data-bar]: computed transform none, inline null
+TOEFL: transform none
+Arc: inline override null, final attribute 21.237
+Source: metrics.json

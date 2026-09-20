@@ -54,6 +54,31 @@ Reproducible with `node scripts/make-placeholder-covers.mjs`, which holds the SV
 
 `.evidence-cover` paints a brand-colour gradient underneath the image, and a failed image load sets `data-missing="true"` and hides the `<img>`. The slot therefore stays correct — sized, captioned and flagged — with no image file present at all. Proven by `placeholder covers missing still leave the evidence slots correct` in `tests/portfolio.spec.js` and by `blockedPlaceholders` in `docs/evidence/kirim-2/metrics-after.json`.
 
+## CV page previews
+
+The Tentang page shows the CV inline so a recruiter does not have to download a PDF to read it. Those page images are renderings of the supplied PDF itself — no image model, no retyping, no editing.
+
+| Website asset | Source | Used for |
+|---|---|---|
+| `public/images/cv-halaman-1.webp` | page 1 of `Anung Hanindhita Ramadhan-CV.pdf` (root, unchanged) | `cvPreview` on Tentang, `aspect-ratio` intrinsic 1000 × 1413. |
+| `public/images/cv-halaman-2.webp` | page 2 of the same PDF | `cvPreview` on Tentang, same size. |
+
+Pipeline, inside `scripts/prepare-assets.mjs`:
+
+1. `pdftoppm -png -r 150 "Anung Hanindhita Ramadhan-CV.pdf" <tmp>/halaman` — poppler renders every page at 150 dpi (A4 → 1241 × 1754 px).
+2. `sharp(...).resize({ width: 1000 }).webp({ quality: 82 })` — one WebP per page at 1000 × 1413.
+
+The intermediate PNGs are pure derivatives of a tracked PDF, so they are written to a temporary directory and deleted, not kept under `assets/source/`. poppler is needed only when regenerating; the site build never shells out.
+
+The original PDF stays downloadable next to the preview, and every fact on those pages also exists as real text elsewhere on the site, so the images are a convenience and never the only copy.
+
+## Share card (og:image)
+
+- Path declared by `src/site.js` and injected into `index.html` by `vite.config.js`: `/images/og-cover.png`, 1200 × 630, `image/png`.
+- File status: **not produced yet.** `docs/image-jobs/IMG-2-og-image.md` is the ticket.
+- This is the only image in the project allowed to carry text, because the text is a person's name and role, not a work result.
+- Its face must be the supplied photograph, composited — never generated or altered. The ticket states this as a hard condition.
+
 ## Swapping a placeholder for real material
 
 1. Put the real file at the same `src` path listed in `src/data.js`, at 1200 × 900.
@@ -62,3 +87,7 @@ Reproducible with `node scripts/make-placeholder-covers.mjs`, which holds the SV
 4. Add a row to this file naming the source.
 
 No JSX, CSS or test changes are required. The DOM shape, the intrinsic size attributes and the grid are identical either way.
+
+## VIS-1 — 2026-09-19
+
+Tidak ada aset gambar baru atau gambar yang diubah. Ring memakai SVG yang sudah ada; kisi timeline adalah dekorasi CSS, bukan gambar bukti kerja. Screenshot browser sebelum/sesudah tersimpan di `docs/evidence/vis-1/` untuk verifikasi saja dan tidak dipakai sebagai materi portofolio. Status seluruh placeholder, caption, dan sumber foto tetap.
