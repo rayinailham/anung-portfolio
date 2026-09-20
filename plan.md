@@ -1,300 +1,284 @@
-# Plan Perbaikan Portofolio Anung
+# Plan — Perbaikan Portofolio Anung (putaran 2)
 
-Audit dijalankan 2026-09-18 pada dev server `http://localhost:5173` (Chromium via Playwright MCP), viewport 1440×900 / 820×1000 / 390×844, mode terang dan gelap, plus pembacaan `docs/lighthouse-mobile.json` dan ekstraksi ulang CV sumber.
+Ditulis 2026-09-20. Menggantikan audit 2026-09-18 yang isinya sudah tutup
+(ringkasannya di "Arsip" paling bawah; riwayat penuh ada di git dan
+`docs/evidence/`).
 
-Kondisi sekarang: fondasinya kuat. Lighthouse a11y 100, best-practices 100, SEO 100, CLS 0.008, nol console error, kontras semua token lolos AA (paling rendah `--muted` di `--paper` = 5.81:1). Jadi masalahnya bukan "web-nya jelek" — masalahnya **bukti kerja tipis, angka tidak divisualkan, satu bug motion yang menghilangkan konten, dan beberapa ruang mati di layout**. Tebakan Milord soal "foto kurang", "appear on scroll", dan "data bisa divisualisasikan" semuanya benar.
+Putaran ini lahir dari dua hal: pemeriksaan manual pemilik di browser, dan
+audit kode langsung yang membantah sebagian klaim `progress.md` lama.
 
-Total 33 temuan. Diurutkan per severity.
+## Kondisi `main` yang sudah diverifikasi
 
----
+Diukur di `main` 7b3e322, 2026-09-20, bukan dikutip dari catatan.
 
-## P0 — Bug yang menghapus konten
+| Fakta | Angka | Cara cek |
+|---|---|---|
+| Suite Playwright | 196 passed, exit 0, 5,0 menit | `npx playwright test` |
+| Build | sukses, entry 279,73 kB / gzip 85,62 kB | `npm run build` |
+| Chunk per route | Experience 10,59 · About 6,16 · Contact 15,82 kB | keluaran build |
+| robots/sitemap/llms | ter-emit ke `dist/` | keluaran build |
+| Rupa VIS-1 | **TIDAK ADA di `main`** | `src/motion.js` REVEAL_TIMING masih seragam |
+| `public/images/og-cover.png` | **TIDAK ADA** | `og:image` menunjuk 404 |
 
-### P0-1 · Filter pengalaman membuat satu section jadi tak terlihat selamanya
+196 test lolos **sambil** bug P0 di bawah hidup. Itu fakta penting tentang
+suite-nya, bukan cuma tentang bug-nya: tidak ada satu pun test yang menuntut
+konten benar-benar terlihat setelah pengguna berhenti menggulir.
 
-**Ini temuan paling serius. Sudah direproduksi.**
+## Aturan putaran ini
 
-Repro:
-1. Buka `http://localhost:5173/#/pengalaman`
-2. Klik filter **Pemasaran digital** (3 kartu → 1 kartu, tinggi dokumen 4051px → 2831px)
-3. Scroll ke bawah
-
-Hasil terukur: section `.organizations` ("Kegiatan selama kuliah") berada di `top: 166px` — jelas di dalam viewport — tapi `getComputedStyle(org).opacity === "0"`, dan keempat kartu di `.organization-grid` juga `"0"`. Layar penuh kosong. `ContactCallout` di bawahnya kena hal yang sama.
-
-Akar masalah: `src/motion.js:58` `usePageMotion` hanya dijalankan ulang saat `route` / `revealed` / `reduced` berubah. `ScrollTrigger.refresh()` di `src/motion.js:159` hanya dipanggil sekali setelah mount. Saat `setFilter` (`src/App.jsx:156`) memotong 1220px dari tinggi dokumen, semua trigger di bawah filter menyimpan posisi lama — start point-nya sekarang berada di bawah ujung dokumen, jadi `once: true` tidak akan pernah menyala. Elemen ditinggal di `opacity: 0` permanen.
-
-Yang sama berlaku untuk disclosure "Lihat detail" (`src/App.jsx:161`) — tinggi dokumen berubah tanpa refresh. Risikonya lebih kecil (delta ~100px) tapi akar masalahnya identik.
-
-Perbaikan yang diminta:
-- Panggil `ScrollTrigger.refresh()` setiap kali layout berubah karena state React (filter, disclosure), bukan hanya saat route berubah.
-- Tambahkan jaring pengaman supaya bug sekelas ini tidak bisa menghilangkan konten lagi: elemen `[data-reveal]` yang sudah masuk viewport wajib terlihat walau trigger-nya stale. Opsi: `ScrollTrigger.create({ onRefresh })` yang memaksa `opacity: 1` untuk apa pun yang sudah lewat start point, atau `IntersectionObserver` fallback.
-- Ganti `once: true` + `clearProps` dengan pola yang idempoten terhadap refresh.
-
-Test yang harus ditambahkan (test lama tidak menangkap ini — `tests/portfolio.spec.js` mengecek jumlah kartu setelah filter, tapi tidak pernah mengecek section di bawahnya masih terlihat):
-```
-filter → scroll ke .organizations → expect opacity 1 untuk section dan tiap kartu
-```
-
-### P0-2 · Tidak ada jaring pengaman kalau ScrollTrigger gagal
-
-Seluruh isi di bawah fold berada di `opacity: 0` sampai scroll membangunkannya. P0-1 membuktikan konsekuensinya. Screenshot full-page pun keluar hampir kosong. Kalau GSAP gagal load (CDN diblokir kantor, JS error di browser lama), pengunjung melihat halaman kosong, bukan halaman tanpa animasi.
-
-Perbaikan: reveal harus *progressive enhancement* — CSS default `opacity: 1`, JS yang menurunkan ke 0 sesaat sebelum animasi, plus timeout pengaman yang memaksa semuanya terlihat setelah N detik.
+1. Angka diukur ulang, tidak dikutip dari catatan lama.
+2. Satu baris `progress.md` hanya `DONE` kalau ada bukti yang bisa diulang.
+3. `src/data.js`, angka, dan copy yang menyatakan fakta tidak berubah.
+4. `tests/` boleh diubah **hanya** di BLOK C, dan hanya dengan menulis ulang
+   invarian ke DOM baru — tidak melonggarkan.
+5. Tanpa dependensi baru.
+6. Tidak ada commit, push, atau PR tanpa perintah eksplisit pemilik.
 
 ---
 
-## P1 — Bukti kerja (jawaban untuk "fotonya kurang")
+# BLOK A — Bug (paling mendesak)
 
-### P1-3 · Cuma ada 2 gambar untuk 4 halaman, dan satu foto dipakai 3×
+## BUG-1 · Sepertiga bawah halaman Pengalaman permanen tak terlihat · P0
 
-Inventaris nyata di `public/images/`: `anung-profile.webp` dan `connections.webp`. Itu saja.
+**Gejala.** Di `#/pengalaman`, setelah menggulir sampai dasar, enam elemen
+tetap `opacity: 0` selamanya: `section.organizations` ("Kegiatan selama
+kuliah."), empat `<article>` di dalamnya (BEM SB IPB, IDEANATION,
+ADDVENTURES 8.0, ABEST Internship Program), dan `section.contact-callout`
+("Ingin tahu detail pekerjaan saya?").
 
-- `anung-profile.webp` dipakai di hero Beranda, di kartu "Mengelola mitra afiliasi Unicharm", dan di Tentang — foto yang sama persis, crop berbeda.
-- `connections.webp` adalah ilustrasi dekoratif hasil AI (lihat `docs/asset-provenance.md`), bukan bukti kerja.
-- Halaman **Pengalaman sama sekali tidak punya gambar**. Nol. Padahal itu halaman inti portofolio.
+**Bukti.** Gulir wheel asli sampai `scrollY 5026` dari `scrollHeight 6026`,
+lalu diam. `opacity` diambil tiap 1,2 detik sampai 10,8 detik: **tetap `0` di
+sepuluh pengukuran berturut-turut.**
 
-### P1-4 · Ada foto asli yang kuat tapi tidak dipakai sama sekali
+**Kenapa ini lebih dari sekadar reveal gagal.** `src/motion.js:253` memasang
+jaring pengaman 5 detik yang seharusnya membuang `opacity`/`transform` inline
+dari setiap `[data-reveal]`. Jaring itu **tidak menyelamatkan elemen-elemen
+ini**. Jadi P0-2 lama ("jaring pengaman kalau ScrollTrigger gagal") yang
+ditandai DONE sebenarnya bocor.
 
-`with_anymind_team.jpg` (176 KB, di root project) adalah foto tim di depan layar **"ANYMIND X PANTENE NEW PRODUCT LAUNCH"** dengan logo AnyMind, P&G, dan Pantene terbaca jelas. Ini bukti visual langsung untuk klaim "40 mitra afiliasi dikoordinasikan untuk acara Pantene" — angka yang dipajang besar-besar di Beranda tanpa bukti apa pun.
+**Yang harus dikerjakan.**
+- Cari akarnya dulu, jangan langsung tambal. Pertanyaannya: kenapa jaring 5
+  detik tidak menjangkau elemen ini — timer-nya di-clear oleh cleanup effect
+  yang berjalan ulang, selektornya tidak cocok, atau tween dibuat ulang
+  sesudah jaring lewat?
+- Perbaiki akarnya, bukan gejalanya. Menaikkan `opacity` lewat CSS paksa
+  adalah tambalan, bukan perbaikan.
+- Jaring pengaman harus jadi jaminan, bukan harapan: setelah diperbaiki,
+  tidak boleh ada jalan di mana `[data-reveal]` bisa berakhir `opacity: 0`
+  secara permanen.
 
-Foto ini tidak masuk `scripts/prepare-assets.mjs` dan tidak dirujuk di mana pun. Ini item dengan rasio dampak/usaha tertinggi di seluruh daftar.
+**Gerbang.** Test baru yang gagal pada `main` hari ini dan lolos sesudahnya:
+untuk keempat route, gulir ke dasar, tunggu melewati ambang jaring pengaman,
+lalu tuntut **nol** elemen `[data-reveal]`/`[data-reveal-group] > *` dengan
+`opacity < 0.99`. Jalankan di 4 project.
 
-### P1-5 · CV mengklaim konten yang tidak pernah ditampilkan
+## BUG-2 · Intro splash terlalu cepat untuk dibaca · P1
 
-`src/data.js` sendiri menuliskan: "Membuat lebih dari 4 konten Instagram, 3 video promosi produk, video profil perusahaan, dan video webinar B2B." CV aslinya sama. Tidak ada satu pun yang muncul di web.
+**Gejala.** Teks "Halo." dan "Terima kasih sudah berkunjung." hilang sebelum
+sempat dibaca.
 
-Ini portofolio orang pemasaran konten yang tidak menunjukkan konten. Yang dibutuhkan dari Anung:
-- Screenshot / export 4 konten Instagram Anima Companion
-- Thumbnail atau klip 3 video promosi produk
-- Video profil perusahaan
-- Screenshot webinar B2B (15+ peserta)
-- Kalau ada: screenshot dashboard afiliasi Shopee/TikTok (angka disensor), screenshot laporan bulanan yang dia susun
+**Bukti, dihitung dari `src/App.jsx:56-63`.**
 
-Kalau materialnya tidak boleh dipublikasikan, minimal tampilkan mockup/placeholder jujur dengan caption "konten internal klien, tidak dipublikasikan" — bukan dihilangkan diam-diam.
+| Kejadian | Detik |
+|---|---|
+| huruf "Halo." selesai masuk | 0,50 |
+| caption selesai masuk | 0,50 |
+| konten mulai diangkat keluar | 0,52 |
+| tirai selesai naik | ±1,10 |
 
-### P1-6 · Tidak ada case study; dua kartu berbeda menuju halaman yang sama
+Teks utuh di layar hanya **±20 milidetik**.
 
-Di Beranda, kartu "Mengelola mitra afiliasi Unicharm" dan "Konten dan KOL Anima Companion" keduanya `<Link to="/pengalaman">`. Pengunjung yang mengklik salah satunya mendarat di halaman daftar yang sama, tanpa scroll ke entri yang tepat. Information scent-nya bohong.
+**Yang harus dikerjakan.** Beri jeda baca sebelum konten diangkat — targetnya
+teks utuh dan diam minimal **0,9 detik**, total intro tetap di bawah **2,2
+detik** supaya kunjungan pertama tidak terasa disandera. Naikkan juga
+`setTimeout(skip, 2000)` di `src/App.jsx:53` supaya jaring pengamannya tidak
+memotong intro yang sah; jaring itu harus tetap ada dan tetap lebih panjang
+dari durasi intro.
 
-Perbaikan: minimal deep-link ke anchor kartu yang sesuai. Idealnya, satu halaman case study per peran (`/pengalaman/anymind`) dengan struktur situasi → tugas → yang saya kerjakan → bukti visual → hasil.
+**Yang tidak boleh berubah.** Tombol "Lewati intro" tetap ada dan tetap
+bekerja kapan saja. `prefers-reduced-motion` tetap melewati intro sepenuhnya.
+Intro tetap hanya sekali per sesi (`sessionStorage`).
 
-### P1-7 · Fakta CV yang hilang dan bisa memperkuat halaman
+**Gerbang.** Test yang mengukur jendela baca: teks splash terlihat dan diam
+≥ 0,9 detik; intro selesai < 2,2 detik; klik "Lewati intro" di tengah animasi
+langsung membuka halaman.
 
-Dari ekstraksi ulang `Anung Hanindhita Ramadhan-CV.pdf`, hal berikut ada di CV tapi tidak ada di web:
-- Bazar bisnis: **profit di atas IDR 100.000** dan nilai A untuk inovasi produk (web hanya menyebut "30+ transaksi")
-- BEM SB IPB: **11 laporan keuangan bulanan** + laporan untuk 3+ program (web hanya menyebut anggaran Rp600.000)
-- Konteks perusahaan: AnyMind = perusahaan teknologi BPaaS yang beroperasi di **15 pasar Asia & Timur Tengah**; PT Sutan Vet Medika = startup pet healthcare dengan suplemen teruji klinis. Konteks ini membuat magangnya terdengar jauh lebih berbobot, dan cuma yang kedua yang sebagian dipakai.
-- ADDVENTURES: 20+ barang diadakan, 5+ jenis dekorasi, 7+ misi respons cepat
+## BUG-3 · Glitch yang dilaporkan pemilik · belum direproduksi
 
----
+Pemilik melaporkan "sering banyak glitch" tanpa langkah reproduksi.
+Kandidat paling kuat: tirai transisi antar-route (`transitioning` di
+`src/App.jsx`), terutama saat route diganti sebelum tirai sebelumnya selesai.
 
-## P1 — Visualisasi data (jawaban untuk "data yang bisa divisualisasikan")
-
-### P1-8 · Angka masih teks statis di hampir semua tempat
-
-Counter `data-count` hanya ada di 3 statistik Beranda. Di luar itu semuanya teks mati:
-- `.experience-stats` di halaman Pengalaman: "200", "150", "40", "30+", "100+" — angka besar, tidak bergerak, tidak punya konteks skala
-- IPK **3.74/4.00** — angka datar dalam kartu
-- **TOEFL ITP 583** — tanpa konteks sama sekali (skala ITP 310–677; 583 itu kuat, pembaca tidak tahu)
-- **100 afiliasi Shopee + 50 afiliasi TikTok** — pemecahan yang sempurna untuk donut/stacked bar, disajikan sebagai kalimat
-
-Yang layak dibuat (bukan chart.js — SVG inline + GSAP, ukuran kecil, sesuai `artifact-diagram`/`dataviz`):
-1. **Ring IPK** — arc 3.74/4.00 yang menggambar sendiri saat masuk viewport
-2. **Bar TOEFL** — 583 pada skala 310–677, dengan penanda "Professional Working Proficiency"
-3. **Split platform afiliasi** — 100 Shopee / 50 TikTok sebagai stacked bar berwarna brand
-4. **Timeline karier** — lihat P1-9
-5. **Counter di halaman Pengalaman** — pakai ulang `data-count` yang sudah ada, bukan teks statis
-
-### P1-9 · Tidak ada timeline, dan periode yang tumpang tindih membingungkan
-
-Tiga peran: AnyMind Jan–Apr 2026, Sutan Vet Jan–Jul 2026, Sutan Vet Sep–Des 2025. Dua yang pertama **berjalan bersamaan**. Dibaca sebagai daftar vertikal, ini terlihat seperti salah ketik. Dibaca sebagai timeline horizontal, ini justru jadi kekuatan: dia menangani dua magang sekaligus.
-
-Tambahan: dua entri PT Sutan Vet Medika dipisah jadi dua kartu tanpa tanda bahwa itu perusahaan yang sama dengan promosi peran.
-
----
-
-## P1 — Konversi
-
-### P1-10 · Form kontak tidak mengirim apa pun
-
-`src/App.jsx` `send()` hanya menyusun `window.location.href = "mailto:..."`. Untuk recruiter di desktop yang pakai Gmail web tanpa handler `mailto:` terdaftar, menekan "Buka draf email" tidak menghasilkan apa-apa yang terlihat. Pesan hilang dan Anung tidak pernah tahu ada yang mencoba menghubungi.
-
-Ini form kontak di portofolio pencari kerja — ini titik konversi satu-satunya. Perbaikan: backend form nyata (Formspree / Web3Forms / Resend via Vercel function — semuanya punya free tier dan tanpa server sendiri), dengan `mailto:` tetap dipertahankan sebagai fallback.
-
-### P1-11 · Tidak ada tautan WhatsApp
-
-Nomor `+6281388116739` hanya jadi `tel:`. Di Indonesia, recruiter menghubungi lewat WhatsApp. Tambahkan `https://wa.me/6281388116739` dengan pesan pembuka terisi.
-
-### P1-12 · Link portofolio tampil telanjang saat dibagikan
-
-`index.html` punya `og:title`, `og:description`, `og:type` — tapi **tidak ada `og:image`**, tidak ada `og:url`, tidak ada `twitter:card`, tidak ada `<link rel="canonical">`. Dibagikan ke LinkedIn atau WhatsApp — dua tempat portofolio ini pasti dibagikan — hasilnya kartu kosong tanpa gambar.
-
-Perbaikan: gambar OG 1200×630 (potret + nama + peran), URL absolut, `twitter:card=summary_large_image`, canonical setelah domain dipilih.
-
-### P1-13 · CV hanya bisa di-download, tidak bisa dilihat
-
-Recruiter yang sedang menyaring 40 kandidat tidak akan mengunduh PDF. Tambahkan preview CV inline (embed atau render halaman pertama sebagai gambar) di samping tombol download.
+**Yang harus dikerjakan.** Jangan menebak perbaikan. Reproduksi dulu:
+klik cepat berpindah route berulang-ulang, tekan tombol Back browser di
+tengah tirai, dan ganti tema di tengah tirai — di 4 project, dan pada mesin
+yang di-throttle CPU. Catat apa yang rusak sebelum menyentuh kode.
+Kalau tidak ada yang rusak, tulis itu apa adanya dan minta langkah
+reproduksi dari pemilik; **jangan** tandai DONE.
 
 ---
 
-## P2 — Layout
+# BLOK B — Hutang yang belum mendarat di `main`
 
-### P2-14 · Ruang mati besar di beberapa tempat
+Keduanya sudah ada isinya di branch, tapi branch-nya lahir **sebelum**
+refactor Kirim 5. `git merge` akan menghapus `src/pages/`, `src/seo.js`,
+`src/site.js`, dan `src/image-manifest.json`. **Port diff-nya, jangan merge.**
 
-Terukur pada 1440px:
-- **Hero**: `.hero-copy` mengambil kolom `1.2fr` tapi `.hero-description` dibatasi `max-width: 360px` (`src/styles.css:80`). Ada sekitar 380px kosong antara paragraf dan potret.
-- **`.section-heading`** di Beranda ("Yang saya kerjakan selama magang."): judul + paragraf hanya mengisi separuh kiri, separuh kanan kosong total sampai kartu muncul jauh di bawah.
-- **`.intro-section`** (`src/styles.css:119`): grid `1fr 2.4fr` di mana kolom `1fr` hanya berisi kicker "SEDIKIT TENTANG SAYA" — satu baris teks kecil memegang 30% lebar dengan `padding-block: 128px`.
-- **Halaman Pengalaman**: `.experience-side` (periode/perusahaan/peran/lokasi) tingginya ~200px sementara `.experience-main` ~600px. Sisi kiri kosong 400px per kartu × 3 kartu.
+## DEBT-1 · Turunkan rupa VIS-1 ke `main`
 
-Ruang kosong editorial itu sengaja dan bagus — tapi ini ruang kosong tanpa niat. Isi dengan bukti visual dari P1-4/P1-5, atau kurangi agar jadi napas yang disengaja.
+Sumber: commit `6b10739`. Isinya `src/motion.js` (28 baris, murni nilai
+easing/durasi/stagger) dan `src/styles.css` (87 baris rupa).
 
-### P2-15 · Mode gelap kehilangan warna aksen sepenuhnya
+    git diff 60f9c5f..6b10739 -- src/motion.js src/styles.css
 
-`src/styles.css:31` mengoverride `--green: #f5dabf` di tema gelap — nilainya sama persis dengan `--ink`. Akibatnya setiap pemakaian aksen jadi hilang:
-- `.title-line .last-line` (`:77`) — "Anung." yang hijau di mode terang jadi krem sama seperti "Halo, saya". Hierarki dua warna pada judul, elemen identitas visual paling menonjol di situs ini, lenyap.
-- `.wordmark span` (titik setelah "anung") hilang
-- `.about-statement h2 span` hilang
-- `.scroll-progress span` jadi krem di atas hijau gelap
-- `.pulse` (indikator "Terbuka untuk kerja sama") hilang aksennya
+Yang boleh ikut: hanya dua berkas itu. Kalau `git diff --stat` setelah apply
+menyebut berkas lain, itu salah.
 
-Sudah dikonfirmasi lewat screenshot mode gelap. Perbaikan: token aksen tersendiri untuk mode gelap — hijau yang dicerahkan (mis. `#7FB3A8`) atau krem yang dihangatkan, yang tetap lolos AA di `#102e2b` tapi tidak identik dengan `--ink`.
+Catatan: sebagian isi VIS-1 untuk timeline akan **ditimpa** oleh BLOK C.
+Tetap turunkan dulu supaya bagian non-timeline (ring IPK, bar TOEFL, split
+bar, ritme reveal) mendarat, dan supaya BLOK C berdiri di atas basis yang
+sama dengan yang dulu diverifikasi.
 
-### P2-16 · Crop potret memotong logo AnyMind
+## DEBT-2 · Pasang berkas OG
 
-`src/styles.css:87`: `object-position: 46% 72%; transform: scale(1.6)`. Hasilnya logo terbaca **"AnyM"** — terpotong di tengah kata di ketiga tempat foto ini muncul. Kelihatan seperti kecelakaan, bukan keputusan. Logo AnyMind utuh justru kredensial; potong lebih longgar atau geser fokus.
+Sumber: commit `0adb7e5`, hanya menambah berkas.
 
-### P2-17 · Asterisk menumpuk di atas lengan subjek
+    git checkout 0adb7e5 -- public/images/og-cover.png assets/source/og-cover.png \
+      docs/asset-provenance.md docs/evidence/kirim-img-2 docs/image-jobs/IMG-2-og-image.md
 
-`.portrait-asterisk` (`src/styles.css:89`) di `left: -43px; bottom: 77px` mendarat tepat di lengan dan jam tangan Anung. Turunkan atau geser ke luar siluet.
+Jangan ambil `progress.md` dari commit itu.
 
-### P2-18 · ContactCallout identik diulang di 3 halaman
+**Gerbang.** `npm run build`, lalu buktikan `dist/images/og-cover.png` ada dan
+1200×630, dan `og:image` di `dist/index.html` menunjuk ke situ.
 
-Blok "Membutuhkan anggota tim pemasaran?" muncul kata per kata di Beranda, Pengalaman, dan Tentang. Berulang di kunjungan multi-halaman. Variasikan copy-nya per konteks halaman.
-
-### P2-19 · Disclosure membuka tanpa animasi
-
-`hidden={expanded !== item.id}` (`src/App.jsx:161`) — konten muncul instan, halaman melompat. Satu-satunya interaksi di situs ini yang tidak dianimasikan, di tengah situs yang isinya animasi. Tambahkan transisi tinggi.
-
-### P2-20 · Accordion hanya bisa satu terbuka
-
-`setExpanded(expanded === item.id ? null : item.id)` menutup entri lain. Recruiter tidak bisa membandingkan dua peran berdampingan. Izinkan banyak terbuka.
+**Sisa yang jujur.** Validasi LinkedIn Post Inspector dan pratinjau WhatsApp
+nyata **tidak bisa** dilakukan tanpa domain hidup. Tulis sebagai sisa, jangan
+diklaim.
 
 ---
 
-## P2 — Motion
+# BLOK C — Rombak visualisasi "Rentang waktu magang"
 
-### P2-21 · Intro memblokir kunjungan pertama, termasuk deep link
+Pemilik menolak rupa timeline sekarang. Ini satu-satunya blok yang boleh
+mengubah JSX dan test.
 
-Timeline `Splash` berjalan ~1,8 detik sebelum konten bisa dibaca. Disimpan per-sesi, jadi navigasi berikutnya bebas — tapi kunjungan pertama selalu kena. Lebih parah: recruiter yang mengklik tautan langsung ke `#/kontak` tetap disuguhi animasi "Halo." sebelum melihat form kontak.
+## Yang salah sekarang
 
-Perbaikan: lewati intro kalau route awal bukan `/`. Pertimbangkan memperpendek jadi ~1,1 detik.
+| # | Cacat | Sumber |
+|---|---|---|
+| 1 | Label di atas bar, selebar penuh; mata harus lompat untuk memasangkan | `.timeline-row` grid tanpa kolom |
+| 2 | Tidak ada kisi bulan, posisi bar tidak bisa dibaca | `.timeline-track` hanya satu border |
+| 3 | Sumbu hanya dua label dan jauh di bawah semua bar | `.timeline-axis` |
+| 4 | "Dua magang bersamaan" sebaris dengan tiga peran asli, terbaca sebagai **pekerjaan keempat** | dirender sebagai `<li>` biasa |
+| 5 | Bar kotak datar tanpa angka, menempel tepi | `.timeline-bar` |
+| 6 | Kalimat lead mengulang isi baris hijau | redundan |
 
-### P2-22 · LCP mobile 2,9 detik — di atas target
+## Arah desain yang diminta
 
-`docs/lighthouse-mobile.json`: LCP 2,9s (target 2,5s), FCP 1,7s, Speed Index 3,5s, TBT 110ms, performance 93. README sendiri mengakui bahwa menahan copy hero sampai intro terangkat menambah 0,2 detik. Untuk pengunjung yang sudah melihat intro di sesi itu, LCP terukur sekitar 0,4 detik.
+Bentuknya Gantt yang terbaca, bukan empat balok terpisah.
 
-Perbaikan terkait P2-21: dengan intro yang tidak memblokir paint, LCP turun ke angka sesi-kedua.
+- **Dua kolom.** Label kiri dengan lebar tetap (`clamp(200px, 26vw, 320px)`),
+  track kanan. Label sebaris dengan bar-nya.
+- **Kisi 11 bulan** di belakang track, Sep 2025 – Jul 2026, sebagai garis
+  vertikal tipis. Kisi murni dekoratif: `--from` dan `--span` tetap satu-satunya
+  sumber posisi, tetap dihitung dari `start`/`end` di `src/data.js`.
+- **Sumbu di atas track, bukan di bawah.** Label tiap 2 bulan di desktop, tiap
+  kuartal di bawah 700px. Sumbu lama yang hanya dua label dihapus.
+- **Bar**: tinggi ±28px, ujung pill, periode ditulis di ujung bar sehingga
+  angkanya bisa dibaca tanpa mengukur ke sumbu.
+- **Overlap berhenti jadi baris.** Bulan yang tumpang tindih digambar sebagai
+  pita vertikal di belakang dua baris yang menghasilkannya, dengan satu
+  anotasi "4 bulan bersamaan". Overlap harus terbaca sebagai hubungan antara
+  dua baris, bukan sebagai baris ketiga.
+- **Mobile**: label menumpuk di atas bar, kisi tetap ada, sumbu tetap di atas.
+- Warna hanya dari token yang sudah ada. Kontras AA wajib lolos terang dan
+  gelap; lampirkan angka setiap pasangan yang berubah.
 
-### P2-23 · Kosakata reveal terlalu seragam
+## Test yang harus ditulis ulang
 
-Setiap `[data-reveal]` memakai `duration: 0.9`, `ease: power3.out`, offset 44px (`src/motion.js:90`). Judul, statistik, kartu, blok teks — semuanya masuk dengan cara yang sama persis. Efeknya jadi pola, bukan ritme. Yang kurang: stagger per-karakter untuk judul, `data-mask` clip-wipe untuk media baru, dan kurva berbeda untuk elemen berbeda.
+Desain lama dikunci di `tests/portfolio.spec.js`:
 
----
+- `:611` `.timeline-row` tepat 4 — ikut hitungan baris overlap
+- `:626` `bar('.timeline-overlap')` — geometri baris overlap
+- `:639` `.timeline-overlap .timeline-period` teks persis
+- `:640` `.timeline-axis` teks persis `"Sep 2025Jul 2026"`
 
-## P2 — Performa & aset
+Empat assertion itu memotret **bentuk lama**, bukan kebenaran. Tulis ulang ke
+DOM baru dengan invarian yang sama kerasnya:
 
-### P2-24 · Satu bundle 414 KB (132 KB gzip), tanpa code splitting
+1. Lebar setiap bar proporsional terhadap jumlah bulannya, dihitung dari
+   `src/data.js`, bukan dari angka yang diketik di test.
+2. Rentang sumbu masih Sep 2025 – Jul 2026 dan diturunkan dari data.
+3. Bulan tumpang tindih tetap tergambar dan tetap disebut 4 bulan.
+4. Dua periode di perusahaan yang sama tetap dijelaskan lewat `.timeline-note`.
+5. Kisi bulan tidak boleh memengaruhi posisi bar: bar dengan kisi disembunyikan
+   harus punya geometri identik.
 
-`dist/assets/index-DlpgcT3G.js` = 413.852 byte mentah / 132.009 byte gzip / 115.067 byte brotli. Semuanya masuk ke satu file: React 19 + GSAP + ScrollTrigger + Lenis + Phosphor Icons. Lighthouse melaporkan perkiraan penghematan 57 KiB dari JS tak terpakai.
-
-Perbaikan: lazy-load GSAP/Lenis di belakang `prefers-reduced-motion`, code-split per route, ganti Phosphor dengan SVG inline (hanya ~14 ikon yang dipakai).
-
-### P2-25 · Subset font untuk aksara yang tidak akan pernah dipakai
-
-Build menghasilkan woff2 Manrope untuk cyrillic, greek, latin-ext, dan vietnamese di samping latin. Browser hanya mengunduh yang cocok dengan `unicode-range`, jadi dampak runtime-nya kecil — tapi 47 KB artefak yang sia-sia untuk situs berbahasa Indonesia.
-
-### P2-26 · Satu ukuran gambar untuk semua layar
-
-`scripts/prepare-assets.mjs` menghasilkan satu WebP 900px. Tidak ada `srcset`, tidak ada AVIF, tidak ada varian mobile. Ponsel 390px mengunduh 127 KB potret 900px. Dengan bertambahnya gambar dari P1-4/P1-5, ini harus jadi pipeline yang benar: AVIF + WebP, beberapa lebar, `srcset`/`sizes`.
-
----
-
-## P2 — SEO & visibilitas AI
-
-### P2-27 · Client-side render + hash route = satu dokumen terindeks
-
-`index.html` mengirim `<div id="root"></div>` kosong. `#/pengalaman`, `#/tentang`, `#/kontak` berbagi dokumen yang sama; fragmen hash tidak pernah dikirim ke server. Google bisa merender JS, tapi preview LinkedIn/WhatsApp tidak — itu sebabnya P1-12 berdampak besar. README mengakui keterbatasan ini tapi belum ada yang dikerjakan.
-
-Opsi, dari murah ke mahal: prerender statis per route saat build (`vite-plugin-prerender` atau script Playwright pasca-build) → pindah ke path route + hosting dengan rewrite → SSG penuh.
-
-### P2-28 · Tidak ada structured data
-
-Tidak ada JSON-LD. Untuk portofolio pribadi, schema `Person` dengan `jobTitle`, `alumniOf`, `knowsAbout`, `sameAs` (LinkedIn), `email` adalah standar dan langsung membantu Google dan asisten AI memahami siapa ini.
-
-### P2-29 · Tidak ada sitemap.xml
-
-`public/robots.txt` hanya `User-agent: * / Allow: /`. Tidak ada sitemap.
-
-### P2-30 · Tidak ada llms.txt
-
-Kategori `agentic-browsing` Lighthouse memberi skor **0,67**, satu-satunya audit yang gagal adalah `llms-txt`. Recruiter makin sering menempelkan tautan kandidat ke ChatGPT/Claude untuk minta ringkasan. `llms.txt` berisi ringkasan terstruktur — peran, angka, kontak — membuat ringkasan itu akurat alih-alih hasil tebakan.
-
-### P2-31 · Situs Indonesia, CV bahasa Inggris, tanpa opsi
-
-Situs seluruhnya Indonesia (`lang="id"`). CV yang diunduh seluruhnya bahasa Inggris. AnyMind beroperasi di 15 pasar dan mempekerjakan lintas negara. Recruiter regional mendarat di halaman yang tidak bisa dibaca lalu mengunduh CV yang bisa. Pertimbangkan toggle ID/EN dengan `hreflang`.
+Melonggarkan assertion tanpa penggantinya = gagal.
 
 ---
 
-## P3 — Poles aksesibilitas
+# BLOK D — Poles visual menyeluruh
 
-### P3-32 · Tiga target sentuh di bawah 24px
+Hanya setelah BLOK A, B, C lolos. Boleh menyentuh `src/styles.css` dan nilai
+estetis di `src/motion.js`. Tidak boleh menyentuh `src/data.js`, angka, copy
+fakta, logika, routing, form, state, `scripts/`, konfigurasi build.
 
-Diukur pada viewport 390px, `WCAG 2.2 SC 2.5.8 Target Size (Minimum)` mensyaratkan 24×24 CSS px:
-- `.header-cv` "Download CV" — 113×**22**
-- Footer "LinkedIn" — 76×**22**
-- Footer "Email" — 56×**22**
-
-Tambahkan padding blok. Selisihnya 2px.
-
-### P3-33 · Marquee memakai `role="img"` untuk pita teks panjang
-
-`<div className="marquee" role="img" aria-label="Bidang: pemasaran afiliasi, ...">`. Berfungsi, tapi `role="img"` + `aria-label` pada pita bergerak lebih tepat sebagai teks statis untuk screen reader dengan konten visual `aria-hidden`.
-
----
-
-## Urutan pengerjaan yang disarankan
-
-**Batch 1 — Stop the bleeding** (P0-1, P0-2, P3-32)
-Perbaiki bug filter, pasang jaring pengaman reveal, benahi target sentuh. Ini yang membuat situs bisa dipercaya. Tambahkan regression test untuk bug filter sebelum memperbaikinya.
-
-**Batch 2 — Bukti** (P1-4, P1-5, P1-3, P1-7)
-Masukkan foto AnyMind × Pantene. Kumpulkan aset konten dari Anung. Bangun galeri bukti di halaman Pengalaman. Tambahkan fakta CV yang hilang. Ini yang mengubah "web yang rapi" jadi "portofolio".
-
-**Batch 3 — Konversi** (P1-10, P1-11, P1-12, P1-13)
-Backend form, WhatsApp, kartu OG, preview CV. Ini yang mengubah pengunjung jadi percakapan.
-
-**Batch 4 — Visualisasi data** (P1-8, P1-9)
-Ring IPK, bar TOEFL, split platform, timeline karier, counter di halaman Pengalaman.
-
-**Batch 5 — Layout & motion** (P2-14 sampai P2-23)
-Ruang mati, aksen mode gelap, crop potret, disclosure, kosakata reveal, gerbang intro.
-
-**Batch 6 — Infrastruktur** (P2-24 sampai P2-31, P3-33)
-Bundle, gambar, prerender, structured data, sitemap, llms.txt, bilingual.
-
-Batch 1 dan 2 memberi nilai terbesar per jam. Batch 6 bisa ditunda tanpa ada yang menyadarinya.
+1. `src/styles.css` penuh angka lepas (31px, 58px, 22px, 67px, 27px…).
+   Rasionalkan jadi skala spacing berbasis token di `:root`.
+2. Skala tipografi konsisten: `h1` sudah `clamp()`, samakan `h2`/`h3`/body.
+3. Ritme vertikal antar-section disamakan lintas 4 halaman.
+4. Durasi dan easing hover/focus disamakan — sekarang campur 180/250/620ms
+   tanpa alasan.
+5. Radius dan bayangan dalam token warna yang ada.
 
 ---
 
-## Yang sengaja TIDAK saya rekomendasikan
+# Di luar scope putaran ini
 
-Supaya jelas bahwa hal-hal ini sudah diperiksa dan memang baik:
+| Item | Alasan |
+|---|---|
+| Foto/video asli dari Anung | Belum dikirim. Tiga slot bukti tetap placeholder jujur bercaption. |
+| Deploy | Keputusan pemilik. |
+| `VITE_SITE_URL` | Domain final belum ada; canonical/OG/sitemap/llms tetap host placeholder dan build tetap memperingatkan. |
+| `VITE_WEB3FORMS_KEY` | Tanpa kunci, form jatuh ke draf `mailto:` dan copy-nya mengatakan persis itu. |
+| P2-31 bilingual · P2-27 prerender/SSG · P2-25 subset font · P2-24 SVG manual | Di-SKIP sejak putaran 1, alasannya masih berlaku. |
 
-- **Kontras** lolos AA di mana-mana, terang maupun gelap. Jangan disentuh.
-- **Skema warna** (bordo/hijau/krem dari palet yang disuplai) kuat dan khas. Jangan diganti.
-- **Tipografi** — Manrope self-hosted, skala clamp, letter-spacing negatif pada judul — sudah tepat.
-- **Reduced motion** ditangani menyeluruh: intro dilewati, Lenis mati, animasi dekoratif mati.
-- **Perilaku history** (back/forward, kill curtain, fokus ke `main`) benar dan sudah dites.
-- **Kejujuran copy** — `src/data.js:2` secara eksplisit melarang menyajikan target outreach sebagai hasil penjualan, dan copy-nya mematuhi itu. Pertahankan. Jangan biarkan permintaan "buat lebih impresif" berubah jadi angka yang dikarang.
-- **CLS 0.008** hampir sempurna. Setiap gambar baru wajib punya `width`/`height` supaya tetap begitu.
+---
+
+# Gerbang rilis putaran ini
+
+Diukur ulang di akhir, bukan dikutip.
+
+| Gerbang | Ambang |
+|---|---|
+| `npm test` | lolos penuh, 4 project |
+| Test baru BUG-1 | gagal di `main` hari ini, lolos sesudahnya |
+| Lighthouse mobile | performance ≥ 98 · a11y 100 · best-practices 100 · SEO 100 · agentic-browsing 1,00 |
+| CLS | ≤ 0,01 |
+| Kontras | AA lolos terang dan gelap; angka setiap pasangan yang berubah dilampirkan |
+| `prefers-reduced-motion` | dihormati; chunk animasi tetap tidak diunduh |
+| Console error | 0 |
+| Bukti | `docs/evidence/putaran-2/` |
+
+---
+
+# Arsip — audit 2026-09-18
+
+Putaran 1 menutup 30 temuan dan mem-SKIP 3. Rinciannya ada di git
+(`git log`, commit Kirim 1–5) dan `docs/evidence/kirim-1` … `kirim-5`.
+
+| Kelompok | Hasil |
+|---|---|
+| P0-1, P0-2 | DONE — **P0-2 terbukti bocor, dibuka lagi sebagai BUG-1** |
+| P1-3 … P1-13 | DONE — kecuali P1-8/P1-9/P2-23 yang rupanya tertahan di branch, lihat DEBT-1 |
+| P2-14 … P2-30 | DONE, kecuali yang di-SKIP |
+| P2-24, P2-25, P2-27, P2-31 | SKIP / dibatasi |
+| P3-32, P3-33 | DONE |
+
+Metrik akhir putaran 1, diverifikasi ulang hari ini kecuali baris Lighthouse:
+performance 98 · a11y 100 · best-practices 100 · SEO 100 · agentic-browsing
+1,00 · LCP 2,3 s · CLS 0 · 196 test lolos.
+
+**Peringatan yang dibawa dari putaran 1:** branch `fase/img-1`, `fase/img-2`,
+dan `fase/vis-1` sudah usang. Jangan di-merge.
