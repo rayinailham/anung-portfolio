@@ -16,11 +16,11 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 
 | Blok | Isi | Item | Done |
 |---|---|---|---|
-| A | Bug | 2 | 0 |
+| A | Bug | 2 | 1 |
 | B | Hutang yang belum mendarat di `main` | 2 | 0 |
 | C | Rombak visualisasi timeline | 1 | 0 |
 | D | Poles visual menyeluruh | 1 | 0 |
-| — | **Total** | **6** | **0** |
+| — | **Total** | **6** | **1** |
 
 Urutan kerja: A → B → C → D. BLOK D hanya dimulai setelah A, B, C lolos.
 
@@ -45,7 +45,7 @@ sesi yang sama, bukan dikutip dari catatan lama.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| BUG-1 | Sepertiga bawah `#/pengalaman` permanen `opacity: 0`; tween dibuat sebelum gerbang `revealed`, semua penyelamat dipasang sesudahnya | TODO | **Akar sudah ditemukan** (lihat catatan di bawah + `plan.md`). Butuh: perbaikan di akarnya, test baru yang **gagal di `a49750b`** dan lolos sesudahnya, nol elemen tersangkut di 4 route × 4 project, plus test pendamping bahwa animasi reveal masih hidup. |
+| BUG-1 | Sepertiga bawah `#/pengalaman` permanen `opacity: 0`; tween dibuat sebelum gerbang `revealed`, semua penyelamat dipasang sesudahnya | DONE | [`docs/evidence/putaran-2/bug-1/`](docs/evidence/putaran-2/bug-1/): gerbang urutan lifecycle gagal 4/4 di `a49750b`; hasil akhir 12/12 lolos (4 route × 4 project + animasi normal), test resmi terfokus 24/24, build exit 0. |
 | BUG-2 | Intro splash terlalu cepat; teks utuh hanya ±20 ms | TODO | Butuh: jendela baca ≥ 0,9 s terukur, total intro < 2,2 s, "Lewati intro" tetap bekerja di tengah animasi, reduced motion tetap melewati intro, jaring `skip` tetap lebih panjang dari intro. |
 
 ### Catatan BUG-1
@@ -187,8 +187,21 @@ dilepas.
 - **2026-09-20** — `tests/` dibuka untuk BLOK C saja. Empat assertion timeline
   memotret bentuk lama; mempertahankannya berarti mengunci desain yang sudah
   ditolak pemilik.
+- **2026-09-20 — BUG-1.** Gerbang regresi ditempatkan di
+  `docs/evidence/putaran-2/bug-1/`, bukan `tests/`, karena aturan putaran hanya
+  membuka `tests/` pada BLOK C. Probe natural race lolos sekali pada snapshot
+  baseline, jadi pembeda baseline memakai invarian deterministik: guard
+  `revealed` dan deadline native wajib terpasang sebelum `gsap.context`.
+  Test perilaku tetap mengunci nol konten tersembunyi di 4 route × 4 project,
+  dan test pendamping membuktikan tween normal masih hidup.
 
 ## Log verifikasi
 
 Diisi per item saat selesai: perintah yang dijalankan, keluarannya, dan di
 mana buktinya disimpan (`docs/evidence/putaran-2/`).
+
+- **BUG-1 — 2026-09-20.** `npx playwright test --config
+  docs/evidence/putaran-2/bug-1/playwright.config.js`: 12 passed final; guard
+  yang sama 4 failed di snapshot `a49750b`. Test resmi terfokus: 24 passed.
+  `npm run build`: exit 0. Bukti dan perintah ulang:
+  [`docs/evidence/putaran-2/bug-1/`](docs/evidence/putaran-2/bug-1/).

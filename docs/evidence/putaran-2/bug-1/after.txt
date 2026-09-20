@@ -1,0 +1,12 @@
+Perintah: npx playwright test --config docs/evidence/putaran-2/bug-1/playwright.config.js
+Hasil final: exit 0 — 12 passed (chromium, mobile, firefox, webkit)
+Cakupan per project:
+- guard `revealed` + deadline native berada sebelum `gsap.context`;
+- 4 route, gulir ke dasar, tunggu 5,4 detik, nol opacity < 0,99;
+- tween reveal normal punya durasi > 0, melewati opacity antara 0 dan 1, selesai >= 0,99.
+
+Perintah: npx playwright test -g 'filter layout refresh|refresh recovers stopped|native reveal deadline|reduced motion leaves every reveal|GSAP blocked'
+Hasil: exit 0 — 24 passed.
+
+Perintah: npm run build
+Hasil: exit 0 — Vite 8.3.0, 4579 modul ditransformasi.

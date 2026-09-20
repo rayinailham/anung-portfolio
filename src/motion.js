@@ -109,22 +109,30 @@ export function useSmoothScroll(ref, reduced) {
 export function usePageMotion(ref, route, revealed, reduced, skipOpening = false) {
   useLayoutEffect(() => {
     const scope = ref.current;
-    if (!scope || reduced) return;
+    // Never create a from-state until the page is allowed to animate. A tween
+    // created while the intro or route curtain owns the page can hide content,
+    // then lose every recovery hook when this effect returns early.
+    if (!scope || reduced || !revealed) return;
     const reveals = [];
+    const safetyElements = [...scope.querySelectorAll('[data-reveal], [data-reveal-group], [data-reveal-group] > *, [data-mask], .hero-enter, .title-line > span, .portrait-frame, [data-arc], [data-bar], [data-bar-fill]')];
+    const counters = [...scope.querySelectorAll('[data-count]')];
+    // Arm the native deadline before GSAP is allowed to paint a hidden frame.
+    // It survives a same-page effect cleanup while any reveal is unfinished.
+    const safety = setTimeout(() => {
+      gsap.killTweensOf(safetyElements);
+      for (const element of safetyElements) {
+        element.style.removeProperty('opacity');
+        element.style.removeProperty('transform');
+        element.style.removeProperty('clip-path');
+        // Dropping the inline override hands the arc back to its own attribute.
+        element.style.removeProperty('stroke-dashoffset');
+      }
+      counters.forEach(element => { element.textContent = `${element.dataset.count}${element.dataset.suffix || ''}`; });
+    }, 5000);
     const context = gsap.context(() => {
       const title = scope.querySelectorAll('.title-line > span');
       const entrance = scope.querySelectorAll('.hero-enter');
       const frame = scope.querySelector('.page-opening .portrait-frame');
-
-      // Hold the opening frame while the intro or route curtain still covers the
-      // page. Without this the settled layout is painted for a frame before the
-      // entrance starts, which reads as a jump in Firefox.
-      if (!revealed) {
-        gsap.set(title, { yPercent: 118 });
-        gsap.set(entrance, { y: 26, opacity: 0 });
-        if (frame) gsap.set(frame, { clipPath: 'inset(100% 0% 0% 0%)' });
-        return;
-      }
 
       const intro = gsap.timeline({ defaults: { ease: 'power3.out' } });
       if (!skipOpening && title.length) intro.fromTo(title, { yPercent: 118 }, { yPercent: 0, duration: 1, stagger: 0.08, ease: 'expo.out', clearProps: 'transform' }, 0);
@@ -228,7 +236,6 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
         });
       }
     }, scope);
-    if (!revealed) return () => context.revert();
     // ResizeObserver runs after React commits and also sees intermediate heights
     // during disclosure transitions. Coalesce to one refresh per animation frame.
     // Use current geometry as a backstop for once-triggers with stale positions.
@@ -240,6 +247,9 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
       }
     };
     ScrollTrigger.addEventListener('refresh', revealPassed);
+    // Do not depend on a later refresh event: stale once-triggers need a check
+    // as soon as every tween and recovery hook exists.
+    revealPassed();
     let frame;
     const refresh = () => {
       cancelAnimationFrame(frame);
@@ -248,24 +258,9 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
     const observer = new ResizeObserver(refresh);
     observer.observe(scope.querySelector('main'));
     refresh();
-    const counters = [...scope.querySelectorAll('[data-count]')];
-    // Native timer, independent of the GSAP ticker. Readability wins after 5s,
-    // including below-fold content that has not been visited yet.
-    const safety = setTimeout(() => {
-      const elements = scope.querySelectorAll('[data-reveal], [data-reveal-group], [data-reveal-group] > *, [data-mask], .hero-enter, .title-line > span, .portrait-frame, [data-arc], [data-bar], [data-bar-fill]');
-      gsap.killTweensOf(elements);
-      for (const element of elements) {
-        element.style.removeProperty('opacity');
-        element.style.removeProperty('transform');
-        element.style.removeProperty('clip-path');
-        // Dropping the inline override hands the arc back to its own attribute.
-        element.style.removeProperty('stroke-dashoffset');
-      }
-      counters.forEach(element => { element.textContent = `${element.dataset.count}${element.dataset.suffix || ''}`; });
-    }, 5000);
     return () => {
       cancelAnimationFrame(frame);
-      clearTimeout(safety);
+      if (!scope.isConnected || reveals.every(({ tween }) => tween.progress() >= 1)) clearTimeout(safety);
       observer.disconnect();
       ScrollTrigger.removeEventListener('refresh', revealPassed);
       context.revert();

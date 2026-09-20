@@ -1,0 +1,9 @@
+Snapshot: a49750b (git archive, /tmp, dependensi lokal disalin)
+Perintah: ./node_modules/.bin/playwright test --config docs/evidence/putaran-2/bug-1/playwright.config.js -g 'guard and native deadline'
+Hasil: exit 1 — 4 failed (chromium, mobile, firefox, webkit)
+Kegagalan: guard `if (!scope || reduced || !revealed) return;` tidak ditemukan sebelum `gsap.context` (index -1).
+
+Probe perilaku natural 4 route juga dijalankan sekali pada snapshot: 4 passed.
+Itu konsisten dengan sifat race, sehingga tidak dipakai sebagai satu-satunya
+pembeda baseline. Gerbang deterministik di atas mengunci urutan akar masalah;
+probe perilaku tetap mengunci hasil akhir di semua route dan project.
