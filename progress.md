@@ -19,8 +19,8 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 | A | Bug | 2 | 2 |
 | B | Hutang yang belum mendarat di `main` | 2 | 2 |
 | C | Rombak visualisasi timeline | 1 | 1 |
-| D | Poles visual menyeluruh | 1 | 0 |
-| — | **Total** | **6** | **5** |
+| D | Poles visual menyeluruh | 1 | 1 |
+| — | **Total** | **6** | **6** |
 
 Urutan kerja: A → B → C → D. BLOK D hanya dimulai setelah A, B, C lolos.
 
@@ -37,7 +37,8 @@ sesi yang sama, bukan dikutip dari catatan lama.
 | Console error | 0 | Playwright MCP, `#/pengalaman` |
 | Elemen `[data-reveal]` tersangkut `opacity: 0` di `#/pengalaman` | **6–9 dari 10** (race) | gulir ke dasar, ukur 10× sampai 10,8 s |
 | `dist/images/og-cover.png` | **tidak ada** | `ls` setelah build |
-| Lighthouse mobile | belum diukur ulang putaran ini | — |
+| Lighthouse mobile | diukur di `a764db0`, bukan di 7b3e322: performance 96 · 96 · 90 · 90, a11y/best-practices/SEO 100 di semua halaman | `mercusuar.mjs`, dua putaran |
+| CLS mobile | Beranda 0 · Pengalaman 0 · **Tentang 0,1602** · **Kontak 0,1602** | idem, terulang di dua putaran |
 
 ---
 
@@ -142,7 +143,7 @@ ritme reveal) tetap harus mendarat lebih dulu.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| POLISH-1 | Skala spacing bertoken, skala tipografi, ritme vertikal, easing hover/focus, radius/bayangan | TODO | Butuh: screenshot sebelum/sesudah 4 halaman × terang/gelap × 1440px/390px, angka kontras tiap pasangan yang berubah, Lighthouse sebelum/sesudah, `npm test` lolos tanpa mengubah `tests/`. |
+| POLISH-1 | Skala spacing bertoken, skala tipografi, ritme vertikal, easing hover/focus, radius/bayangan | DONE | [`docs/evidence/putaran-2/polish-1/`](docs/evidence/putaran-2/polish-1/): 32 potret (4 halaman × terang/gelap × 1440px/390px, sebelum dan sesudah); angka px lepas untuk jarak 57 → 1; ukuran font teks tampak 36 → 19 nilai; durasi transisi 5 → 2; radius 5 → 3; padding vertikal per halaman 7/7/5/6 → 3/3/3/3; kontras 1240 simpul / 96 pasangan / 0 gagal di kedua kolom; 64 kombinasi lebar 320–1920px, 0 gagal; Lighthouse CLS Tentang & Kontak 0,1602 → 0,0000; `npm test` 200 passed tanpa menyentuh `tests/`. |
 
 ---
 
@@ -240,6 +241,43 @@ dilepas.
   dua test baru (geometri + gerbang kisi dekoratif) di 4 project. Tidak ada
   cakupan yang hilang.
 
+- **2026-09-20 — POLISH-1.** Ritme vertikal dan skala tipografi dibuat fluid
+  (`clamp`) antara 390px dan 1440px, bukan bertingkat per breakpoint. Yang
+  tersisa di dalam `@media (max-width: ...)` hanya perubahan layout: kolom yang
+  runtuh, elemen yang muncul atau hilang. Terukur: 163 → 81 baris di dalam
+  ketiga media query itu, dan nilai padding berbeda per halaman 7/7/5/6 →
+  3/3/3/3.
+- **2026-09-20 — POLISH-1.** `h1` yang tadinya punya tiga ukuran berbeda
+  (`.hero`, `.page-heading`, `.about-hero`) plus override mobile disatukan jadi
+  satu token `--display`. Konsekuensinya judul halaman di 1440px turun 100px →
+  95px dan `h1` di 768px turun 78px → ~65px. Disengaja: dua ukuran untuk judul
+  utama di satu situs bukan skala, itu dua keputusan yang kebetulan berdampingan.
+- **2026-09-20 — POLISH-1.** `main:empty { min-height: calc(100dvh -
+  var(--header-height)); }` ditambahkan walau tidak ada di daftar lima poin.
+  Alasannya: mengukur Lighthouse sebagai pembanding sebelum/sesudah memunculkan
+  CLS **0,1602** di Tentang dan Kontak, terulang di dua putaran, sedangkan
+  gerbang putaran menuntut CLS ≤ 0,01. `<main>` kosong satu putaran jaringan
+  saat chunk rute malas datang, jadi footer duduk di bawah header lalu turun.
+  Perbaikannya satu aturan CSS di berkas yang memang boleh disentuh item ini,
+  tanpa menyentuh `src/App.jsx`. Hasil: 0,0000.
+- **2026-09-20 — POLISH-1.** Sisa jujur VIZ-1 ditutup di sini: anotasi pita
+  "4 bulan bersamaan" di ≤767px sekarang berlatar `var(--paper)` dan selebar
+  isinya, jadi tumpahannya terbaca sebagai chip yang duduk di atas pita, bukan
+  teks yang memotong garis tepi pita.
+- **2026-09-20 — POLISH-1.** Durasi hover 620ms pada `.feature-photo` dan
+  `.feature-art` ikut disamakan jadi 320ms. Itu satu-satunya durasi yang rasanya
+  berubah jelas; 620ms untuk skala 1,022 membuat gambar terasa menyeret, dan
+  tidak ada alasan tertulis untuk nilai itu.
+- **2026-09-20 — POLISH-1.** Nilai reveal di `src/motion.js` tidak disentuh
+  walau prompt mengizinkan nilai estetis di berkas itu. Poin 4 `plan.md` bicara
+  soal hover/focus; ritme reveal per jenis konten baru mendarat lewat DEBT-1 dan
+  mengubahnya berarti membuang keputusan yang sudah diverifikasi.
+- **2026-09-20 — POLISH-1.** Performance Lighthouse mobile berhenti di 96–98
+  dan tidak stabil di 98, jadi gerbang ≥98 putaran ini belum terpenuhi utuh. Tidak dinaikkan dengan cara lain:
+  penyebabnya bundel JS 279,74 kB (React + GSAP + ikon), di luar jangkauan CSS
+  dan di luar scope item ini. Yang bisa dibuktikan di mesin yang sama hanya arah
+  dan besarnya: 90 → 97–98 di dua rute terburuk, dua putaran di tiap kolom.
+
 ## Log verifikasi
 
 Diisi per item saat selesai: perintah yang dijalankan, keluarannya, dan di
@@ -280,3 +318,15 @@ mana buktinya disimpan (`docs/evidence/putaran-2/`).
   0 gagal, terendah `.timeline-band-note` gelap 4,947:1 terhadap ambang 4,5:1.
   `measure.mjs`: 8 lebar 320–1920px, 0 gagal. `npm run build`: exit 0, 4579
   modul. Bukti: [`docs/evidence/putaran-2/viz-1/`](docs/evidence/putaran-2/viz-1/).
+- **POLISH-1 — 2026-09-20.** `npx playwright test`: **200 passed (3,7 menit)**,
+  exit 0, `tests/` tidak berubah sebaris pun. `npm run build`: exit 0, 4579
+  modul, CSS 39,66 → 41,98 kB mentah tetapi 11,38 → 11,03 kB gzip.
+  `kosakata.sh`: angka px lepas untuk jarak **57 → 1** (sisanya `margin: -1px`
+  di `.sr-only`). `ritme.mjs`: ukuran font teks tampak **36 → 19** nilai,
+  durasi transisi **160/180/250/320/620ms → 220/320ms**, radius **5 → 3**,
+  padding vertikal per halaman **7/7/5/6 → 3/3/3/3**. `kontras.mjs`: 1240
+  simpul, 96 pasangan, **0 gagal** sebelum dan sesudah, terendah 5,806:1.
+  `lebar.mjs`: 64 kombinasi 320–1920px × 2 tema × 4 halaman, **0 gagal**.
+  `mercusuar.mjs`: CLS Tentang dan Kontak **0,1602 → 0,0000**, performance
+  **90 → 97–98**, a11y/best-practices/SEO 100 di semua halaman. Bukti:
+  [`docs/evidence/putaran-2/polish-1/`](docs/evidence/putaran-2/polish-1/).

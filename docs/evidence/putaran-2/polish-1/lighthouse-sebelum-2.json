@@ -1,0 +1,38 @@
+{
+  "Beranda": {
+    "performance": 96,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "lcp": "2.3 s",
+    "cls": 0,
+    "tbt": "10 ms"
+  },
+  "Pengalaman": {
+    "performance": 96,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "lcp": "2.6 s",
+    "cls": 0,
+    "tbt": "0 ms"
+  },
+  "Tentang": {
+    "performance": 90,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "lcp": "2.6 s",
+    "cls": 0.1601764796092911,
+    "tbt": "0 ms"
+  },
+  "Kontak": {
+    "performance": 90,
+    "accessibility": 100,
+    "best-practices": 100,
+    "seo": 100,
+    "lcp": "2.6 s",
+    "cls": 0.1601764796092911,
+    "tbt": "10 ms"
+  }
+}

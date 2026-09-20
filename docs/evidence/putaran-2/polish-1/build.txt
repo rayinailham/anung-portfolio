@@ -1,0 +1,27 @@
+
+> anung-portfolio@1.0.0 build
+> vite build
+
+[site-meta] VITE_SITE_URL belum diisi. og:url, canonical, sitemap.xml dan llms.txt memakai host placeholder https://anung-ramadhan.example. Isi VITE_SITE_URL sebelum deploy.
+vite v8.3.0 building client environment for production...
+transforming...
+✓ 4579 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/robots.txt                                              0.07 kB │ gzip:  0.09 kB
+dist/sitemap.xml                                             0.27 kB │ gzip:  0.20 kB
+dist/index.html                                              4.54 kB │ gzip:  1.60 kB
+dist/llms.txt                                                6.34 kB │ gzip:  2.59 kB
+dist/assets/manrope-vietnamese-wght-normal-usUDDRr7.woff2    8.52 kB
+dist/assets/manrope-greek-wght-normal-DL7QRZyv.woff2         9.44 kB
+dist/assets/manrope-cyrillic-wght-normal-Dvxsihut.woff2     14.50 kB
+dist/assets/manrope-latin-ext-wght-normal-Ch3YOpNY.woff2    15.12 kB
+dist/assets/manrope-latin-wght-normal-DHIcAJRg.woff2        24.83 kB
+dist/assets/index-B4zh5COW.css                              41.93 kB │ gzip: 11.02 kB
+dist/assets/About-LO674egY.js                                6.16 kB │ gzip:  2.11 kB
+dist/assets/Experience-Oqy8k6S1.js                          11.14 kB │ gzip:  3.46 kB
+dist/assets/Contact-D7S4FQpO.js                             15.82 kB │ gzip:  4.89 kB
+dist/assets/motion-runtime-C_ALmccL.js                     131.50 kB │ gzip: 49.35 kB
+dist/assets/index-CXCuDXi1.js                              279.74 kB │ gzip: 85.67 kB
+
+✓ built in 219ms
