@@ -15,6 +15,11 @@ playwright/.cache/
 docs/evidence/**/*.webm
 docs/evidence/**/*.mp4
 
+# deploy
+# `vercel link` menulis project id + org id ke sini. Bukan rahasia, tapi juga
+# bukan milik repo: tiap orang yang clone menautkannya ke proyeknya sendiri.
+.vercel/
+
 # tooling agent
 .serena/
 .kiro/
