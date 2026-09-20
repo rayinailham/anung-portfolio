@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { experience } from '../src/data.js';
 
 test.beforeEach(async ({ page }) => {
   page.runtimeErrors = [];
@@ -603,41 +604,138 @@ test('experience counters carry the CV number and keep their suffix outside it',
   expect(stats.map(stat => stat.count)).toEqual(['150', '40', '200', '150', '30', '100']);
 });
 
-test('the career timeline draws the two overlapping internships on one axis', async ({ page }) => {
+// The timeline's shape changed in BLOK C; its arithmetic did not. Every number
+// below is recomputed from `src/data.js` here in the test, so a bar that lies
+// about its own months fails even if the markup and the page agree with each
+// other.
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+const monthIndex = (value) => { const [year, month] = value.split('-').map(Number); return year * 12 + month - 1; };
+const monthLabel = (index) => `${MONTH_NAMES[index % 12]} ${Math.floor(index / 12)}`;
+const chart = (() => {
+  const entries = [...experience].sort((a, b) => monthIndex(a.start) - monthIndex(b.start));
+  const first = Math.min(...entries.map(item => monthIndex(item.start)));
+  const last = Math.max(...entries.map(item => monthIndex(item.end)));
+  const total = last - first + 1;
+  const bands = [];
+  for (let month = first; month <= last; month++) {
+    const active = entries.filter(item => monthIndex(item.start) <= month && month <= monthIndex(item.end));
+    if (active.length < 2) continue;
+    const previous = bands.at(-1);
+    if (previous && previous.to === month - 1) previous.to = month;
+    else bands.push({ from: month, to: month });
+  }
+  bands.forEach(band => {
+    band.rows = entries.filter(item => monthIndex(item.start) <= band.from && band.to <= monthIndex(item.end)).map(item => item.id);
+  });
+  const repeats = [...new Set(entries.map(item => item.company))]
+    .map(company => ({ company, periods: entries.filter(item => item.company === company) }))
+    .filter(group => group.periods.length > 1);
+  return { entries, first, last, total, bands, repeats };
+})();
+
+const boxOf = (locator) => locator.evaluate((el) => { const box = el.getBoundingClientRect(); return { left: box.left, right: box.right, width: box.width }; });
+
+test('the career timeline measures every internship against one month axis', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await ready(page, '/pengalaman');
-  const timeline = page.locator('.timeline');
-  await expect(timeline).toHaveAttribute('data-span', 'Sep 2025/Jul 2026');
-  await expect(page.locator('.timeline-row')).toHaveCount(4);
-  await expect(page.locator('.timeline-lead')).toContainText('4 bulan dengan dua magang berjalan bersamaan');
-  await expect(page.locator('.timeline-note')).toContainText('PT Sutan Vet Medika muncul 2 kali: perusahaan yang sama');
-  await expect(page.locator('.timeline-note')).toContainText('Digital Marketing Intern (Sep - Des 2025) lalu Marketing Intern (Coordination Role) (Jan - Jul 2026)');
+  const { entries, first, last, total, bands, repeats } = chart;
 
-  const span = 11; // Sep 2025 through Jul 2026, inclusive.
-  const bar = async (selector) => {
-    const row = page.locator(selector);
+  // The range is announced from the data, and the roles are the only rows.
+  await expect(page.locator('.timeline')).toHaveAttribute('data-span', `${monthLabel(first)}/${monthLabel(last)}`);
+  await expect(page.locator('.timeline')).toHaveAttribute('data-months', String(total));
+  await expect(page.locator('.timeline-axis')).toHaveAttribute('data-range', `${monthLabel(first)}/${monthLabel(last)}`);
+  await expect(page.locator('.timeline-row')).toHaveCount(entries.length);
+
+  // Every tick that is actually shown names the month its offset points at and
+  // stands where that month begins. The tick closing the range is pinned to the
+  // end of the axis, so it is measured against that edge instead.
+  const axis = await trackGeometry(page.locator('.timeline-axis'));
+  const ticks = await page.locator('.timeline-tick').evaluateAll(list => list
+    .filter(el => getComputedStyle(el).display !== 'none')
+    .map(el => ({ offset: Number(el.dataset.offset), text: el.textContent, closes: el.hasAttribute('data-last'), left: el.getBoundingClientRect().left, right: el.getBoundingClientRect().right })));
+  expect(ticks.length).toBeGreaterThanOrEqual(4);
+  expect(ticks[0].offset).toBe(0);
+  expect(ticks.filter(tick => tick.closes)).toHaveLength(1);
+  expect(ticks.at(-1).closes).toBe(true);
+  for (const tick of ticks) {
+    expect(tick.text).toBe(monthLabel(first + tick.offset));
+    if (tick.closes) expect(Math.abs(tick.right - (axis.left + axis.width))).toBeLessThan(1.5);
+    else expect(Math.abs(tick.left - (axis.left + axis.width * tick.offset / total))).toBeLessThan(1.5);
+  }
+  // One step, applied to the end: no gap widened or dropped to make it fit.
+  const steps = new Set(ticks.slice(1).map((tick, index) => tick.offset - ticks[index].offset));
+  expect(steps.size).toBe(1);
+  const [step] = [...steps];
+  expect(ticks.at(-1).offset + step).toBeGreaterThan(total - 1);
+
+  // Each bar's box is its own months over the chart's months, and its period is
+  // legible on the bar instead of measured back to the axis.
+  for (const item of entries) {
+    const row = page.locator(`.timeline-row[data-entry="${item.id}"]`);
     const track = await trackGeometry(row.locator('.timeline-track'));
-    const box = await row.locator('.timeline-bar').evaluate(el => el.getBoundingClientRect());
-    return { from: (box.left - track.left) / track.width, to: (box.right - track.left) / track.width, unit: track.width / span };
-  };
-  const digital = await bar('.timeline-row[data-entry="anima-digital"]');
-  const anymind = await bar('.timeline-row[data-entry="anymind"]');
-  const coordination = await bar('.timeline-row[data-entry="anima-coordination"]');
-  const overlap = await bar('.timeline-overlap');
-  expect(digital.from).toBeCloseTo(0, 2);
-  expect(digital.to).toBeCloseTo(4 / span, 2);
-  expect(anymind.from).toBeCloseTo(4 / span, 2);
-  expect(anymind.to).toBeCloseTo(8 / span, 2);
-  expect(coordination.from).toBeCloseTo(4 / span, 2);
-  expect(coordination.to).toBeCloseTo(11 / span, 2);
-  // The two 2026 roles really do cover the same months, and the marker row is
-  // exactly that shared stretch rather than a decorative band.
-  const shared = [Math.max(anymind.from, coordination.from), Math.min(anymind.to, coordination.to)];
-  expect(shared[1] - shared[0]).toBeCloseTo(4 / span, 2);
-  expect(overlap.from).toBeCloseTo(shared[0], 2);
-  expect(overlap.to).toBeCloseTo(shared[1], 2);
-  await expect(page.locator('.timeline-overlap .timeline-period')).toHaveText('Jan 2026 - Apr 2026');
-  await expect(page.locator('.timeline-axis')).toHaveText('Sep 2025Jul 2026');
+    const box = await boxOf(row.locator('.timeline-bar'));
+    expect((box.left - track.left) / track.width).toBeCloseTo((monthIndex(item.start) - first) / total, 2);
+    expect(box.width / track.width).toBeCloseTo((monthIndex(item.end) - monthIndex(item.start) + 1) / total, 2);
+    // Inside the bar on a wide screen, directly under it on a narrow one; either
+    // way it overlaps its own bar's months and never leaves the track.
+    await expect(row.locator('.timeline-period')).toHaveText(item.period);
+    const period = await boxOf(row.locator('.timeline-period'));
+    expect(period.right).toBeGreaterThan(box.left);
+    expect(period.left).toBeLessThan(box.right);
+    expect(period.left).toBeGreaterThanOrEqual(track.left - 0.5);
+    expect(period.right).toBeLessThanOrEqual(track.left + track.width + 0.5);
+  }
+
+  // The shared months are a ribbon behind the rows that produced them. It is
+  // drawn once per owning row, never as a row of its own.
+  expect(bands.length).toBeGreaterThan(0);
+  for (const band of bands) {
+    const key = `${monthLabel(band.from)}/${monthLabel(band.to)}`;
+    const spans = band.rows.map(id => entries.find(item => item.id === id));
+    expect(spans.length).toBeGreaterThanOrEqual(2);
+    // The ribbon really is where two periods coincide, not a decorative strip.
+    expect(band.from).toBe(Math.max(...spans.map(item => monthIndex(item.start))));
+    expect(band.to).toBe(Math.min(...spans.map(item => monthIndex(item.end))));
+    const slices = page.locator(`.timeline-band[data-band="${key}"]`);
+    await expect(slices).toHaveCount(band.rows.length);
+    expect(await slices.evaluateAll(list => list.map(el => el.closest('.timeline-row').dataset.entry))).toEqual(band.rows);
+    for (const id of band.rows) {
+      const row = page.locator(`.timeline-row[data-entry="${id}"]`);
+      const track = await trackGeometry(row.locator('.timeline-track'));
+      const box = await boxOf(row.locator(`.timeline-band[data-band="${key}"]`));
+      expect((box.left - track.left) / track.width).toBeCloseTo((band.from - first) / total, 2);
+      expect(box.width / track.width).toBeCloseTo((band.to - band.from + 1) / total, 2);
+    }
+    const months = band.to - band.from + 1;
+    await expect(page.locator(`.timeline-band[data-band="${key}"] .timeline-band-note`)).toHaveCount(1);
+    await expect(page.locator(`.timeline-band[data-band="${key}"][data-band-head="true"] .timeline-band-note`)).toHaveText(`${months} bulan bersamaan`);
+    // The chip carries the count; the months behind it stay readable to a
+    // screen reader, which cannot see where the ribbon sits.
+    await expect(page.locator('.timeline-lead')).toContainText(`${monthLabel(band.from)} - ${monthLabel(band.to)}: ${months} bulan dengan dua magang berjalan bersamaan`);
+  }
+
+  // Two periods at the same company are still spelled out as one employer.
+  expect(repeats.length).toBeGreaterThan(0);
+  await expect(page.locator('.timeline-note')).toHaveCount(repeats.length);
+  for (const group of repeats) {
+    await expect(page.locator('.timeline-note')).toContainText(`${group.company} muncul ${group.periods.length} kali: perusahaan yang sama, ${group.periods.length} periode magang`);
+    await expect(page.locator('.timeline-note')).toContainText(group.periods.map(item => `${item.role} (${item.period})`).join(' lalu '));
+  }
+});
+
+test('the month grid is decoration: switching it off moves no bar', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await ready(page, '/pengalaman');
+  const geometry = () => page.locator('.timeline-bar').evaluateAll(list => list.map(el => {
+    const box = el.getBoundingClientRect();
+    return [Math.round(box.left * 100) / 100, Math.round(box.width * 100) / 100];
+  }));
+  const before = await geometry();
+  expect(before).toHaveLength(chart.entries.length);
+  // One line per month, from the same count the bars are measured against.
+  await expect(page.locator('.timeline-row').first().locator('.timeline-grid > span')).toHaveCount(chart.total);
+  await page.addStyleTag({ content: '.timeline-grid { display: none !important; }' });
+  expect(await geometry()).toEqual(before);
 });
 
 test('every revealing element says what kind of content it is', async ({ page }) => {
@@ -670,7 +768,7 @@ test('GSAP blocked still leaves every data visual on its final value', async ({ 
   const segments = await page.locator('.split-segment').evaluateAll(list => list.map(el => el.getBoundingClientRect().width));
   expect(segments[0] / segments[1]).toBeCloseTo(2, 1);
   const bars = await page.locator('.timeline-bar').evaluateAll(list => list.map(el => el.getBoundingClientRect().width));
-  expect(bars).toHaveLength(4);
+  expect(bars).toHaveLength(experience.length);
   expect(bars.every(width => width > 20)).toBe(true);
   expect(blocked).toBeGreaterThan(0);
 });

@@ -50,16 +50,26 @@ function SplitBar({ split }) {
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
 const monthIndex = (value) => { const [year, month] = value.split('-').map(Number); return year * 12 + month - 1; };
 const monthLabel = (index) => `${MONTHS[index % 12]} ${Math.floor(index / 12)}`;
+// Axis labels thin out instead of disappearing: every second month on a wide
+// screen, every quarter below 767px. Both sets ship in the DOM and CSS picks
+// one, so the ticks stay derived from the data at every width.
+const tickSteps = (offset) => [2, 3].filter(step => offset % step === 0);
+// The last label of a step would hang off the right edge of the axis, so it is
+// anchored to the end of the range instead — which is what that month is.
+const tickEnds = (offset, total) => tickSteps(offset).filter(step => offset + step > total - 1);
 
 // Overlapping internships read like a typo in a vertical list. On one axis they
 // read as what they are: two roles carried at the same time. The overlapping
-// months are counted from the data, never typed in.
+// months are counted from the data, never typed in, and they are drawn as a
+// ribbon behind the two rows that produce them rather than as a row of their
+// own — an overlap is a relation between two jobs, not a third job.
 function CareerTimeline() {
   const entries = [...experience].sort((a, b) => monthIndex(a.start) - monthIndex(b.start));
   const first = Math.min(...entries.map(item => monthIndex(item.start)));
   const last = Math.max(...entries.map(item => monthIndex(item.end)));
   const total = last - first + 1;
   const share = (from, to) => ({ '--from': (from - first) / total, '--span': (to - from + 1) / total });
+  const months = Array.from({ length: total }, (_, offset) => offset);
   const bands = [];
   for (let month = first; month <= last; month++) {
     const active = entries.filter(item => monthIndex(item.start) <= month && month <= monthIndex(item.end));
@@ -68,41 +78,61 @@ function CareerTimeline() {
     if (previous && previous.to === month - 1) previous.to = month;
     else bands.push({ from: month, to: month });
   }
+  // A band belongs to every row whose own period contains it, so the ribbon is
+  // anchored to the rows that caused it and cannot drift onto an unrelated one.
+  bands.forEach(band => {
+    band.rows = entries.filter(item => monthIndex(item.start) <= band.from && band.to <= monthIndex(item.end)).map(item => item.id);
+  });
   const companies = [...new Set(entries.map(item => item.company))]
     .map(company => ({ company, periods: entries.filter(item => item.company === company) }))
     .filter(group => group.periods.length > 1);
   return <section className="timeline-section wrap" aria-labelledby="timeline-title" data-reveal="fade" data-reveal-kind="viz">
     <h2 id="timeline-title">Rentang waktu magang.</h2>
-    {bands.map(band => <p className="timeline-lead" key={band.from}>
-      {monthLabel(band.from)} - {monthLabel(band.to)}: {band.to - band.from + 1} bulan dengan dua magang berjalan bersamaan.
-    </p>)}
-    <ol className="timeline" data-viz="timeline" data-span={`${monthLabel(first)}/${monthLabel(last)}`}>
-      {entries.map(item => <li className="timeline-row" key={item.id} data-entry={item.id}>
-        <div className="timeline-label">
-          <strong>{item.company}</strong>
-          <span>{item.role}</span>
-          <span className="timeline-period">{item.period}</span>
-        </div>
-        <div className="timeline-track">
-          <span className="timeline-bar" data-bar aria-hidden="true" style={share(monthIndex(item.start), monthIndex(item.end))} />
-        </div>
-      </li>)}
-      {/* The shared months get a bar of their own, lined up under the two roles
-          that produced them, so the overlap is a row and not a reading trick. */}
-      {bands.map(band => <li className="timeline-row timeline-overlap" key={`band-${band.from}`} data-band={`${monthLabel(band.from)}/${monthLabel(band.to)}`}>
-        <div className="timeline-label">
-          <strong>Dua magang bersamaan</strong>
-          <span className="timeline-period">{monthLabel(band.from)} - {monthLabel(band.to)}</span>
-        </div>
-        <div className="timeline-track">
-          <span className="timeline-bar" data-bar aria-hidden="true" style={share(band.from, band.to)} />
-        </div>
-      </li>)}
-    </ol>
-    <p className="timeline-axis" aria-hidden="true"><span>{monthLabel(first)}</span><span>{monthLabel(last)}</span></p>
-    {companies.map(group => <p className="timeline-note" key={group.company}>
-      {group.company} muncul {group.periods.length} kali: perusahaan yang sama, {group.periods.length} periode magang, {group.periods.map(item => `${item.role} (${item.period})`).join(' lalu ')}.
-    </p>)}
+    <figure className="timeline-figure">
+      {/* The axis sits above the bars, where the eye already is, instead of one
+          scroll further down. It is decoration: `--from` and `--span` remain the
+          only source of a bar's position. */}
+      <p className="timeline-axis" aria-hidden="true" data-range={`${monthLabel(first)}/${monthLabel(last)}`}>
+        {months.filter(offset => tickSteps(offset).length > 0).map(offset =>
+          <span className="timeline-tick" key={offset} data-offset={offset} data-every={tickSteps(offset).join(' ')} data-last={tickEnds(offset, total).join(' ') || undefined} style={{ '--at': offset / total }}>{monthLabel(first + offset)}</span>)}
+      </p>
+      <ol className="timeline" data-viz="timeline" data-span={`${monthLabel(first)}/${monthLabel(last)}`} data-months={total}>
+        {entries.map(item => <li className="timeline-row" key={item.id} data-entry={item.id}>
+          <div className="timeline-label">
+            <strong>{item.company}</strong>
+            <span>{item.role}</span>
+          </div>
+          <div className="timeline-track">
+            {/* The month grid is a separate layer, never a box the bar sits in,
+                so hiding it cannot move a single bar. */}
+            <span className="timeline-grid" aria-hidden="true">{months.map(offset => <span key={offset} style={{ '--at': offset / total }} />)}</span>
+            {bands.filter(band => band.rows.includes(item.id)).map(band => <span
+              className="timeline-band"
+              key={`band-${band.from}`}
+              aria-hidden="true"
+              data-band={`${monthLabel(band.from)}/${monthLabel(band.to)}`}
+              data-band-head={band.rows[0] === item.id ? 'true' : undefined}
+              style={share(band.from, band.to)}>
+              {band.rows[0] === item.id && <span className="timeline-band-note">{band.to - band.from + 1} bulan bersamaan</span>}
+            </span>)}
+            <span className="timeline-bar" style={share(monthIndex(item.start), monthIndex(item.end))}>
+              <span className="timeline-bar-fill" data-bar aria-hidden="true" />
+              <span className="timeline-period">{item.period}</span>
+            </span>
+          </div>
+        </li>)}
+      </ol>
+      <figcaption className="timeline-notes">
+        {/* The ribbon's chip carries the count; the months behind it are spelled
+            out here for anyone who cannot see where the ribbon sits. */}
+        {bands.map(band => <p className="timeline-lead sr-only" key={band.from}>
+          {monthLabel(band.from)} - {monthLabel(band.to)}: {band.to - band.from + 1} bulan dengan dua magang berjalan bersamaan.
+        </p>)}
+        {companies.map(group => <p className="timeline-note" key={group.company}>
+          {group.company} muncul {group.periods.length} kali: perusahaan yang sama, {group.periods.length} periode magang, {group.periods.map(item => `${item.role} (${item.period})`).join(' lalu ')}.
+        </p>)}
+      </figcaption>
+    </figure>
   </section>;
 }
 

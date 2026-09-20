@@ -1,0 +1,10 @@
+320px | label lewat sumbu: tidak ada | bar px: 102, 102, 178 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+370px | label lewat sumbu: tidak ada | bar px: 120, 120, 210 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+390px | label lewat sumbu: tidak ada | bar px: 127, 127, 223 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+767px | label lewat sumbu: tidak ada | bar px: 264, 264, 463 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+768px | label lewat sumbu: tidak ada | bar px: 170, 170, 298 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+1024px | label lewat sumbu: tidak ada | bar px: 239, 239, 419 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+1440px | label lewat sumbu: tidak ada | bar px: 356, 356, 624 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+1920px | label lewat sumbu: tidak ada | bar px: 357, 357, 625 | periode nempel barnya: true | periode dalam track: true | geser mendatar: false | LOLOS
+
+8 lebar diperiksa, 0 gagal.

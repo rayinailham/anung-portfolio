@@ -18,9 +18,9 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 |---|---|---|---|
 | A | Bug | 2 | 2 |
 | B | Hutang yang belum mendarat di `main` | 2 | 2 |
-| C | Rombak visualisasi timeline | 1 | 0 |
+| C | Rombak visualisasi timeline | 1 | 1 |
 | D | Poles visual menyeluruh | 1 | 0 |
-| — | **Total** | **6** | **4** |
+| — | **Total** | **6** | **5** |
 
 Urutan kerja: A → B → C → D. BLOK D hanya dimulai setelah A, B, C lolos.
 
@@ -120,7 +120,7 @@ penanda dan strukturnya ada, rupanya tidak.
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| VIZ-1 | Rombak "Rentang waktu magang" jadi Gantt terbaca: dua kolom, kisi 11 bulan, sumbu di atas, overlap jadi pita bukan baris | TODO | Butuh: screenshot sebelum/sesudah 1440px + 390px × terang/gelap, angka kontras tiap pasangan yang berubah, test lama yang dipotret ulang beserta penggantinya, `npm test` lolos. |
+| VIZ-1 | Rombak "Rentang waktu magang" jadi Gantt terbaca: dua kolom, kisi 11 bulan, sumbu di atas, overlap jadi pita bukan baris | DONE | [`docs/evidence/putaran-2/viz-1/`](docs/evidence/putaran-2/viz-1/): 8 potret sebelum/sesudah (1440px + 390px × terang/gelap); 14 pasangan kontras, 0 gagal, terendah 4,947:1; 8 lebar 320–1920px, 0 gagal; dua test pengganti gagal 8/8 di DOM lama yang sudah diberi atribut baru, lolos 8/8 sesudahnya; `npm test` 200 passed. |
 
 Diminta langsung oleh pemilik; rupa sekarang ditolak. Enam cacat dan arah
 desainnya ada di `plan.md` BLOK C.
@@ -211,6 +211,35 @@ dilepas.
   gambar. LinkedIn Post Inspector dan pratinjau WhatsApp nyata menunggu domain
   hidup dan deploy.
 
+- **2026-09-20 — VIZ-1.** Pita overlap digambar sebagai potongan per baris di
+  dalam track masing-masing, bukan satu elemen yang membentang lintas baris
+  lewat CSS Grid. Alasannya: baris yang membentang butuh penempatan grid
+  eksplisit yang pecah begitu layout menumpuk di mobile, sedangkan dua potongan
+  di baris yang bersentuhan terbaca sebagai satu pita utuh dan tetap masuk akal
+  setelah menumpuk.
+- **2026-09-20 — VIZ-1.** Kalimat "4 bulan dengan dua magang berjalan
+  bersamaan" dipindah jadi `sr-only` di dalam `<figcaption>`. Cacat 6 menuntut
+  kalimat lead berhenti mengulang isi pita, tapi faktanya tidak boleh hanya
+  hidup di elemen `aria-hidden`. Chip "4 bulan bersamaan" mengurus mata,
+  kalimat penuh mengurus pembaca layar, dan tidak ada yang dobel di layar.
+- **2026-09-20 — VIZ-1.** `plan.md` menyebut ambang kuartal "di bawah 700px";
+  yang dipakai breakpoint 767px yang sudah ada. Menambah breakpoint keempat
+  hanya untuk satu langkah label akan menambah satu titik patah baru ke
+  `src/styles.css` yang justru mau dirapikan BLOK D.
+- **2026-09-20 — VIZ-1.** Label sumbu terakhir dipaku ke ujung sumbu, bukan ke
+  posisi bulannya. Diukur: di 1024px teks di posisi 90,9% menggantung 1px di
+  luar sumbu, di 320px menggantung 8px. Bulan itu memang bulan terakhir
+  rentang, jadi memaku labelnya di ujung tetap jujur.
+- **2026-09-20 — VIZ-1.** Periode pindah ke bawah barnya di <=767px. Test
+  `all pages keep readable text` melarang teks tampak di bawah 14px, dan bar
+  24px selebar 102px di 320px tidak muat memuat periode 14px di dalamnya.
+  Invarian test ikut berubah dari "periode di dalam kotak bar" jadi "periode
+  menempel pada rentang barnya dan tidak keluar track" — dua hal yang sama-sama
+  bisa gagal, bukan pelonggaran.
+- **2026-09-20 — VIZ-1.** Suite naik 196 -> 200 karena satu test lama diganti
+  dua test baru (geometri + gerbang kisi dekoratif) di 4 project. Tidak ada
+  cakupan yang hilang.
+
 ## Log verifikasi
 
 Diisi per item saat selesai: perintah yang dijalankan, keluarannya, dan di
@@ -243,3 +272,11 @@ mana buktinya disimpan (`docs/evidence/putaran-2/`).
   cocok, regenerasi bersih byte-identik. `audit.py`: 15 berkas, 0 temuan, 5
   umpan negatif tertolak. Kontras bordo/krem 8,881:1 dan hijau/krem 8,956:1.
   Bukti: [`docs/evidence/putaran-2/debt-2/`](docs/evidence/putaran-2/debt-2/).
+- **VIZ-1 — 2026-09-20.** `npx playwright test`: **200 passed (3,7 menit)**,
+  exit 0, 4 project. Gerbang DOM lama: snapshot `git archive 9b7b4d8` yang
+  sudah diberi `data-months` dan `data-range` tetap **8 failed / 8** pada dua
+  test baru — gagal di `.timeline-row` toHaveCount (3 diminta, 4 ada) dan
+  `.timeline-bar` toHaveLength (3 diminta, 4 ada). `contrast.mjs`: 14 pasangan,
+  0 gagal, terendah `.timeline-band-note` gelap 4,947:1 terhadap ambang 4,5:1.
+  `measure.mjs`: 8 lebar 320–1920px, 0 gagal. `npm run build`: exit 0, 4579
+  modul. Bukti: [`docs/evidence/putaran-2/viz-1/`](docs/evidence/putaran-2/viz-1/).

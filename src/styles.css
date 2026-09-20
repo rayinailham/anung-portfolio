@@ -312,21 +312,36 @@ input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
 .split-bar figcaption { font-size: .875rem; line-height: 1.8; color: var(--muted); margin-top: 16px; }
 /* Eleven equal month cells on the existing Sep 2025–Jul 2026 axis.
    The grid is decorative; --from and --span still come only from the data. */
-.timeline-section { --timeline-label-width: clamp(240px, 28vw, 360px); --timeline-gap: 32px; padding-bottom: 50px; }
+/* A Gantt chart, not four stacked blocks: label and bar share a row, the axis
+   sits above the bars, and the months the two 2026 roles share are a ribbon
+   behind those two rows instead of a row of their own. */
+.timeline-section { --timeline-label-width: clamp(200px, 26vw, 320px); --timeline-gap: 28px; --timeline-bar-height: 28px; padding-bottom: 50px; }
 .timeline-section h2 { font-size: clamp(28px, 3vw, 40px); }
-.timeline-lead { font-size: 1rem; line-height: 1.8; margin-top: 18px; max-width: 560px; }
-.timeline { position: relative; list-style: none; padding: 0; margin: 34px 0 0; display: flex; flex-direction: column; gap: 0; border-block: 1px solid var(--line); }
+.timeline-figure { margin: 34px 0 0; }
+.timeline-axis { position: relative; height: 32px; margin: 0 0 0 calc(var(--timeline-label-width) + var(--timeline-gap)); font-size: .8125rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.timeline-tick { position: absolute; top: 0; bottom: 0; left: calc(var(--at) * 100%); display: none; padding-left: 8px; border-left: 1px solid var(--line); white-space: nowrap; }
+.timeline-tick[data-every~="2"] { display: block; }
+.timeline-tick[data-last~="2"] { left: auto; right: 0; padding-left: 0; border-left: 0; }
+.timeline { position: relative; list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0; border-block: 1px solid var(--line); }
 .timeline-row { position: relative; display: grid; grid-template-columns: var(--timeline-label-width) minmax(0, 1fr); column-gap: var(--timeline-gap); }
-.timeline-label { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 3px; padding-block: 18px; font-size: .875rem; }
+.timeline-row + .timeline-row { border-top: 1px solid var(--line); }
+.timeline-label { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding-block: 18px; font-size: .875rem; }
 .timeline-label strong { font-size: 1rem; font-weight: 700; }
 .timeline-label span { color: var(--muted); }
-.timeline-period { font-variant-numeric: tabular-nums; }
-.timeline-track { position: relative; min-height: 88px; border-inline: 1px solid var(--line); background-image: linear-gradient(to right, var(--line) 1px, transparent 1px); background-size: calc(100% / 11) 100%; }
-.timeline-bar { position: absolute; top: calc(50% - 8px); height: 16px; left: calc(var(--from) * 100%); width: calc(var(--span) * 100%); background: var(--ink); transform-origin: left center; }
-.timeline-overlap { border-top: 1px solid var(--line); }
-.timeline-overlap .timeline-label strong { color: var(--green); }
-.timeline-overlap .timeline-bar { top: calc(50% - 4px); height: 8px; background: var(--green); }
-.timeline-axis { display: flex; justify-content: space-between; margin-top: 12px; margin-left: calc(var(--timeline-label-width) + var(--timeline-gap)); font-size: .875rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.timeline-track { position: relative; min-height: 84px; }
+/* Decoration only. The grid is its own layer above nothing and below every bar,
+   so switching it off cannot change a single bar's geometry. */
+.timeline-grid { position: absolute; inset: 0; pointer-events: none; }
+.timeline-grid > span { position: absolute; top: 0; bottom: 0; left: calc(var(--at) * 100%); width: 1px; background: var(--line); }
+.timeline-band { position: absolute; top: 0; bottom: 0; left: calc(var(--from) * 100%); width: calc(var(--span) * 100%); border-inline: 1px solid var(--green); }
+.timeline-band::before { content: ''; position: absolute; inset: 0; background: var(--green); opacity: .12; }
+.timeline-band-note { position: absolute; top: 5px; left: 0; right: 0; text-align: center; font-size: .875rem; font-weight: 700; color: var(--green); white-space: nowrap; }
+.timeline-bar { position: absolute; top: calc(50% - var(--timeline-bar-height) / 2); height: var(--timeline-bar-height); left: calc(var(--from) * 100%); width: calc(var(--span) * 100%); display: flex; align-items: center; justify-content: flex-end; }
+.timeline-bar-fill { position: absolute; inset: 0; background: var(--ink); border-radius: 999px; transform-origin: left center; }
+/* The period rides the end of its own bar, so the number is read where the bar
+   stops instead of measured back to the axis. */
+.timeline-period { position: relative; padding-inline: 16px; font-size: .875rem; font-weight: 700; color: var(--paper); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.timeline-notes { margin: 0; }
 .timeline-note { font-size: .875rem; line-height: 1.8; color: var(--muted); margin-top: 24px; max-width: 620px; }
 .splash { position: fixed; inset: 0; z-index: 40; background: #6c151e; color: #f5dabf; display: flex; align-items: center; justify-content: center; padding: 40px; }
 .splash-top { position: absolute; top: 35px; left: 55px; right: 55px; display: flex; align-items: center; justify-content: space-between; font-size: .875rem; letter-spacing: 1.4px; }
@@ -445,15 +460,19 @@ button:active, .button:active { transform: scale(.97); }
   .experience-location { margin-top: 10px; }
   .experience-main h3 { font-size: 31px; margin-top: 11px; }
   .experience-main > p { font-size: 1rem; margin-top: 16px; }
-  .timeline-section { padding-bottom: 35px; }
-  .timeline-lead { font-size: 1rem; margin-top: 14px; }
-  .timeline { gap: 0; margin-top: 26px; }
-  .timeline-row { grid-template-columns: minmax(0, 1fr); gap: 0; padding-bottom: 16px; }
-  .timeline-label { gap: 3px; padding-block: 16px 10px; }
-  .timeline-track { min-height: 34px; }
-  .timeline-bar { height: 12px; top: calc(50% - 6px); }
-  .timeline-overlap .timeline-bar { height: 6px; top: calc(50% - 3px); }
-  .timeline-axis { margin-left: 0; }
+  .timeline-section { padding-bottom: 35px; --timeline-bar-height: 24px; }
+  .timeline-figure { margin-top: 26px; }
+  .timeline-axis { margin-left: 0; height: 28px; font-size: .75rem; }
+  .timeline-tick[data-every~="2"] { display: none; }
+  .timeline-tick[data-every~="3"] { display: block; }
+  .timeline-tick[data-last~="3"] { left: auto; right: 0; padding-left: 0; border-left: 0; }
+  .timeline-row { grid-template-columns: minmax(0, 1fr); gap: 0; padding-bottom: 14px; }
+  .timeline-label { gap: 2px; padding-block: 16px 8px; }
+  .timeline-track { min-height: 80px; }
+  .timeline-band-note { top: 2px; }
+  /* A 24px bar is too short to hold a readable period at 320px, so the number
+     steps just under its own bar instead of shrinking below 14px. */
+  .timeline-period { position: absolute; top: 100%; left: 0; padding: 4px 0 0; color: var(--ink); }
   .split-track { height: 14px; }
   .score-scale-track { height: 12px; }
   .score-scale { margin-top: 30px; }

@@ -1,0 +1,60 @@
+
+    Error: expect(received).toHaveLength(expected)
+
+    Expected length: 3
+    Received length: 4
+    Received array:  [[447.39, 282.03], [729.42, 282.03], [729.42, 493.56], [729.42, 282.03]]
+
+      732 |   }));
+      733 |   const before = await geometry();
+    > 734 |   expect(before).toHaveLength(chart.entries.length);
+          |                  ^
+      735 |   // One line per month, from the same count the bars are measured against.
+      736 |   await expect(page.locator('.timeline-row').first().locator('.timeline-grid > span')).toHaveCount(chart.total);
+      737 |   await page.addStyleTag({ content: '.timeline-grid { display: none !important; }' });
+        at /tmp/claude-1000/-home-rayin-Projects-freelance-porto-anung/6a702f58-d896-4e5d-9fc2-90c60c5979cf/scratchpad/snap-lama/tests/portfolio.spec.js:734:18
+
+    Error: console errors
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+    + ]
+
+      16 |   expect(page.runtimeErrors, 'uncaught runtime errors').toEqual([]);
+      17 |   if (!NETWORK_FAULT_TESTS.some(prefix => testInfo.title.startsWith(prefix))) {
+    > 18 |     expect(page.consoleErrors, 'console errors').toEqual([]);
+         |                                                  ^
+      19 |   }
+      20 | });
+      21 |
+        at /tmp/claude-1000/-home-rayin-Projects-freelance-porto-anung/6a702f58-d896-4e5d-9fc2-90c60c5979cf/scratchpad/snap-lama/tests/portfolio.spec.js:18:50
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/portfolio-the-month-grid-i-fa381-itching-it-off-moves-no-bar-webkit/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/portfolio-the-month-grid-i-fa381-itching-it-off-moves-no-bar-webkit/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/portfolio-the-month-grid-i-fa381-itching-it-off-moves-no-bar-webkit/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/portfolio-the-month-grid-i-fa381-itching-it-off-moves-no-bar-webkit/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    [chromium] › tests/portfolio.spec.js:638:1 › the career timeline measures every internship against one month axis 
+    [chromium] › tests/portfolio.spec.js:726:1 › the month grid is decoration: switching it off moves no bar 
+    [mobile] › tests/portfolio.spec.js:638:1 › the career timeline measures every internship against one month axis 
+    [mobile] › tests/portfolio.spec.js:726:1 › the month grid is decoration: switching it off moves no bar 
+    [firefox] › tests/portfolio.spec.js:638:1 › the career timeline measures every internship against one month axis 
+    [firefox] › tests/portfolio.spec.js:726:1 › the month grid is decoration: switching it off moves no bar 
+    [webkit] › tests/portfolio.spec.js:638:1 › the career timeline measures every internship against one month axis 
+    [webkit] › tests/portfolio.spec.js:726:1 › the month grid is decoration: switching it off moves no bar 

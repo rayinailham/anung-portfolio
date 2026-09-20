@@ -1,0 +1,18 @@
+| Tema | Pasangan | Token | Rasio | Ambang | Hasil |
+|---|---|---|---|---|---|
+| terang | .timeline-period di atas .timeline-bar-fill | var(--paper) / var(--ink) | 8,881:1 | 4,5:1 | LOLOS |
+| terang | .timeline-band-note di atas pita overlap | var(--green) / var(--green) 12% + var(--paper) | 7,284:1 | 4,5:1 | LOLOS |
+| terang | .timeline-period di bawah bar (<=767px) di atas halaman | var(--ink) / var(--paper) | 8,881:1 | 4,5:1 | LOLOS |
+| terang | .timeline-period di bawah bar (<=767px) di atas pita overlap | var(--ink) / var(--green) 12% + var(--paper) | 7,223:1 | 4,5:1 | LOLOS |
+| terang | .timeline-tick di atas halaman | var(--muted) / var(--paper) | 5,806:1 | 4,5:1 | LOLOS |
+| terang | .timeline-bar-fill di atas halaman | var(--ink) / var(--paper) | 8,881:1 | 3:1 | LOLOS |
+| terang | garis tepi pita overlap di atas halaman | var(--green) / var(--paper) | 8,956:1 | 3:1 | LOLOS |
+| gelap | .timeline-period di atas .timeline-bar-fill | var(--paper) / var(--ink) | 10,819:1 | 4,5:1 | LOLOS |
+| gelap | .timeline-band-note di atas pita overlap | var(--green) / var(--green) 12% + var(--paper) | 4,947:1 | 4,5:1 | LOLOS |
+| gelap | .timeline-period di bawah bar (<=767px) di atas halaman | var(--ink) / var(--paper) | 10,819:1 | 4,5:1 | LOLOS |
+| gelap | .timeline-period di bawah bar (<=767px) di atas pita overlap | var(--ink) / var(--green) 12% + var(--paper) | 8,690:1 | 4,5:1 | LOLOS |
+| gelap | .timeline-tick di atas halaman | var(--muted) / var(--paper) | 7,692:1 | 4,5:1 | LOLOS |
+| gelap | .timeline-bar-fill di atas halaman | var(--ink) / var(--paper) | 10,819:1 | 3:1 | LOLOS |
+| gelap | garis tepi pita overlap di atas halaman | var(--green) / var(--paper) | 6,159:1 | 3:1 | LOLOS |
+
+14 pasangan diperiksa, 0 gagal.

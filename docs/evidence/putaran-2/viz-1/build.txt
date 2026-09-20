@@ -1,0 +1,8 @@
+dist/assets/index-BcBE2I8T.css                              39.66 kB │ gzip: 11.38 kB
+dist/assets/About-C4JigHLG.js                                6.16 kB │ gzip:  2.11 kB
+dist/assets/Experience-DMshj-cc.js                          11.14 kB │ gzip:  3.45 kB
+dist/assets/Contact-C4RqoyG2.js                             15.82 kB │ gzip:  4.88 kB
+dist/assets/motion-runtime-C_ALmccL.js                     131.50 kB │ gzip: 49.35 kB
+dist/assets/index-K4L-oUCn.js                              279.74 kB │ gzip: 85.67 kB
+
+✓ built in 264ms
