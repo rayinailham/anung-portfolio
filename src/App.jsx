@@ -50,19 +50,25 @@ function Splash({ reveal, done, reduced, motionStatus }) {
     try { seen = sessionStorage.getItem('anung-intro') === 'seen'; } catch { /* Storage is optional. */ }
     if (reduced || seen || motionStatus === 'unavailable' || motionStatus === 'skipped') { reveal(); done(); return; }
     if (motionStatus === 'loading') return;
-    const safety = setTimeout(skip, 2000);
+    const safety = setTimeout(skip, 2400);
+    let readingHold;
+    let timeline;
     const ctx = gsap.context(() => {
-      gsap.timeline({ onComplete: done })
+      timeline = gsap.timeline({ onComplete: done })
         .from('.splash-word span', { yPercent: 115, duration: 0.38, stagger: 0.03, ease: 'expo.out' })
         .from('.splash-caption', { opacity: 0, y: 10, duration: 0.18 }, '-=0.18')
         .to('.splash-star', { rotation: 180, duration: 0.5, ease: 'power2.inOut' }, 0)
+        .call(() => {
+          timeline.pause();
+          readingHold = setTimeout(() => timeline.play(), 950);
+        }, null, '+=0.02')
         .to('.splash-content', { y: -38, opacity: 0, duration: 0.18 }, '+=0.02')
         .to(ref.current, { yPercent: -100, duration: 0.46, ease: 'power4.inOut' }, '-=0.06')
         // The page starts moving while the intro is still lifting, so the hero is
         // never painted settled and then re-animated.
         .call(reveal, null, '<0.12');
     }, ref);
-    return () => { clearTimeout(safety); ctx.revert(); };
+    return () => { clearTimeout(safety); clearTimeout(readingHold); ctx.revert(); };
   }, [reveal, done, reduced, motionStatus, skip]);
   return <div className="splash" ref={ref} role="dialog" aria-modal="true" aria-label="Selamat datang di portofolio Anung">
     <div className="splash-top"><span>ANUNG RAMADHAN</span><button onClick={skip}>Lewati intro <ArrowRight /></button></div>

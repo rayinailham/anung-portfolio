@@ -1,0 +1,9 @@
+Snapshot: a49750b (git archive, /tmp, dependensi lokal disalin)
+Perintah: ./node_modules/.bin/playwright test --config docs/evidence/putaran-2/bug-2/playwright.config.js -g 'complete text'
+Hasil: exit 1 — 4 failed.
+Jendela baca teks final:
+- chromium: 49,7 ms
+- mobile: 50,4 ms
+- firefox: 34,0 ms
+- webkit: 46,0 ms
+Semua gagal ambang minimal 900 ms.

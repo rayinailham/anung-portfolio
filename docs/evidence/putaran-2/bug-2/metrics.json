@@ -1,0 +1,14 @@
+{
+  "measured_at": "2026-09-20",
+  "thresholds_ms": {
+    "minimum_read_window": 900,
+    "maximum_total_intro": 2200,
+    "native_safety": 2400
+  },
+  "projects": {
+    "chromium": { "read_window": 1000.8, "total_intro": 2070.0, "text_settled_at": 480.1 },
+    "mobile": { "read_window": 1000.2, "total_intro": 2044.2, "text_settled_at": 457.3 },
+    "firefox": { "read_window": 1000.0, "total_intro": 2072.0, "text_settled_at": 490.0 },
+    "webkit": { "read_window": 1013.0, "total_intro": 1766.0, "text_settled_at": 183.0 }
+  }
+}

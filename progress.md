@@ -16,11 +16,11 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 
 | Blok | Isi | Item | Done |
 |---|---|---|---|
-| A | Bug | 2 | 1 |
+| A | Bug | 2 | 2 |
 | B | Hutang yang belum mendarat di `main` | 2 | 0 |
 | C | Rombak visualisasi timeline | 1 | 0 |
 | D | Poles visual menyeluruh | 1 | 0 |
-| — | **Total** | **6** | **1** |
+| — | **Total** | **6** | **2** |
 
 Urutan kerja: A → B → C → D. BLOK D hanya dimulai setelah A, B, C lolos.
 
@@ -46,7 +46,7 @@ sesi yang sama, bukan dikutip dari catatan lama.
 | ID | Item | Status | Bukti |
 |---|---|---|---|
 | BUG-1 | Sepertiga bawah `#/pengalaman` permanen `opacity: 0`; tween dibuat sebelum gerbang `revealed`, semua penyelamat dipasang sesudahnya | DONE | [`docs/evidence/putaran-2/bug-1/`](docs/evidence/putaran-2/bug-1/): gerbang urutan lifecycle gagal 4/4 di `a49750b`; hasil akhir 12/12 lolos (4 route × 4 project + animasi normal), test resmi terfokus 24/24, build exit 0. |
-| BUG-2 | Intro splash terlalu cepat; teks utuh hanya ±20 ms | TODO | Butuh: jendela baca ≥ 0,9 s terukur, total intro < 2,2 s, "Lewati intro" tetap bekerja di tengah animasi, reduced motion tetap melewati intro, jaring `skip` tetap lebih panjang dari intro. |
+| BUG-2 | Intro splash terlalu cepat; teks utuh hanya ±20 ms | DONE | [`docs/evidence/putaran-2/bug-2/`](docs/evidence/putaran-2/bug-2/): baseline 4/4 gagal (34,0–50,4 ms); hasil akhir 12/12 lolos, jendela baca min 1000,0 ms, total max 2072 ms, skip/reduced motion/session lolos, test resmi terfokus 16/16, build exit 0. |
 
 ### Catatan BUG-1
 
@@ -194,6 +194,11 @@ dilepas.
   `revealed` dan deadline native wajib terpasang sebelum `gsap.context`.
   Test perilaku tetap mengunci nol konten tersembunyi di 4 route × 4 project,
   dan test pendamping membuktikan tween normal masih hidup.
+- **2026-09-20 — BUG-2.** Jeda baca dibuat sebagai pause wall-clock 950 ms
+  sesudah tween teks selesai, bukan menambah tween visual palsu. Pause dimulai
+  20 ms setelah posisi final agar WebKit mendapat satu frame stabil. Timeline
+  nominal tetap 1,12 detik; waktu nyata intro 1,77–2,07 detik. Safety dinaikkan
+  ke 2,4 detik, 328 ms di atas hasil terlama.
 
 ## Log verifikasi
 
@@ -205,3 +210,14 @@ mana buktinya disimpan (`docs/evidence/putaran-2/`).
   yang sama 4 failed di snapshot `a49750b`. Test resmi terfokus: 24 passed.
   `npm run build`: exit 0. Bukti dan perintah ulang:
   [`docs/evidence/putaran-2/bug-1/`](docs/evidence/putaran-2/bug-1/).
+- **BUG-2 — 2026-09-20.** `npx playwright test --config
+  docs/evidence/putaran-2/bug-2/playwright.config.js`: 12 passed; test timing
+  yang sama di snapshot `a49750b`: 4 failed. Jendela baca final minimum
+  1000,0 ms; total intro maksimum 2072 ms. Test resmi terfokus: 16 passed.
+  `npm run build`: exit 0. Bukti:
+  [`docs/evidence/putaran-2/bug-2/`](docs/evidence/putaran-2/bug-2/).
+- **BLOK A — gerbang akhir 2026-09-20.** Snapshot bersih dibuat dari
+  `git archive HEAD` sehingga perubahan BLOK B di worktree tidak ikut diuji.
+  `npm test`: **196 passed (3,9 menit)**, exit 0. `npm run build`: exit 0,
+  Vite 8.3.0 mentransformasi 4579 modul. Ringkasan:
+  [`docs/evidence/putaran-2/`](docs/evidence/putaran-2/).

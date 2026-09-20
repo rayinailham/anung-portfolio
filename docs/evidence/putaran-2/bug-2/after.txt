@@ -1,0 +1,12 @@
+Perintah: npx playwright test --config docs/evidence/putaran-2/bug-2/playwright.config.js
+Hasil: exit 0 — 12 passed (chromium, mobile, firefox, webkit).
+
+Perintah: npx playwright test -g 'fresh contact deep link|intro lasts about one second|intro completes; route transition|reduced motion bypasses intro'
+Hasil: exit 0 — 16 passed.
+
+Perintah: npm run build
+Hasil: exit 0 — Vite 8.3.0, 4579 modul ditransformasi.
+
+Gerbang akhir snapshot HEAD bersih:
+- npm test: exit 0 — 196 passed (3.9m)
+- npm run build: exit 0 — Vite 8.3.0, 4579 modul ditransformasi
