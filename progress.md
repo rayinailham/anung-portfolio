@@ -17,10 +17,10 @@ Status: `TODO` · `WIP` · `BLOCKED` · `DONE` · `SKIP`
 | Blok | Isi | Item | Done |
 |---|---|---|---|
 | A | Bug | 2 | 2 |
-| B | Hutang yang belum mendarat di `main` | 2 | 0 |
+| B | Hutang yang belum mendarat di `main` | 2 | 1 |
 | C | Rombak visualisasi timeline | 1 | 0 |
 | D | Poles visual menyeluruh | 1 | 0 |
-| — | **Total** | **6** | **2** |
+| — | **Total** | **6** | **3** |
 
 Urutan kerja: A → B → C → D. BLOK D hanya dimulai setelah A, B, C lolos.
 
@@ -95,7 +95,7 @@ Kirim 5. `git merge` akan menghapus `src/pages/`, `src/seo.js`, `src/site.js`,
 
 | ID | Item | Status | Bukti |
 |---|---|---|---|
-| DEBT-1 | Turunkan rupa VIS-1 (`6b10739`) ke `main` | TODO | Butuh: `git diff --stat` setelah apply hanya menyebut `src/motion.js` dan `src/styles.css`; `npm test` lolos tanpa mengubah `tests/`. |
+| DEBT-1 | Turunkan rupa VIS-1 (`6b10739`) ke `main` | DONE | [`docs/evidence/putaran-2/debt-1/`](docs/evidence/putaran-2/debt-1/): diff hanya `src/motion.js` + `src/styles.css` (63 tambah, 52 hapus); `tests/` tidak berubah; `npm test` 196/196 lolos dalam 3,8 menit. |
 | DEBT-2 | Pasang `public/images/og-cover.png` dari `0adb7e5` | TODO | Butuh: `dist/images/og-cover.png` ada dan 1200×630; `og:image` di `dist/index.html` menunjuk ke situ. Sisa jujur: validasi LinkedIn Post Inspector + pratinjau WhatsApp nyata menunggu domain hidup. |
 
 ### Koreksi terhadap papan lama — penting
@@ -199,6 +199,11 @@ dilepas.
   20 ms setelah posisi final agar WebKit mendapat satu frame stabil. Timeline
   nominal tetap 1,12 detik; waktu nyata intro 1,77–2,07 detik. Safety dinaikkan
   ke 2,4 detik, 328 ms di atas hasil terlama.
+- **2026-09-20 — DEBT-1.** Diff VIS-1 dipindahkan manual ke arsitektur Kirim 5;
+  branch lama tidak di-merge. Tidak ada token atau pasangan warna berubah, jadi
+  item ini tidak melahirkan rasio kontras baru. Provisioner Python dari skill
+  Arch tidak menemukan CLI Python `playwright`; verifikasi dialihkan ke paket
+  Node proyek dan launch nyata ketiga engine berhasil sebelum suite penuh.
 
 ## Log verifikasi
 
@@ -221,3 +226,8 @@ mana buktinya disimpan (`docs/evidence/putaran-2/`).
   `npm test`: **196 passed (3,9 menit)**, exit 0. `npm run build`: exit 0,
   Vite 8.3.0 mentransformasi 4579 modul. Ringkasan:
   [`docs/evidence/putaran-2/`](docs/evidence/putaran-2/).
+- **DEBT-1 — 2026-09-20.** `git diff --stat` hanya menyebut `src/motion.js`
+  dan `src/styles.css` (63 tambah, 52 hapus); `tests/` tidak berubah.
+  `npm test`: **196 passed (3,8 menit)**, exit 0, pada Chromium desktop,
+  Chromium mobile, Firefox, dan WebKit. Bukti:
+  [`docs/evidence/putaran-2/debt-1/`](docs/evidence/putaran-2/debt-1/).
