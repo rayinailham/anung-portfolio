@@ -15,6 +15,14 @@ playwright/.cache/
 docs/evidence/**/*.webm
 docs/evidence/**/*.mp4
 
+# media mentah, video besar, dan dump frame video lokal
+*.mp4
+*.mov
+*.mkv
+*.avi
+assets/*.mp4
+assets/screenshots_video/
+
 # deploy
 # `vercel link` menulis project id + org id ke sini. Bukan rahasia, tapi juga
 # bukan milik repo: tiap orang yang clone menautkannya ke proyeknya sendiri.
@@ -24,6 +32,7 @@ docs/evidence/**/*.mp4
 .serena/
 .kiro/
 .codex/
+.agents/
 .aider*
 .claude/settings.local.json
 

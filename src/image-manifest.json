@@ -29,6 +29,36 @@
     "avif": "/images/connections-400.avif 400w, /images/connections-640.avif 640w, /images/connections-900.avif 900w, /images/connections-1200.avif 1200w",
     "webp": "/images/connections-400.webp 400w, /images/connections-640.webp 640w, /images/connections-900.webp 900w, /images/connections.webp 1200w"
   },
+  "/images/konten-sosial.webp": {
+    "widths": [
+      320,
+      480,
+      720,
+      1200
+    ],
+    "avif": "/images/konten-sosial-320.avif 320w, /images/konten-sosial-480.avif 480w, /images/konten-sosial-720.avif 720w, /images/konten-sosial-1200.avif 1200w",
+    "webp": "/images/konten-sosial-320.webp 320w, /images/konten-sosial-480.webp 480w, /images/konten-sosial-720.webp 720w, /images/konten-sosial.webp 1200w"
+  },
+  "/images/video-produk.webp": {
+    "widths": [
+      320,
+      480,
+      720,
+      1200
+    ],
+    "avif": "/images/video-produk-320.avif 320w, /images/video-produk-480.avif 480w, /images/video-produk-720.avif 720w, /images/video-produk-1200.avif 1200w",
+    "webp": "/images/video-produk-320.webp 320w, /images/video-produk-480.webp 480w, /images/video-produk-720.webp 720w, /images/video-produk.webp 1200w"
+  },
+  "/images/webinar-b2b.webp": {
+    "widths": [
+      320,
+      480,
+      720,
+      1200
+    ],
+    "avif": "/images/webinar-b2b-320.avif 320w, /images/webinar-b2b-480.avif 480w, /images/webinar-b2b-720.avif 720w, /images/webinar-b2b-1200.avif 1200w",
+    "webp": "/images/webinar-b2b-320.webp 320w, /images/webinar-b2b-480.webp 480w, /images/webinar-b2b-720.webp 720w, /images/webinar-b2b.webp 1200w"
+  },
   "/images/placeholder/konten-sosial.webp": {
     "widths": [
       320,

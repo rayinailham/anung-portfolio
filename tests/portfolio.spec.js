@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
 
 // Tests that deliberately abort a request get a browser network diagnostic on
 // the console; every other test still has to keep the console clean.
-const NETWORK_FAULT_TESTS = ['GSAP blocked', 'placeholder covers missing', 'contact send survives a dead network', 'contact form offers the email draft', 'route chunks blocked'];
+const NETWORK_FAULT_TESTS = ['GSAP blocked', 'evidence covers missing', 'contact send survives a dead network', 'contact form offers the email draft', 'route chunks blocked'];
 
 test.afterEach(async ({ page }, testInfo) => {
   expect(page.runtimeErrors, 'uncaught runtime errors').toEqual([]);
@@ -450,26 +450,34 @@ test('deep link from a Beranda card lands on its own experience entry', async ({
 test('every evidence slot is declared, sized and captioned honestly', async ({ page }) => {
   await ready(page, '/pengalaman');
   await expect(page.locator('.evidence-item')).toHaveCount(4);
-  await expect(page.locator('.evidence-item[data-placeholder="true"]')).toHaveCount(3);
-  await expect(page.locator('.evidence-item:not([data-placeholder]) img'))
-    .toHaveAttribute('src', '/images/anymind-pantene-team.webp');
+  await expect(page.locator('.evidence-item[data-placeholder="true"]')).toHaveCount(0);
+  const sources = await page.locator('.evidence-cover img').evaluateAll(images =>
+    images.map(image => image.getAttribute('src')));
+  expect(sources).toEqual([
+    '/images/anymind-pantene-team.webp',
+    '/images/konten-sosial.webp',
+    '/images/video-produk.webp',
+    '/images/webinar-b2b.webp',
+  ]);
   const sizes = await page.locator('.evidence-cover img').evaluateAll(images =>
     images.map(image => [Number(image.getAttribute('width')), Number(image.getAttribute('height'))]));
   expect(sizes).toHaveLength(4);
   expect(sizes.every(([width, height]) => width > 0 && height > 0)).toBe(true);
-  for (const slot of await page.locator('.evidence-item[data-placeholder="true"]').all()) {
-    await expect(slot.locator('figcaption')).toContainText('ilustrasi sementara');
+  for (const slot of await page.locator('.evidence-item').all()) {
     await expect(slot.locator('figcaption')).toBeVisible();
   }
   // The real photo is never described as work Anung produced on his own.
   await expect(page.locator('#entri-anymind .evidence-item figcaption')).toContainText('Pantene Affiliate Gathering');
 });
 
-test('placeholder covers missing still leave the evidence slots correct', async ({ page }) => {
+test('evidence covers missing still leave the evidence slots correct', async ({ page }) => {
   let aborted = 0;
-  await page.route('**/images/placeholder/**', route => { aborted++; return route.abort(); });
+  await page.route(url => /konten-sosial|video-produk|webinar-b2b/.test(url.pathname), route => {
+    aborted++;
+    return route.abort();
+  });
   await ready(page, '/pengalaman');
-  const slots = page.locator('.evidence-item[data-placeholder="true"]');
+  const slots = page.locator('#entri-anima-digital .evidence-item');
   await expect(slots).toHaveCount(3);
   for (const slot of await slots.all()) {
     await slot.scrollIntoViewIfNeeded();
@@ -1166,6 +1174,6 @@ test('robots, sitemap and llms.txt are served and agree on one origin', async ({
   // this file will restate outreach as sales.
   expect(llmsBody).toContain('bukan hasil penjualan');
   expect(llmsBody).toContain('100 Shopee + 50 TikTok, bukan 150 orang unik');
-  expect(llmsBody).toContain('ilustrasi abstrak sementara');
+  expect(llmsBody).toContain('Anima Companion');
   for (const figure of ['150', '200', '583', '3.74']) expect(llmsBody, `angka ${figure}`).toContain(figure);
 });
