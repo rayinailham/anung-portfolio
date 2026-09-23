@@ -8,7 +8,7 @@
 // real address, and `urlIsPlaceholder` stays true so the build can say so.
 import { profile } from './data.js';
 
-export const SITE_URL_PLACEHOLDER = 'https://anung-ramadhan.example';
+export const SITE_URL_PLACEHOLDER = 'https://anung-portfolio.vercel.app';
 export const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 
 // wa.me wants the number without '+' or separators; profile.phone stays the

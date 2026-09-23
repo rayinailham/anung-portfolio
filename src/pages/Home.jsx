@@ -5,7 +5,7 @@ function Home() {
   return <>
     <section className="hero wrap page-opening">
       <div className="hero-copy">
-        <p className="availability hero-enter"><span className="pulse" aria-hidden="true" />Terbuka untuk kerja sama</p>
+        <p className="availability hero-enter"><span className="pulse" aria-hidden="true" />Terbuka untuk lowongan kerja</p>
         <p className="eyebrow hero-enter">AFILIASI & PEMASARAN DIGITAL</p>
         <Title lines={['Halo, saya', 'Anung.']} />
         <p className="hero-description hero-enter">Saya membantu tim pemasaran mengelola mitra afiliasi dan kerja sama dengan kreator, mulai dari menghubungi mereka hingga memantau konten yang terbit.</p>
