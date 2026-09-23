@@ -242,7 +242,6 @@ test('mobile touch targets, marquee text and dark accent meet their requirements
   await expect(page.locator('.marquee')).not.toHaveAttribute('role', 'img');
   await expect(page.locator('.marquee > .sr-only')).toHaveText('Bidang: pemasaran afiliasi, kerja sama KOL, perencanaan konten.');
   await expect(page.locator('.marquee-track')).toHaveAttribute('aria-hidden', 'true');
-  await page.getByRole('button', { name: 'Aktifkan mode gelap' }).click();
   const tokens = await page.evaluate(() => {
     const style = getComputedStyle(document.documentElement);
     return Object.fromEntries(['--green', '--paper', '--paper-soft', '--ink', '--button-text'].map(name => [name, style.getPropertyValue(name).trim()]));
@@ -291,7 +290,6 @@ test('experience filters and contribution disclosures work', async ({ page }) =>
 
 test('theme persists and CV download contains a PDF', async ({ page, request }) => {
   await ready(page);
-  await page.getByRole('button', { name: 'Aktifkan mode gelap' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');

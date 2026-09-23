@@ -8,21 +8,21 @@
   font-family: 'Manrope Variable', 'Arial', sans-serif;
   font-size: 100%;
   line-height: var(--leading-body);
-  color: #6c151e;
-  background: #f5dabf;
+  color: #f5dabf;
+  background: #102e2b;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --paper: #f5dabf;
-  --paper-soft: #f9e5d1;
-  --ink: #6c151e;
-  --muted: #75463c;
-  --green: #0f3d3a;
-  --line: #6c151e33;
-  --button: #6c151e;
-  --button-text: #f5dabf;
-  --shadow-drop: 0 20px 30px #6c151e14;
-  color-scheme: light;
+  --paper: #102e2b;
+  --paper-soft: #163a36;
+  --ink: #f5dabf;
+  --muted: #cfb9a5;
+  --green: #7fb3a8;
+  --line: #f5dabf33;
+  --button: #f5dabf;
+  --button-text: #6c151e;
+  --shadow-drop: 0 20px 30px #0000005c;
+  color-scheme: dark;
 
   /* Spacing: one 4px ladder. Nothing between the steps. */
   --space-3xs: 4px;
@@ -82,7 +82,8 @@
   --radius-circle: 50%;
   --radius-arch: 46% 46% var(--radius-nub) var(--radius-nub);
 }
-:root[data-theme='dark'] {
+:root[data-theme='dark'],
+:root[data-theme='light'] {
   background: #102e2b;
   color: #f5dabf;
   --paper: #102e2b;

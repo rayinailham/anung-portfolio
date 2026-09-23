@@ -1,16 +1,14 @@
 <!doctype html>
-<html lang="id">
+<html lang="id" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#F5DABF" />
+    <meta name="theme-color" content="#102e2b" />
     <!--site-meta-->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" as="font" type="font/woff2" href="/node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2" crossorigin />
     <script>
-      try {
-        document.documentElement.dataset.theme = localStorage.getItem('anung-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      } catch { document.documentElement.dataset.theme = 'light'; }
+      document.documentElement.dataset.theme = 'dark';
     </script>
   </head>
   <body>

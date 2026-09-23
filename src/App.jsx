@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { ArrowRight, Asterisk, DownloadSimple, Sun, Moon, List, X, ArrowUpRight, ArrowDown } from '@phosphor-icons/react';
+import { ArrowRight, Asterisk, DownloadSimple, List, X, ArrowUpRight, ArrowDown } from '@phosphor-icons/react';
 import { profile } from './data';
 import { WHATSAPP_URL } from './site';
 import { routes, getAnchor, getRoute } from './routes.js';
@@ -83,7 +83,7 @@ function Splash({ reveal, done, reduced, motionStatus }) {
   </div>;
 }
 
-function Header({ route, theme, setTheme, reduced }) {
+function Header({ route, reduced }) {
   const [open, setOpen] = useState(false);
   const toggleRef = useRef(null);
   const navRef = useRef(null);
@@ -107,7 +107,6 @@ function Header({ route, theme, setTheme, reduced }) {
       {Object.entries(routes).map(([path, label]) => <Link key={path} to={path} onNavigate={() => setOpen(false)} aria-current={path === route ? 'page' : undefined}>{label}<span className="nav-line" /></Link>)}
     </nav>
     <div className="header-actions">
-      <button className="icon-button theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} aria-label={theme === 'dark' ? 'Aktifkan mode terang' : 'Aktifkan mode gelap'}>{theme === 'dark' ? <Sun /> : <Moon />}</button>
       <a className="header-cv" href={profile.cv} download>Download CV <DownloadSimple size={16} /></a>
       <button ref={toggleRef} className="icon-button menu-toggle" aria-expanded={open} aria-controls="main-navigation" aria-label={open ? 'Tutup menu' : 'Buka menu'} onClick={() => setOpen(!open)}>{open ? <X /> : <List />}</button>
     </div>
@@ -128,7 +127,6 @@ export default function App() {
   const [revealed, setRevealed] = useState(!initialIntro);
   const initialRoute = useRef(route);
   const [transitioning, setTransitioning] = useState(false);
-  const [theme, setTheme] = useState(() => document.documentElement.dataset.theme || 'light');
   const userReduced = useReducedMotion();
   const motionStatus = useMotionStatus();
   const reduced = userReduced || motionStatus !== 'ready';
@@ -188,10 +186,10 @@ export default function App() {
     return () => clearTimeout(id);
   }, [booting, transitioning, revealed, revealPage]);
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
-    document.querySelector('meta[name="theme-color"]').content = theme === 'dark' ? '#102e2b' : '#F5DABF';
-    try { localStorage.setItem('anung-theme', theme); } catch { /* Storage is optional. */ }
-  }, [theme]);
+    document.documentElement.dataset.theme = 'dark';
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = '#102e2b';
+  }, []);
   useEffect(() => {
     if (booting || transitioning) lenis.current?.stop(); else lenis.current?.start();
     document.body.classList.toggle('motion-locked', booting || transitioning);
@@ -291,7 +289,7 @@ export default function App() {
     <div className="app" ref={root} inert={booting || transitioning ? true : undefined}>
       <div className="scroll-progress" aria-hidden="true"><span /></div>
       <a className="skip-link" href="#main-content" onClick={event => { event.preventDefault(); root.current.querySelector('main')?.focus(); }}>Lewati ke konten</a>
-      <Header route={route} theme={theme} setTheme={setTheme} reduced={reduced} />
+      <Header route={route} reduced={reduced} />
       <main id="main-content" tabIndex={-1} key={route}>{Page ? <Page /> : pageFailed ? <PageUnavailable /> : isRoute(route) ? null : <section className="not-found wrap"><p>404</p><h1>Sepertinya salah jalan.</h1><Link to="/" className="button">Kembali ke beranda <ArrowRight /></Link></section>}</main>
       <Footer />
     </div>
