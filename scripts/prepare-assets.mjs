@@ -29,6 +29,7 @@ const responsive = [
   { source: 'anung_profile.jpeg', out: 'images/anung-profile.webp', widths: [320, 440, 640, 900], quality: 83 },
   { source: 'with_anymind_team.jpg', out: 'images/anymind-pantene-team.webp', widths: [400, 640, 900, 1200], quality: 82 },
   { source: 'assets/source/connections.png', out: 'images/connections.webp', widths: [400, 640, 900, 1200], quality: 82 },
+  { source: 'assets/source/sutan-vet-produk.jpg', out: 'images/sutan-vet-produk.webp', widths: [400, 640, 900, 1200], quality: 82 },
   { source: 'assets/source/konten-sosial.jpg', out: 'images/konten-sosial.webp', widths: [320, 480, 720, 1200], quality: 82 },
   { source: 'assets/source/video-produk.jpg', out: 'images/video-produk.webp', widths: [320, 480, 720, 1200], quality: 82 },
   { source: 'assets/source/webinar-b2b.jpg', out: 'images/webinar-b2b.webp', widths: [320, 480, 720, 1200], quality: 82 },

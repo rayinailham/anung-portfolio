@@ -33,7 +33,7 @@ function Home() {
           <div className="story-meta"><span>AnyMind Group</span><ArrowUpRight size={26} /></div><h3>Mengelola mitra<br />afiliasi Unicharm.</h3><p>Pemasaran afiliasi / 2026</p>
         </Link>
         <Link to="/pengalaman#entri-anima-digital" className="feature-story secondary-story" data-reveal="right" data-reveal-kind="media" aria-label="Lihat pengalaman kolaborasi KOL di PT Sutan Vet Medika">
-          <div className="feature-art" data-mask><Picture src="/images/connections.webp" sizes={SIZES.featureArt} width="1200" height="800" loading="lazy" fetchPriority="low" alt="Ilustrasi dua bentuk saling terhubung dalam warna bordo dan hijau" data-parallax /></div>
+          <div className="feature-art" data-mask><Picture src="/images/sutan-vet-produk.webp" sizes={SIZES.featureArt} width="1200" height="800" loading="lazy" fetchPriority="low" alt="Jajaran produk suplemen dan perawatan hewan Anima Companion dari PT Sutan Vet Medika" data-parallax /></div>
           <div className="story-meta"><span>PT Sutan Vet Medika</span><ArrowUpRight size={26} /></div><h3>Konten dan KOL<br />Anima Companion.</h3><p>KOL & pemasaran digital / 2025 - 2026</p>
         </Link>
       </div>

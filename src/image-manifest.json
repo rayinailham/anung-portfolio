@@ -29,6 +29,16 @@
     "avif": "/images/connections-400.avif 400w, /images/connections-640.avif 640w, /images/connections-900.avif 900w, /images/connections-1200.avif 1200w",
     "webp": "/images/connections-400.webp 400w, /images/connections-640.webp 640w, /images/connections-900.webp 900w, /images/connections.webp 1200w"
   },
+  "/images/sutan-vet-produk.webp": {
+    "widths": [
+      400,
+      640,
+      900,
+      1200
+    ],
+    "avif": "/images/sutan-vet-produk-400.avif 400w, /images/sutan-vet-produk-640.avif 640w, /images/sutan-vet-produk-900.avif 900w, /images/sutan-vet-produk-1200.avif 1200w",
+    "webp": "/images/sutan-vet-produk-400.webp 400w, /images/sutan-vet-produk-640.webp 640w, /images/sutan-vet-produk-900.webp 900w, /images/sutan-vet-produk.webp 1200w"
+  },
   "/images/konten-sosial.webp": {
     "widths": [
       320,
