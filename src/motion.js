@@ -24,7 +24,7 @@ export function useMotionStatus() {
   useEffect(() => {
     if (reduced) { setStatus('skipped'); return; }
     let active = true;
-    const timeout = setTimeout(() => { active = false; setStatus('unavailable'); }, 1500);
+    const timeout = setTimeout(() => { active = false; setStatus('unavailable'); }, 6000);
     runtime ||= import('./motion-runtime');
     runtime.then(modules => {
       if (!active) return;
@@ -95,6 +95,7 @@ export function useSmoothScroll(ref, reduced) {
     lenis.on('scroll', ScrollTrigger.update);
     const frame = (time) => lenis.raf(time * 1000);
     gsap.ticker.add(frame);
+    gsap.ticker.lagSmoothing(0);
     const visibility = () => { if (document.hidden) lenis.stop(); else lenis.start(); };
     document.addEventListener('visibilitychange', visibility);
     return () => {
@@ -116,18 +117,23 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
     const reveals = [];
     const safetyElements = [...scope.querySelectorAll('[data-reveal], [data-reveal-group], [data-reveal-group] > *, [data-mask], .hero-enter, .title-line > span, .portrait-frame, [data-arc], [data-bar], [data-bar-fill]')];
     const counters = [...scope.querySelectorAll('[data-count]')];
+    let lastTick = Date.now();
+    const markTick = () => { lastTick = Date.now(); };
+    gsap.ticker.add(markTick);
     // Arm the native deadline before GSAP is allowed to paint a hidden frame.
-    // It survives a same-page effect cleanup while any reveal is unfinished.
+    // It only restores elements if the GSAP ticker is dead / sleeping, never killing healthy tweens.
     const safety = setTimeout(() => {
-      gsap.killTweensOf(safetyElements);
-      for (const element of safetyElements) {
-        element.style.removeProperty('opacity');
-        element.style.removeProperty('transform');
-        element.style.removeProperty('clip-path');
-        // Dropping the inline override hands the arc back to its own attribute.
-        element.style.removeProperty('stroke-dashoffset');
+      if (!gsap || (Date.now() - lastTick > 1000)) {
+        gsap?.killTweensOf(safetyElements);
+        for (const element of safetyElements) {
+          element.style.removeProperty('opacity');
+          element.style.removeProperty('transform');
+          element.style.removeProperty('clip-path');
+          // Dropping the inline override hands the arc back to its own attribute.
+          element.style.removeProperty('stroke-dashoffset');
+        }
+        counters.forEach(element => { element.textContent = `${element.dataset.count}${element.dataset.suffix || ''}`; });
       }
-      counters.forEach(element => { element.textContent = `${element.dataset.count}${element.dataset.suffix || ''}`; });
     }, 5000);
     const context = gsap.context(() => {
       const title = scope.querySelectorAll('.title-line > span');
@@ -289,7 +295,8 @@ export function usePageMotion(ref, route, revealed, reduced, skipOpening = false
     return () => {
       cancelAnimationFrame(frame);
       cancelAnimationFrame(checking);
-      if (!scope.isConnected || reveals.every(({ tween }) => tween.progress() >= 1)) clearTimeout(safety);
+      clearTimeout(safety);
+      gsap.ticker.remove(markTick);
       observer.disconnect();
       removeEventListener('scroll', onScroll);
       ScrollTrigger.removeEventListener('refresh', revealPassed);
